@@ -1,0 +1,60 @@
+{
+  "_key": "lib_cs_update_payload_location",
+  "name": "Move Payload",
+  "category": "Cobalt Strike",
+  "tactic": "TA0001",
+  "icon": "\ud83d\udce6",
+  "riskLevel": "low",
+  "subcategory": "Artifact Management",
+  "description": "Relocate payload to organized or web-accessible directory",
+  "estimatedDuration": 10,
+  "executionType": "shell_command",
+  "cobaltStrikeCommand": null,
+  "robotKeyword": null,
+  "robotTemplate": null,
+  "shellCommand": "mv ${old_path} ${new_path}",
+  "inputs": [
+    {
+      "id": "payload",
+      "label": "Existing Payload",
+      "type": "Payload_Artifact",
+      "required": true,
+      "description": "Payload to relocate"
+    }
+  ],
+  "outputs": [
+    {
+      "id": "updated_payload",
+      "label": "Relocated Payload",
+      "type": "Payload_Artifact",
+      "description": "Payload at new location"
+    }
+  ],
+  "parameters": [
+    {
+      "id": "new_path",
+      "label": "New Location",
+      "type": "string",
+      "required": true,
+      "placeholder": "/var/www/html/updates/svchost.exe",
+      "default": null,
+      "description": "Destination path"
+    }
+  ],
+  "requirements": {
+    "c2Server": false,
+    "listeners": [],
+    "payloads": [],
+    "sshConnections": [],
+    "externalTools": [],
+    "libraries": []
+  },
+  "metadata": {
+    "version": "1.0.0",
+    "tags": [
+      "payload",
+      "file-management",
+      "staging"
+    ]
+  }
+}

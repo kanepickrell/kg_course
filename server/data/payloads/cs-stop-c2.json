@@ -1,0 +1,40 @@
+{
+  "_payload_version": "2.0",
+  "_saved_at": "2026-01-28T03:43:59.254771",
+  "_artifact_key": "cs-stop-c2",
+  "id": "cs-stop-c2",
+  "name": "Stop C2",
+  "description": "Disconnect from the Cobalt Strike teamserver",
+  "icon": "\ud83d\uded1",
+  "tactic": "Resource Development",
+  "category": "Cobalt Strike",
+  "subcategory": "C2 Management",
+  "riskLevel": "low",
+  "estimatedDuration": 5,
+  "inputs": [
+    {
+      "id": "trigger",
+      "label": "Previous Step",
+      "type": "any",
+      "required": true,
+      "description": "Connect from final node in chain"
+    }
+  ],
+  "outputs": [],
+  "parameters": [],
+  "requirements": {
+    "c2Server": true,
+    "activeSession": false
+  },
+  "robotFramework": {
+    "libraries": [
+      "cobaltstrike.py"
+    ],
+    "keyword": "stop_c2",
+    "keywordArgs": [],
+    "variables": [],
+    "preKeywordLog": "=== Stopping C2 Server ===",
+    "postKeywordLog": "C2 server disconnected",
+    "isTeardown": true
+  }
+}

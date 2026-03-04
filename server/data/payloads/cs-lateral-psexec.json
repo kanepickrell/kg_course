@@ -1,0 +1,93 @@
+{
+  "_payload_version": "2.0",
+  "_saved_at": "2026-01-28T03:53:52.196822",
+  "_artifact_key": "cs-lateral-psexec",
+  "id": "cs-lateral-psexec",
+  "name": "Lateral Move (PsExec)",
+  "description": "Lateral movement using PsExec64 via beacon",
+  "icon": "\ud83d\udd00",
+  "tactic": "Lateral Movement",
+  "category": "Cobalt Strike",
+  "subcategory": "Movement",
+  "riskLevel": "high",
+  "estimatedDuration": 30,
+  "inputs": [
+    {
+      "id": "session",
+      "label": "Active Session",
+      "type": "session",
+      "required": true,
+      "description": "Beacon session to pivot from"
+    }
+  ],
+  "outputs": [
+    {
+      "id": "session",
+      "label": "New Session",
+      "type": "session",
+      "description": "Beacon session on target system"
+    }
+  ],
+  "parameters": [
+    {
+      "id": "targetIp",
+      "label": "Target IP",
+      "type": "string",
+      "required": true,
+      "default": "",
+      "description": "IP address of lateral movement target"
+    },
+    {
+      "id": "listener",
+      "label": "Listener",
+      "type": "string",
+      "required": true,
+      "default": "HTTP",
+      "description": "Listener for the new beacon"
+    }
+  ],
+  "requirements": {
+    "c2Server": true,
+    "activeSession": true
+  },
+  "robotFramework": {
+    "libraries": [
+      "cobaltstrike.py"
+    ],
+    "keyword": "Lateral_Move_Psexec",
+    "keywordArgs": [
+      {
+        "sessionVariable": "CURRENT_SESSION",
+        "position": 1
+      },
+      {
+        "param": "targetIp",
+        "position": 2,
+        "variableRef": true,
+        "variableName": "LATERAL_TARGET_IP"
+      },
+      {
+        "param": "listener",
+        "position": 3,
+        "variableRef": true,
+        "variableName": "LATERAL_LISTENER"
+      }
+    ],
+    "variables": [
+      {
+        "name": "LATERAL_TARGET_IP",
+        "fromParam": "targetIp",
+        "scope": "suite"
+      },
+      {
+        "name": "LATERAL_LISTENER",
+        "fromParam": "listener",
+        "scope": "suite"
+      }
+    ],
+    "captureOutput": "lateral_result",
+    "sessionVariable": "CURRENT_SESSION",
+    "preKeywordLog": "=== Lateral Movement (PsExec) to ${LATERAL_TARGET_IP} ===",
+    "postKeywordLog": "Lateral movement complete - new session established"
+  }
+}

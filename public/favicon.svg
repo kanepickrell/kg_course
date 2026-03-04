@@ -1,0 +1,16 @@
+<svg viewBox="0 0 100 115" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="protoGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#22d3ee"/>
+      <stop offset="100%" stop-color="#0891b2"/>
+    </linearGradient>
+  </defs>
+  <!-- Top hexagon - lifted -->
+  <polygon points="50,2 72,14 72,38 50,50 28,38 28,14" fill="url(#protoGrad)" stroke="#e0e0e0" stroke-width="3"/>
+  <!-- Bottom left hexagon -->
+  <polygon points="28,52 50,64 50,88 28,100 6,88 6,64" fill="none" stroke="#e0e0e0" stroke-width="3"/>
+  <!-- Bottom right hexagon -->
+  <polygon points="72,52 94,64 94,88 72,100 50,88 50,64" fill="none" stroke="#e0e0e0" stroke-width="3"/>
+  <!-- Single node at junction -->
+  <circle cx="50" cy="64" r="4" fill="#e0e0e0"/>
+</svg>

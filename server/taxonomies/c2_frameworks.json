@@ -1,0 +1,49 @@
+{
+  "taxonomy_id": "proto:C2Frameworks",
+  "taxonomy_label": "C2 Frameworks",
+  "description": "Command and Control frameworks used for adversary emulation",
+  "version": "1.0.0",
+  "last_updated": "2026-01-16",
+  "terms": [
+    {
+      "uri": "proto:c2/cobalt_strike",
+      "label": "Cobalt Strike",
+      "aliases": ["CS", "Cobalt", "CobaltStrike"],
+      "definition": "Commercial adversary simulation and red team operations software by Fortra (formerly HelpSystems)",
+      "broader": null,
+      "vendor": "Fortra",
+      "beacon_types": ["HTTP", "HTTPS", "DNS", "SMB"],
+      "documentation_url": "https://www.cobaltstrike.com/documentation"
+    },
+    {
+      "uri": "proto:c2/sliver",
+      "label": "Sliver",
+      "aliases": ["sliver", "SliverC2"],
+      "definition": "Open source cross-platform adversary emulation/red team framework by BishopFox",
+      "broader": null,
+      "vendor": "BishopFox",
+      "beacon_types": ["HTTP", "HTTPS", "DNS", "mTLS", "WireGuard"],
+      "documentation_url": "https://sliver.sh/"
+    },
+    {
+      "uri": "proto:c2/powershell_empire",
+      "label": "PowerShell Empire",
+      "aliases": ["Empire", "PS Empire", "PSEmpire"],
+      "definition": "Post-exploitation framework built on PowerShell and Python agents",
+      "broader": null,
+      "vendor": "BC Security",
+      "beacon_types": ["HTTP", "HTTPS"],
+      "documentation_url": "https://bc-security.gitbook.io/empire-wiki/"
+    },
+    {
+      "uri": "proto:c2/covenant",
+      "label": "Covenant C2",
+      "aliases": ["Covenant", "CovenantC2"],
+      "definition": ".NET based C2 framework with a web-based interface",
+      "broader": null,
+      "vendor": "Covenant Project",
+      "beacon_types": ["HTTP", "HTTPS"],
+      "documentation_url": "https://github.com/cobbr/Covenant"
+    }
+  ]
+}

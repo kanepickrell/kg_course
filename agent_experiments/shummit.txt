@@ -1,0 +1,283 @@
+Shummit Proposal: Semantic AI Platform 
+
+Problem Statement 
+
+Many organizations report that a large share of their AI development effort is consumed by 
+data preparation, integration, and aligning data across teams—not by developing models 
+or intelligence. According to BCG research, organizations following the “10-20-70” 
+principle spend about 10% of their effort on algorithms, 20% on technology & data, and 
+70% on people, process, and cultural transformation. 
+
+Teams across departments often build AI applications in isolation; they each solve 
+recurring data connectivity, metadata, schema mismatch, or discovery challenges, and 
+insights tend to stay within domain silos. The issue is not always lack of data, but lack of 
+discoverability, shared vocabulary, or cross-team connection of data and semantic 
+definitions. 
+
+Proposed Solution 
+
+We propose to build a Semantic AI Infrastructure Platform which enables teams to: 
+
+•  Define shared business concepts once (e.g., Person, Project, System, Event) using 
+
+web/semantic standards (e.g. JSON-LD contexts, RDF, etc.). 
+
+•  Map their existing data to those shared concept definitions while keeping existing 
+
+systems and workflows. 
+
+•  Publish metadata/data mappings so that AI applications or analytic pipelines can 
+discover and integrate relevant data across teams automatically without ad-hoc 
+custom integration. 
+
+The idea is to shift some integration work outward: data-producing/publishing teams take 
+responsibility for mapping; the system provides discoverability and linking. 
+
+Evidence & Academic Merit 
+
+Below are studies and observations that support technical feasibility, benefits, and known 
+challenges; where precise metrics are unavailable, language has been generalized. 
+
+•  Technical Feasibility & Case Studies 
+
+1.  MapSDI: A Scaled-up Semantic Data Integration Framework (Jozashoori & 
+
+Vidal, 2019) demonstrates that using mapping rules and preprocessing steps 
+(projection, deduplication) guided by semantic mappings can reduce 
+
+knowledge graph creation time by an order of magnitude vs naïve 
+approaches  
+
+2.  Knowledge Graph Induction enabling Recommending and Trend Analysis: A 
+Corporate Research Community Use Case (IBM Research) – shows how 
+structured + textual data from different systems can be unified under a 
+knowledge graph, and supports recommendation & analytics use cases 
+
+3.  BCG’s “Where’s the Value in AI?” (2024) survey of many companies shows 
+that only ~25-30% are moving beyond proofs of concept, with many still 
+struggling to scale value; leaders in AI mature in both technical capability 
+and organizational change 
+
+4.  The “10-20-70” allocation model from BCG is repeatedly cited in recent AI 
+
+strategy/consulting work, indicating that many organizations recognize that 
+the people/process dimension is often the largest and hardest to address.  
+
+•  Benefits in Accuracy, Discovery, & Cross-Domain Use 
+
+1.  A Benchmark to Understand the Role of Knowledge Graphs on LLM’s 
+
+Accuracy for Question Answering on Enterprise SQL Databases (Sequeda, 
+Allemang, Jacob, et al., 2023) shows that for question answering tasks over 
+an enterprise SQL schema, using a knowledge-graph representation + 
+ontology + mappings increases accuracy substantially vs zero-shot LLM over 
+raw SQL tables (≈ 16% → ≈ 54%).  
+
+2.  JEL: Applying End-to-End Neural Entity Linking in JPMorgan Chase shows 
+
+practical deployment of knowledge graph / entity linking in a large enterprise 
+setting, with cross-system integration and use in risk/fraud/advice systems. 
+
+• 
+
+Industry / Organizational Observations & Challenges 
+
+1.  Many case studies (from e.g. Enterprise Knowledge) show organizations 
+
+struggling with data discovery, inconsistent metadata, siloed systems, and 
+decentralized content or practice, which semantic layers / knowledge graph / 
+graph-based metadata systems help to address.  
+
+2.  Industrial enterprise knowledge-graph development research (e.g. Adoption 
+
+of knowledge-graph best development practices (Jawad et al., 
+ScienceDirect, 2023)) documents that challenges include data quality, 
+scalability of graph creation, governance, and tooling. 
+
+•  Proposal Limitations 
+
+o  There are very few publicly published large-scale ROI studies that directly 
+compare, say, “semantic infrastructure + cross-team discoverability” vs 
+“traditional ETL / integration approaches” in exactly similar settings. 
+
+o  Many case studies are qualitative (improved insight, reduced duplicated 
+effort) rather than fully quantified (dollar savings, latency improvements 
+across the board). 
+
+o  Performance metrics (for large/enterprise datasets) are often proprietary or 
+
+not disclosed; so setting expectations must be cautious. 
+
+Technical Foundation 
+
+This doesn’t have to be the way forward but platform may build on these tools and 
+frameworks: 
+
+• 
+
+JSON-LD (contexts, types) and RDF (including named graphs or similar concepts) 
+are mature standards with broad adoption. 
+
+•  Existing architectures / frameworks (e.g. mapping-rule frameworks like MapSDI) 
+show that large heterogeneous sources can be integrated through semantic 
+mappings. 
+
+•  There are enterprise tools / graph databases (Neo4j, Stardog, GraphDB, Apache 
+Jena, etc.) that support RDF/triples, graph querying, reasoning, etc. Many case 
+studies use such tools. 
+
+•  Performance / scale issues are tractable but non-trivial; approaches often require 
+
+preprocessing, deduplication, incremental updates, good indexing, and governance 
+to keep things maintainable. 
+
+Two-Week Deliverable 
+
+Week 1: Infrastructure Foundation 
+
+•  Schema/ontology/context registry using JSON-LD/RDF standards 
+
+•  Data / dataset registration API so teams can expose metadata / data mappings to 
+
+the shared schema. 
+
+•  Graph database instance with sample dataset(s) and ability to store named graphs 
+
+or graph fragments with connections. 
+
+Week 2: Cross-Team AI Demonstration 
+
+•  Simulating multiple organizational teams for a generic organization (i.e. HR, IT, 
+
+Operations) mapping to shared concepts. 
+
+•  Building a sample AI application or analytic dashboard that can use federated 
+
+queries (SPARQL over multiple named graphs or datasets) to answer cross-domain 
+questions that previously were difficult or impossible. 
+
+•  Example queries: e.g., “How do system access patterns correlate with project 
+
+outcomes across departments?”, “Are there patterns in employee performance, 
+resource usage, and event logs that cross teams?” etc. 
+
+Success Metrics & Realistic Expectations 
+
+Technical / Performance Metrics 
+
+•  Time to register a dataset with shared vocabulary (ideally low, but define realistic 
+
+target depending on complexity) 
+
+•  Discovery coverage: proportion of relevant cross-team datasets that are 
+
+discoverable via the shared vocabulary / schema 
+
+•  Query performance: federated or combined cross-team queries should run within 
+
+acceptable latency (e.g. under some threshold, though in prototype settings may be 
+higher) 
+
+Organizational / Adoption Metrics 
+
+•  Stakeholder readiness and willingness to map to shared concepts 
+
+•  Consistency / quality of mappings / metadata (data validation) 
+
+•  Usability of tools (how easily teams discover data, how intuitive the mapping 
+
+schema registry etc.) 
+
+Risk Mitigation & Organizational Readiness 
+
+•  Known key challenges: governance, cultural resistance, lack of clarity in benefit, 
+misalignment between domain teams, data quality, domain-specific terminology 
+mismatches, etc. 
+
+•  Mitigations: 
+
+1.  Start with willing, early adopter teams rather than trying to force whole org 
+
+adoption. 
+
+2.  Focus on compelling use cases that deliver visible value early (e.g. 
+
+report/dashboard, cross-team insights) rather than architectures alone. 
+
+3.  Secure executive sponsorship / leadership endorsement, to align incentives 
+
+and resource allocation. 
+
+4.  Build or adopt data governance frameworks / schema‐management roles 
+
+early (taxonomy/ontology stewards). 
+
+Strategic Impact & Scope 
+
+•  The prototype aims to test whether adding more teams increases the “network 
+
+effect” of semantic infrastructure: each new team that maps its data adds value for 
+others. 
+
+•  The goal is technical proof of concept and organizational value exploration, without 
+
+overpromising large ROI until sufficient scale and maturity. 
+
+•  Because many of the benefits are qualitative or indirect (reduced duplication, faster 
+discovery, more consistent definitions, ability to reuse data/models), expectations 
+should include both qualitative feedback and early quantitative indicators (e.g. 
+speed ups in time to insight, reduction in repeated integration effort). 
+
+Sources 
+
+•  Read these papers by Tony Seale first (there are several parts) gives a clear 
+
+explanation of why an organization would want to adopt this approach to data 
+management: 
+
+o  https://medium.com/experience-stack/embrace-complexity-part-1-
+
+39483f10a47f 
+
+o  https://medium.com/experience-stack/embrace-complexity-part-2-
+
+28eca3c94a8d?source=user_profile_page---------0-------------
+2c658f4bef6d---------------------- 
+
+o  https://medium.com/@Tonyseale/embrace-complexity-part-3-cloud-
+
+39f4074e4489?source=user_profile_page---------7-------------2c658f4bef6d-
+--------------------- 
+
+o  https://medium.com/@Tonyseale/building-your-connected-data-
+
+catalog-634674b41770 
+
+•  BCG – Where’s the Value in AI? (2024)  
+•  BCG – AI Capabilities Overview (10-20-70 allocation)  
+
+ 
+• 
+
+Jozashoori & Vidal (2019). MapSDI: A Scaled-up Semantic Data Integration 
+Framework 
+
+•  Sequeda, Allemang, Jacob, et al. (2023). A Benchmark to Understand the Role of 
+Knowledge Graphs on LLM’s Accuracy for Question Answering on Enterprise SQL 
+Databases 
+IBM Research (2022). Knowledge Graph Induction enabling Recommending and 
+Trend Analysis: A Corporate Research Community Use Case 
+JPMorgan Chase – JEL: Applying End-to-End Neural Entity Linking (2024) 
+
+• 
+
+• 
+
+•  Enterprise Knowledge – Case Studies  
+• 
+
+Jawad et al. (2023). Adoption of knowledge-graph best development practices 
+(ScienceDirect)  
+
+ 
+

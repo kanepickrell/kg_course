@@ -1,0 +1,73 @@
+{
+  "meta_narrative": "This document is a detailed offensive cyber‑attack execution plan that describes gaining initial access to the DI.",
+  "ip_addresses": [
+    "151.102.64.5",
+    "151.102.64.6",
+    "151.102.64.8",
+    "151.102.65.1",
+    "151.102.65.142",
+    "151.102.65.143",
+    "151.102.65.144",
+    "151.102.65.57",
+    "31.148.54.96"
+  ],
+  "credentials": [
+    {
+      "username": "DI\\Administrator",
+      "password": "P@ssw0rd",
+      "type": "wmic"
+    },
+    {
+      "username": "DI\\rodrigo.allison",
+      "password": "r4#Sw5GyL+5V",
+      "type": "wmic"
+    },
+    {
+      "username": "DI\\shelia.serrano",
+      "password": "xI#Yp6@4#8o#",
+      "type": "wmic"
+    },
+    {
+      "username": "DI\\eduardo.wheeler",
+      "password": "bL+6oA6P@W+x",
+      "type": "wmic"
+    },
+    {
+      "username": "Administrator",
+      "password": null,
+      "type": "ssh"
+    },
+    {
+      "username": "fannie.sparks",
+      "password": null,
+      "type": "ssh"
+    },
+    {
+      "username": "cisco",
+      "password": null,
+      "type": "ssh"
+    },
+    {
+      "username": "oliver.jones",
+      "password": "1R34llyL0v3P1zz4!",
+      "type": "powershell"
+    },
+    {
+      "username": "Administrator@di.gov.gk",
+      "password": null,
+      "type": "email"
+    },
+    {
+      "username": "oliver.jones@di.gov.gk",
+      "password": null,
+      "type": "email"
+    }
+  ],
+  "statistics": {
+    "total_ips": 9,
+    "total_credentials": 10,
+    "document_length_chars": 5509,
+    "document_length_lines": 109,
+    "processing_time_seconds": 14.75
+  }
+}

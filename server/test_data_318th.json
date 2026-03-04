@@ -1,0 +1,208 @@
+{
+  "processes": [
+    {
+      "_key": "obap_test_001",
+      "name": "OBAP End-to-End Test Process",
+      "description": "Test process for validating full pipeline: ingestion -> LLM discovery -> visualization",
+      "owner": "Automation Team",
+      "status": "active",
+      "created_date": "2024-11-24",
+      "steps": [
+        {
+          "_key": "plan_test_001",
+          "type": "PlanningStep",
+          "name": "Initial Capability Planning",
+          "description": "Plan required capabilities and identify TTPs for test scenario",
+          "phase": "planning",
+          "is_initial_step": true,
+          "duration_hours": 4,
+          "next_steps": [
+            "DevelopmentStep/dev_test_001"
+          ],
+          "artifacts": [
+            {
+              "_key": "cap_req_test_001",
+              "type": "CapabilityRequestArtifact",
+              "name": "Test Capability Request",
+              "description": "Request for credential dumping capability",
+              "requested_by": "OPFOR Lead",
+              "priority": "high",
+              "ttp_ids": ["T1003", "T1003.006"]
+            },
+            {
+              "_key": "sprint_log_test_001",
+              "type": "SprintLogArtifact",
+              "name": "Planning Sprint Log",
+              "sprint_number": 1,
+              "completion_status": "completed",
+              "ttp_ids": ["T1003"]
+            }
+          ]
+        },
+        {
+          "_key": "dev_test_001",
+          "type": "DevelopmentStep",
+          "name": "Content Development",
+          "description": "Develop automation scripts and orchestration sequences",
+          "phase": "development",
+          "is_initial_step": false,
+          "duration_hours": 16,
+          "next_steps": [
+            "ExecutionStep/exec_test_001"
+          ],
+          "artifacts": [
+            {
+              "_key": "orch_plan_test_001",
+              "type": "OrchestrationPlanArtifact",
+              "name": "Test Orchestration Plan",
+              "description": "Sequence for credential dumping scenario",
+              "version": "1.0",
+              "ttp_ids": ["T1003.006"],
+              "sequence_steps": 5
+            },
+            {
+              "_key": "robot_log_test_001",
+              "type": "RobotLogArtifact",
+              "name": "Development Robot Log",
+              "test_type": "unit_test",
+              "pass_rate": 0.95,
+              "ttp_id": "T1003"
+            }
+          ]
+        },
+        {
+          "_key": "exec_test_001",
+          "type": "ExecutionStep",
+          "name": "Live Range Execution",
+          "description": "Execute credential dumping scenario on live range",
+          "phase": "execution",
+          "is_initial_step": false,
+          "duration_hours": 2,
+          "next_steps": [],
+          "artifacts": [
+            {
+              "_key": "live_exec_test_001",
+              "type": "LiveExecutionArtifact",
+              "name": "Test Execution Results",
+              "description": "Live execution of credential dumping",
+              "execution_date": "2024-11-24",
+              "success_rate": 0.90,
+              "ttp_id": "T1003",
+              "observations": "Successfully demonstrated credential access techniques"
+            },
+            {
+              "_key": "exec_plan_test_001",
+              "type": "ExecutionPlanArtifact",
+              "name": "Test Execution Plan",
+              "description": "Detailed plan for range execution",
+              "version": "1.1",
+              "ttp_ids": ["T1003", "T1003.006"]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "_key": "obap_test_002",
+      "name": "Multi-TTP Complex Process",
+      "description": "More complex process involving multiple teams and TTPs to test LLM discovery",
+      "owner": "Range Team",
+      "status": "in_progress",
+      "created_date": "2024-11-20",
+      "steps": [
+        {
+          "_key": "plan_test_002",
+          "type": "PlanningStep",
+          "name": "Multi-Stage Attack Planning",
+          "description": "Plan multi-stage attack chain",
+          "phase": "planning",
+          "is_initial_step": true,
+          "duration_hours": 8,
+          "next_steps": [
+            "DevelopmentStep/dev_test_002a",
+            "DevelopmentStep/dev_test_002b"
+          ],
+          "artifacts": [
+            {
+              "_key": "cap_req_test_002",
+              "type": "CapabilityRequestArtifact",
+              "name": "Multi-Stage Capability Request",
+              "description": "Request for lateral movement and persistence capabilities",
+              "requested_by": "OPFOR Team",
+              "priority": "critical",
+              "ttp_ids": ["T1021", "T1078", "T1136"]
+            }
+          ]
+        },
+        {
+          "_key": "dev_test_002a",
+          "type": "DevelopmentStep",
+          "name": "Lateral Movement Development",
+          "description": "Develop lateral movement automation",
+          "phase": "development",
+          "is_initial_step": false,
+          "duration_hours": 20,
+          "next_steps": [
+            "ExecutionStep/exec_test_002"
+          ],
+          "artifacts": [
+            {
+              "_key": "orch_plan_test_002a",
+              "type": "OrchestrationPlanArtifact",
+              "name": "Lateral Movement Orchestration",
+              "description": "Automated lateral movement sequence",
+              "version": "2.0",
+              "ttp_ids": ["T1021"],
+              "sequence_steps": 8
+            }
+          ]
+        },
+        {
+          "_key": "dev_test_002b",
+          "type": "DevelopmentStep",
+          "name": "Persistence Development",
+          "description": "Develop persistence mechanisms",
+          "phase": "development",
+          "is_initial_step": false,
+          "duration_hours": 12,
+          "next_steps": [
+            "ExecutionStep/exec_test_002"
+          ],
+          "artifacts": [
+            {
+              "_key": "orch_plan_test_002b",
+              "type": "OrchestrationPlanArtifact",
+              "name": "Persistence Orchestration",
+              "description": "Automated persistence establishment",
+              "version": "1.5",
+              "ttp_ids": ["T1078", "T1136"],
+              "sequence_steps": 6
+            }
+          ]
+        },
+        {
+          "_key": "exec_test_002",
+          "type": "ExecutionStep",
+          "name": "Integrated Execution",
+          "description": "Execute full attack chain on range",
+          "phase": "execution",
+          "is_initial_step": false,
+          "duration_hours": 4,
+          "next_steps": [],
+          "artifacts": [
+            {
+              "_key": "live_exec_test_002",
+              "type": "LiveExecutionArtifact",
+              "name": "Multi-Stage Execution Results",
+              "description": "Results from full attack chain execution",
+              "execution_date": "2024-11-23",
+              "success_rate": 0.85,
+              "ttp_id": "T1021",
+              "observations": "Lateral movement successful, some persistence issues noted"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

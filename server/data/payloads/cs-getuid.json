@@ -1,0 +1,58 @@
+{
+  "_payload_version": "2.0",
+  "_saved_at": "2026-01-27T23:17:56.867697",
+  "_artifact_key": "cs-getuid",
+  "id": "cs-getuid",
+  "name": "Get User Identity",
+  "description": "Retrieve current user identity and privilege context from beacon",
+  "icon": "\ud83d\udc64",
+  "tactic": "Discovery",
+  "category": "Cobalt Strike",
+  "subcategory": "Reconnaissance",
+  "riskLevel": "low",
+  "estimatedDuration": 5,
+  "inputs": [
+    {
+      "id": "session",
+      "label": "Active Session",
+      "type": "session",
+      "required": true,
+      "description": "Beacon session to query"
+    }
+  ],
+  "outputs": [
+    {
+      "id": "session",
+      "label": "Session",
+      "type": "session",
+      "description": "Pass-through session for chaining"
+    },
+    {
+      "id": "userIdentity",
+      "label": "User Identity",
+      "type": "string",
+      "description": "Current user context (e.g., DOMAIN\\username)"
+    }
+  ],
+  "parameters": [],
+  "requirements": {
+    "c2Server": true,
+    "activeSession": true
+  },
+  "robotFramework": {
+    "libraries": [
+      "cobaltstrike.py"
+    ],
+    "keyword": "GetUID",
+    "keywordArgs": [
+      {
+        "sessionVariable": "CURRENT_SESSION",
+        "position": 1
+      }
+    ],
+    "captureOutput": "uid_output",
+    "sessionVariable": "CURRENT_SESSION",
+    "preKeywordLog": "=== Getting User Identity ===",
+    "postKeywordLog": "User Identity: ${uid_output}"
+  }
+}

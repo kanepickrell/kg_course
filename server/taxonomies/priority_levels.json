@@ -1,0 +1,49 @@
+{
+  "taxonomy_id": "proto:PriorityLevels",
+  "taxonomy_label": "Priority Levels",
+  "description": "Priority classification for development stories and tasks",
+  "version": "1.0.0",
+  "last_updated": "2026-01-16",
+  "terms": [
+    {
+      "uri": "proto:priority/critical",
+      "label": "Critical",
+      "aliases": ["critical", "P0", "p0", "urgent", "Urgent", "blocker", "Blocker"],
+      "definition": "Highest priority - blocks other work or has immediate deadline",
+      "broader": null,
+      "sequence": 1,
+      "color": "#DC2626",
+      "sla_days": 1
+    },
+    {
+      "uri": "proto:priority/high",
+      "label": "High",
+      "aliases": ["high", "P1", "p1", "important"],
+      "definition": "High priority - should be addressed in current sprint",
+      "broader": null,
+      "sequence": 2,
+      "color": "#EA580C",
+      "sla_days": 7
+    },
+    {
+      "uri": "proto:priority/medium",
+      "label": "Medium",
+      "aliases": ["medium", "med", "P2", "p2", "normal", "Normal"],
+      "definition": "Standard priority - planned work for upcoming sprints",
+      "broader": null,
+      "sequence": 3,
+      "color": "#CA8A04",
+      "sla_days": 14
+    },
+    {
+      "uri": "proto:priority/low",
+      "label": "Low",
+      "aliases": ["low", "P3", "p3", "minor", "Minor", "nice_to_have"],
+      "definition": "Low priority - address when capacity allows",
+      "broader": null,
+      "sequence": 4,
+      "color": "#16A34A",
+      "sla_days": 30
+    }
+  ]
+}

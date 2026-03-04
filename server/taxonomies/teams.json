@@ -1,0 +1,70 @@
+{
+  "taxonomy_id": "proto:Teams",
+  "taxonomy_label": "318th RANS Teams",
+  "description": "Organizational teams within the 318th Range and Network Squadron",
+  "version": "1.0.0",
+  "last_updated": "2026-01-16",
+  "terms": [
+    {
+      "uri": "proto:team/Automation",
+      "label": "Automation",
+      "aliases": ["Auto", "Automation Team", "AT"],
+      "definition": "Responsible for attack automation scripts, C2 integration, orchestration frameworks, and execution pipelines.",
+      "broader": null,
+      "related": ["proto:team/OPFOR"],
+      "responsibilities": [
+        "Cobalt Strike automation",
+        "Robot Framework test development",
+        "C2 infrastructure scripting",
+        "Payload deployment automation"
+      ],
+      "color": "#B4A082"
+    },
+    {
+      "uri": "proto:team/Range",
+      "label": "Range",
+      "aliases": ["Range Team", "Infrastructure", "RT", "Range Ops"],
+      "definition": "Manages cyber range infrastructure, VM deployments, network configurations, and environment provisioning.",
+      "broader": null,
+      "related": ["proto:team/Automation"],
+      "responsibilities": [
+        "VM deployment and management",
+        "Network topology configuration",
+        "Range environment provisioning",
+        "Infrastructure maintenance"
+      ],
+      "color": "#8C8264"
+    },
+    {
+      "uri": "proto:team/OPFOR",
+      "label": "OPFOR",
+      "aliases": ["Red Team", "Opposing Force", "Adversary Team", "Red"],
+      "definition": "Executes adversary emulation operations, develops attack chains, and conducts red team activities during exercises.",
+      "broader": null,
+      "related": ["proto:team/Automation", "proto:team/ContentDev"],
+      "responsibilities": [
+        "Adversary emulation",
+        "Attack chain execution",
+        "TTP implementation",
+        "Red team operations"
+      ],
+      "color": "#64783C"
+    },
+    {
+      "uri": "proto:team/ContentDev",
+      "label": "Content Development",
+      "aliases": ["ContentDev", "Content Dev", "Scenario Development", "CD", "Content"],
+      "definition": "Develops training scenarios, threat intelligence products, exercise handbooks, and storyline narratives.",
+      "broader": null,
+      "related": ["proto:team/OPFOR"],
+      "responsibilities": [
+        "Scenario design",
+        "Threat intelligence research",
+        "Handbook creation",
+        "Storyline development",
+        "Intel product generation"
+      ],
+      "color": "#829646"
+    }
+  ]
+}

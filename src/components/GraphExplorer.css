@@ -1,0 +1,341 @@
+/* GraphExplorer React Flow Custom Styles */
+
+/* Neo-brutalist button styles */
+.neo-button {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border: 3px solid #000;
+    box-shadow: 4px 4px 0px #000;
+    transition: all 0.2s ease;
+    font-weight: 600;
+}
+
+.neo-button:hover {
+    transform: translate(2px, 2px);
+    box-shadow: 2px 2px 0px #000;
+}
+
+.neo-button:active {
+    transform: translate(4px, 4px);
+    box-shadow: 0px 0px 0px #000;
+}
+
+.neo-button-secondary {
+    background: #ffffff;
+    border: 3px solid #000;
+    box-shadow: 3px 3px 0px #000;
+    transition: all 0.2s ease;
+}
+
+.neo-button-secondary:hover {
+    transform: translate(1px, 1px);
+    box-shadow: 2px 2px 0px #000;
+}
+
+.neo-card {
+    border: 3px solid #000;
+    box-shadow: 6px 6px 0px #000;
+    border-radius: 12px;
+}
+
+/* Accent colors */
+.text-accent-pink {
+    color: #e6e6e6; /* Soft white */
+}
+
+.text-accent-teal {
+    color: #e6e6e6; /* Soft white */
+}
+
+.bg-accent-pink {
+    background-color: #e6e6e6; /* Soft white */
+}
+
+.bg-accent-teal {
+    background-color: #e6e6e6; /* Soft white */
+}
+
+.bg-accent-pink\/20 {
+    background-color: rgba(230, 230, 230, 0.2); /* Soft white 20% opacity */
+}
+
+.ring-accent-pink {
+    --tw-ring-color: #e6e6e6; /* Soft white */
+}
+
+/* React Flow customization */
+.react-flow__node {
+    cursor: pointer;
+}
+
+.react-flow__node:hover {
+    filter: brightness(1.2);
+}
+
+.react-flow__edge-path {
+    transition: stroke 0.3s ease, stroke-width 0.3s ease;
+}
+
+.react-flow__controls {
+    border: 3px solid #000;
+    box-shadow: 4px 4px 0px #000;
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.95);
+}
+
+.react-flow__controls-button {
+    border-bottom: 2px solid #000;
+    background: white;
+    transition: all 0.2s ease;
+}
+
+.react-flow__controls-button:hover {
+    background: #f0f0f0;
+}
+
+.react-flow__minimap {
+    border: 3px solid #000;
+    box-shadow: 4px 4px 0px #000;
+    border-radius: 8px;
+}
+
+.react-flow__background {
+    background-color: #1a1a1a;
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+    .neo-button-secondary {
+        background: #2a2a2a;
+        color: #ffffff;
+    }
+
+    .neo-card {
+        background: #1a1a1a;
+        border-color: #444;
+        box-shadow: 6px 6px 0px #444;
+    }
+
+    .react-flow__controls {
+        background: rgba(42, 42, 42, 0.95);
+        border-color: #444;
+        box-shadow: 4px 4px 0px #444;
+        color: #ffffff;
+    }
+
+    .react-flow__controls-button {
+        background: #2a2a2a;
+        border-color: #444;
+        color: #ffffff;
+    }
+
+    .react-flow__controls-button:hover {
+        background: #333;
+    }
+
+    .react-flow__minimap {
+        border-color: #444;
+        box-shadow: 4px 4px 0px #444;
+    }
+}
+
+/* Custom animations */
+@keyframes bounce {
+
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-10px);
+    }
+}
+
+.animate-bounce {
+    animation: bounce 2s infinite;
+}
+
+@keyframes pulse {
+
+    0%,
+    100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.5;
+    }
+}
+
+.animate-pulse {
+    animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* Utility classes */
+.bg-background {
+    background-color: #0a0a0a;
+}
+
+.bg-background\/50 {
+    background-color: rgba(10, 10, 10, 0.5);
+}
+
+.bg-card {
+    background-color: #1a1a1a;
+}
+
+.bg-secondary {
+    background-color: #2a2a2a;
+}
+
+.bg-secondary\/30 {
+    background-color: rgba(42, 42, 42, 0.3);
+}
+
+.bg-secondary\/50 {
+    background-color: rgba(42, 42, 42, 0.5);
+}
+
+.bg-muted {
+    background-color: #3a3a3a;
+}
+
+.text-muted-foreground {
+    color: #888;
+}
+
+.border-border {
+    border-color: #333;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    .neo-card {
+        box-shadow: 3px 3px 0px #000;
+    }
+
+    .neo-button {
+        box-shadow: 2px 2px 0px #000;
+    }
+
+    .neo-button:hover {
+        transform: translate(1px, 1px);
+        box-shadow: 1px 1px 0px #000;
+    }
+
+    /* Additional styles for enhanced inspector in GemDrawer */
+
+/* Smooth transitions for collapsible sections */
+details > summary {
+  list-style: none;
+  transition: all 0.2s ease;
+}
+
+details > summary::-webkit-details-marker {
+  display: none;
+}
+
+details[open] > summary {
+  margin-bottom: 0.5rem;
+}
+
+/* Node reference hover effects */
+.node-reference-link {
+  position: relative;
+  transition: all 0.2s ease;
+}
+
+.node-reference-link:hover {
+  transform: translateX(2px);
+}
+
+.node-reference-link:hover::before {
+  content: '→';
+  position: absolute;
+  left: -12px;
+  animation: slide-in 0.3s ease;
+}
+
+@keyframes slide-in {
+  from {
+    opacity: 0;
+    left: -8px;
+  }
+  to {
+    opacity: 1;
+    left: -12px;
+  }
+}
+
+/* Loading skeleton for better UX */
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.05) 25%,
+    rgba(255, 255, 255, 0.1) 50%,
+    rgba(255, 255, 255, 0.05) 75%
+  );
+  background-size: 200% 100%;
+  animation: loading 1.5s ease-in-out infinite;
+}
+
+@keyframes loading {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+/* Better scrollbars for inspector */
+.inspector-scrollable::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.inspector-scrollable::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: 3px;
+}
+
+.inspector-scrollable::-webkit-scrollbar-thumb {
+  background: #ed50d3;
+  border-radius: 3px;
+}
+
+.inspector-scrollable::-webkit-scrollbar-thumb:hover {
+  background: #d12eb8;
+}
+
+/* Copy success feedback */
+@keyframes copy-success {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.copy-success {
+  animation: copy-success 0.3s ease;
+}
+
+/* Highlight animation for newly loaded data */
+@keyframes highlight-fade {
+  0% {
+    background-color: rgba(237, 80, 211, 0.2);
+  }
+  100% {
+    background-color: transparent;
+  }
+}
+
+.data-loaded {
+  animation: highlight-fade 1s ease;
+}
+}

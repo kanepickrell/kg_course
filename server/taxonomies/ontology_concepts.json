@@ -1,0 +1,467 @@
+{
+  "ontology_id": "proto:ProtoGraphOntology",
+  "ontology_label": "ProtoGraph Ontology",
+  "description": "Core ontology for 318th RANS ProtoGraph knowledge graph",
+  "namespace": "https://protograph.318rans.mil/ontology/",
+  "version": "1.0.0",
+  "last_updated": "2026-01-16",
+  "concepts": [
+    {
+      "uri": "proto:concept/Thing",
+      "label": "Thing",
+      "definition": "Root concept - all entities in ProtoGraph are Things",
+      "parent_uri": null,
+      "abstract": true,
+      "collection": null,
+      "properties": [
+        {
+          "name": "id",
+          "type": "string",
+          "required": true,
+          "description": "Unique identifier"
+        },
+        {
+          "name": "created_at",
+          "type": "datetime",
+          "required": false,
+          "description": "When this entity was created"
+        },
+        {
+          "name": "updated_at",
+          "type": "datetime",
+          "required": false,
+          "description": "When this entity was last modified"
+        }
+      ]
+    },
+    {
+      "uri": "proto:concept/Agent",
+      "label": "Agent",
+      "definition": "An entity that can perform actions - people or teams",
+      "parent_uri": "proto:concept/Thing",
+      "abstract": true,
+      "collection": null,
+      "properties": [
+        {
+          "name": "name",
+          "type": "string",
+          "required": true,
+          "description": "Display name of the agent"
+        }
+      ]
+    },
+    {
+      "uri": "proto:concept/Person",
+      "label": "Person",
+      "definition": "An individual team member",
+      "parent_uri": "proto:concept/Agent",
+      "abstract": false,
+      "collection": "Person",
+      "taxonomy": "team_members",
+      "properties": [
+        {
+          "name": "team",
+          "type": "uri",
+          "required": false,
+          "taxonomy": "teams",
+          "description": "Team this person belongs to"
+        },
+        {
+          "name": "role",
+          "type": "string",
+          "required": false,
+          "description": "Job title or role"
+        },
+        {
+          "name": "email",
+          "type": "string",
+          "required": false,
+          "description": "Email address"
+        }
+      ]
+    },
+    {
+      "uri": "proto:concept/Team",
+      "label": "Team",
+      "definition": "An organizational team within 318th RANS",
+      "parent_uri": "proto:concept/Agent",
+      "abstract": false,
+      "collection": "Team",
+      "taxonomy": "teams",
+      "properties": [
+        {
+          "name": "responsibilities",
+          "type": "string[]",
+          "required": false,
+          "description": "List of team responsibilities"
+        },
+        {
+          "name": "color",
+          "type": "string",
+          "required": false,
+          "description": "UI color code for the team"
+        }
+      ]
+    },
+    {
+      "uri": "proto:concept/Artifact",
+      "label": "Artifact",
+      "definition": "A work product created or used by teams - code, documents, logs, etc.",
+      "parent_uri": "proto:concept/Thing",
+      "abstract": true,
+      "collection": null,
+      "properties": [
+        {
+          "name": "name",
+          "type": "string",
+          "required": true,
+          "description": "Display name of the artifact"
+        },
+        {
+          "name": "description",
+          "type": "string",
+          "required": false,
+          "description": "Detailed description"
+        },
+        {
+          "name": "owner",
+          "type": "uri",
+          "required": false,
+          "taxonomy": "teams",
+          "description": "Team that owns this artifact"
+        },
+        {
+          "name": "payload_url",
+          "type": "string",
+          "required": false,
+          "description": "URL to full payload data"
+        }
+      ]
+    },
+    {
+      "uri": "proto:concept/LibraryModule",
+      "label": "Library Module",
+      "definition": "An executable module in the Operator library - Cobalt Strike commands, Robot Framework keywords, scripts, etc.",
+      "parent_uri": "proto:concept/Artifact",
+      "abstract": false,
+      "collection": "LibraryModule",
+      "properties": [
+        {
+          "name": "category",
+          "type": "string",
+          "required": true,
+          "taxonomy": "c2_frameworks",
+          "description": "C2 framework this module belongs to (Cobalt Strike, Sliver, etc.)"
+        },
+        {
+          "name": "tactic",
+          "type": "string",
+          "required": false,
+          "taxonomy": "mitre_tactics",
+          "description": "MITRE ATT&CK tactic ID (e.g., TA0006)"
+        },
+        {
+          "name": "technique",
+          "type": "string",
+          "required": false,
+          "taxonomy": "mitre_techniques",
+          "description": "MITRE ATT&CK technique ID (e.g., T1003.001)"
+        },
+        {
+          "name": "riskLevel",
+          "type": "string",
+          "required": false,
+          "taxonomy": "risk_levels",
+          "description": "Operational risk level"
+        },
+        {
+          "name": "inputs",
+          "type": "object[]",
+          "required": false,
+          "description": "Input parameters the module accepts"
+        },
+        {
+          "name": "outputs",
+          "type": "object[]",
+          "required": false,
+          "description": "Output data the module produces"
+        },
+        {
+          "name": "requirements",
+          "type": "object",
+          "required": false,
+          "description": "Execution requirements (elevated, arch, os)"
+        },
+        {
+          "name": "confidence",
+          "type": "number",
+          "required": false,
+          "description": "Classification confidence score (0-1)"
+        }
+      ]
+    },
+    {
+      "uri": "proto:concept/RobotLog",
+      "label": "Robot Log",
+      "definition": "Execution log from Robot Framework test runs",
+      "parent_uri": "proto:concept/Artifact",
+      "abstract": false,
+      "collection": "RobotLog",
+      "properties": [
+        {
+          "name": "timestamp",
+          "type": "datetime",
+          "required": true,
+          "description": "When the test was executed"
+        },
+        {
+          "name": "scenario_id",
+          "type": "string",
+          "required": false,
+          "description": "Reference to the execution plan/scenario"
+        },
+        {
+          "name": "technique_id",
+          "type": "string",
+          "required": false,
+          "taxonomy": "mitre_techniques",
+          "description": "MITRE ATT&CK technique being tested (e.g., T1021.002)"
+        },
+        {
+          "name": "command",
+          "type": "string",
+          "required": false,
+          "description": "The command that was executed"
+        },
+        {
+          "name": "result_status",
+          "type": "string",
+          "required": true,
+          "taxonomy": "test_statuses",
+          "description": "Test result (PASS or FAIL)"
+        },
+        {
+          "name": "error_message",
+          "type": "string",
+          "required": false,
+          "description": "Error message if test failed"
+        },
+        {
+          "name": "duration_ms",
+          "type": "integer",
+          "required": false,
+          "description": "Execution duration in milliseconds"
+        }
+      ]
+    },
+    {
+      "uri": "proto:concept/WorkItem",
+      "label": "Work Item",
+      "definition": "A unit of work to be tracked - abstract base for stories, tasks, bugs",
+      "parent_uri": "proto:concept/Thing",
+      "abstract": true,
+      "collection": null,
+      "properties": [
+        {
+          "name": "title",
+          "type": "string",
+          "required": true,
+          "description": "Title or name of the work item"
+        },
+        {
+          "name": "description",
+          "type": "string",
+          "required": false,
+          "description": "Detailed description"
+        },
+        {
+          "name": "status",
+          "type": "string",
+          "required": true,
+          "taxonomy": "work_statuses",
+          "description": "Current workflow status"
+        },
+        {
+          "name": "priority",
+          "type": "string",
+          "required": false,
+          "taxonomy": "priority_levels",
+          "description": "Priority level"
+        },
+        {
+          "name": "assigned_to",
+          "type": "uri",
+          "required": false,
+          "taxonomy": "team_members",
+          "description": "Person assigned to this work"
+        },
+        {
+          "name": "assigned_date",
+          "type": "date",
+          "required": false,
+          "description": "Date work was assigned"
+        },
+        {
+          "name": "due_date",
+          "type": "date",
+          "required": false,
+          "description": "Target completion date"
+        },
+        {
+          "name": "completed_date",
+          "type": "date",
+          "required": false,
+          "description": "Actual completion date"
+        }
+      ]
+    },
+    {
+      "uri": "proto:concept/DevelopmentStory",
+      "label": "Development Story",
+      "definition": "A development task to build, extend, or fix components - Jira-style work tracking",
+      "parent_uri": "proto:concept/WorkItem",
+      "abstract": false,
+      "collection": "DevelopmentStory",
+      "properties": [
+        {
+          "name": "story_name",
+          "type": "string",
+          "required": true,
+          "description": "Name of the development story"
+        },
+        {
+          "name": "story_type",
+          "type": "string",
+          "required": false,
+          "taxonomy": "work_types",
+          "description": "Type of work (Bug Fix, New Feature, Refactor, etc.)"
+        },
+        {
+          "name": "requirements",
+          "type": "string",
+          "required": false,
+          "description": "Technical requirements or acceptance criteria"
+        },
+        {
+          "name": "sprint",
+          "type": "string",
+          "required": false,
+          "description": "Sprint this story belongs to"
+        },
+        {
+          "name": "related_artifacts",
+          "type": "uri[]",
+          "required": false,
+          "range": "proto:concept/Artifact",
+          "description": "Artifacts produced or modified by this story"
+        },
+        {
+          "name": "story_points",
+          "type": "integer",
+          "required": false,
+          "description": "Estimated effort in story points"
+        }
+      ]
+    },
+    {
+      "uri": "proto:concept/Process",
+      "label": "Process",
+      "definition": "A multi-step workflow or procedure",
+      "parent_uri": "proto:concept/Thing",
+      "abstract": false,
+      "collection": "Process",
+      "properties": [
+        {
+          "name": "name",
+          "type": "string",
+          "required": true,
+          "description": "Process name"
+        },
+        {
+          "name": "description",
+          "type": "string",
+          "required": false,
+          "description": "Process description"
+        },
+        {
+          "name": "owner",
+          "type": "uri",
+          "required": false,
+          "taxonomy": "teams",
+          "description": "Team that owns this process"
+        },
+        {
+          "name": "steps",
+          "type": "uri[]",
+          "required": false,
+          "range": "proto:concept/Step",
+          "description": "Ordered list of steps in this process"
+        }
+      ]
+    },
+    {
+      "uri": "proto:concept/Step",
+      "label": "Step",
+      "definition": "A single step within a process",
+      "parent_uri": "proto:concept/Thing",
+      "abstract": true,
+      "collection": null,
+      "properties": [
+        {
+          "name": "name",
+          "type": "string",
+          "required": true,
+          "description": "Step name"
+        },
+        {
+          "name": "description",
+          "type": "string",
+          "required": false,
+          "description": "What this step does"
+        },
+        {
+          "name": "sequence",
+          "type": "integer",
+          "required": false,
+          "description": "Order within the process"
+        },
+        {
+          "name": "process",
+          "type": "uri",
+          "required": false,
+          "range": "proto:concept/Process",
+          "description": "Parent process this step belongs to"
+        }
+      ]
+    },
+    {
+      "uri": "proto:concept/ExecutionStep",
+      "label": "Execution Step",
+      "definition": "A step that executes a Library Module or command",
+      "parent_uri": "proto:concept/Step",
+      "abstract": false,
+      "collection": "ExecutionStep",
+      "properties": [
+        {
+          "name": "module",
+          "type": "uri",
+          "required": false,
+          "range": "proto:concept/LibraryModule",
+          "description": "Library Module to execute"
+        },
+        {
+          "name": "parameters",
+          "type": "object",
+          "required": false,
+          "description": "Parameters to pass to the module"
+        },
+        {
+          "name": "expected_outcome",
+          "type": "string",
+          "required": false,
+          "description": "Expected result of this step"
+        }
+      ]
+    }
+  ]
+}

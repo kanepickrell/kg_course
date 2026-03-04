@@ -1,0 +1,80 @@
+{
+  "_key": "lib_cs_rportfwd",
+  "name": "Reverse Port Forward",
+  "category": "Cobalt Strike",
+  "tactic": "TA0011",
+  "icon": "\ud83d\udd00",
+  "riskLevel": "high",
+  "subcategory": "Network Pivoting",
+  "description": "Create reverse tunnel for network pivoting",
+  "estimatedDuration": 20,
+  "executionType": "cobalt_strike",
+  "cobaltStrikeCommand": "rportfwd ${local_port} ${forward_host} ${forward_port}",
+  "robotKeyword": null,
+  "robotTemplate": null,
+  "shellCommand": null,
+  "inputs": [
+    {
+      "id": "beacon",
+      "label": "Pivot Beacon",
+      "type": "Agent_Session",
+      "required": true,
+      "description": "Beacon to pivot through"
+    }
+  ],
+  "outputs": [
+    {
+      "id": "tunnel",
+      "label": "Network Tunnel",
+      "type": "Network_Pivot",
+      "description": "Active reverse port forward"
+    }
+  ],
+  "parameters": [
+    {
+      "id": "local_port",
+      "label": "Local Port",
+      "type": "number",
+      "required": true,
+      "placeholder": "8080",
+      "default": null,
+      "description": "Port on team server"
+    },
+    {
+      "id": "forward_host",
+      "label": "Forward Host",
+      "type": "string",
+      "required": true,
+      "placeholder": "192.168.1.50",
+      "default": null,
+      "description": "Target host IP"
+    },
+    {
+      "id": "forward_port",
+      "label": "Forward Port",
+      "type": "number",
+      "required": true,
+      "placeholder": "80",
+      "default": null,
+      "description": "Target port"
+    }
+  ],
+  "requirements": {
+    "c2Server": true,
+    "listeners": [],
+    "payloads": [],
+    "sshConnections": [],
+    "externalTools": [],
+    "libraries": []
+  },
+  "metadata": {
+    "version": "1.0.0",
+    "tags": [
+      "c2",
+      "pivoting",
+      "tunnel",
+      "port-forward",
+      "cobalt-strike"
+    ]
+  }
+}

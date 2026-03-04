@@ -1,0 +1,1047 @@
+{
+  "packageVersion": "2026-01-23-v7",
+  "description": "Cobalt Strike modules with dynamic variable inheritance support",
+  "schemaVersion": "3.3",
+  
+  "collections": [
+    {
+      "name": "LibraryModule",
+      "documents": [
+        
+        {
+          "_key": "cs_stop_c2",
+          "id": "cs-stop-c2",
+          "name": "Stop C2",
+          "description": "Stop the Cobalt Strike team server and clean up listeners",
+          "type": "LibraryModule",
+          "icon": "🛑",
+          "tactic": "control",
+          "category": "Cobalt Strike",
+          "subcategory": "Infrastructure",
+          "riskLevel": "low",
+          "estimatedDuration": 5,
+          
+          "inputs": [],
+          "outputs": [],
+          
+          "parameters": [
+            {
+              "id": "listenerName",
+              "label": "Listener to Remove",
+              "type": "select",
+              "required": false,
+              "description": "Select a listener to remove before stopping C2",
+              "dynamicOptions": {
+                "sourceType": "canvasVariable",
+                "variablePattern": "LISTENER_NAME",
+                "fallback": "none",
+                "emptyMessage": "No listeners configured — add Create Listener node",
+                "allowManualEntry": true
+              }
+            }
+          ],
+          
+          "requirements": {
+            "c2Server": true
+          },
+          
+          "robotFramework": {
+            "libraries": ["cobaltstrikec2/cobaltstrike.py"],
+            "resources": [],
+            "keyword": "Stop C2",
+            "keywordArgs": [],
+            "variables": [],
+            "documentation": "Remove listeners and stop C2 team server",
+            "tags": ["c2", "infrastructure", "cleanup"],
+            "isTeardown": true
+          }
+        },
+
+        {
+          "_key": "cs_session_sleep",
+          "id": "cs-session-sleep",
+          "name": "Session Sleep",
+          "description": "Set beacon sleep interval and jitter percentage for evasion",
+          "type": "LibraryModule",
+          "icon": "😴",
+          "tactic": "TA0011",
+          "category": "Cobalt Strike",
+          "subcategory": "Session Management",
+          "riskLevel": "low",
+          "estimatedDuration": 2,
+          
+          "inputs": [
+            {
+              "id": "session",
+              "label": "Active Session",
+              "type": "session",
+              "required": true
+            }
+          ],
+          "outputs": [],
+          
+          "parameters": [
+            {
+              "id": "session",
+              "label": "Session",
+              "type": "select",
+              "required": true,
+              "description": "Beacon session to configure",
+              "dynamicOptions": {
+                "sourceType": "canvasVariable",
+                "variablePattern": ".*SESSION.*",
+                "fallback": "manual",
+                "emptyMessage": "No sessions available — get sessions first",
+                "allowManualEntry": true
+              }
+            },
+            {
+              "id": "sleepTime",
+              "label": "Sleep Time (seconds)",
+              "type": "number",
+              "required": true,
+              "default": 30,
+              "description": "Beacon callback interval in seconds"
+            },
+            {
+              "id": "jitter",
+              "label": "Jitter (%)",
+              "type": "number",
+              "required": true,
+              "default": 20,
+              "description": "Random variation percentage (0-99)"
+            }
+          ],
+          
+          "requirements": {
+            "c2Server": true
+          },
+          
+          "robotFramework": {
+            "libraries": ["cobaltstrikec2/cobaltstrike.py"],
+            "resources": [],
+            "keyword": "Session Sleep",
+            "keywordArgs": [
+              { "param": "session", "position": 1, "variableRef": false },
+              { "param": "sleepTime", "position": 2, "variableRef": true, "variableName": "SLEEP_TIME" },
+              { "param": "jitter", "position": 3, "variableRef": true, "variableName": "SLEEP_JITTER" }
+            ],
+            "variables": [
+              { "name": "SLEEP_TIME", "fromParam": "sleepTime", "scope": "suite" },
+              { "name": "SLEEP_JITTER", "fromParam": "jitter", "scope": "suite" }
+            ],
+            "preKeywordLog": "Changing sleep to ${SLEEP_TIME}s, jitter: ${SLEEP_JITTER}%",
+            "documentation": "Set beacon sleep interval and jitter for evasion",
+            "tags": ["tid:t1029", "c2", "evasion", "sleep"]
+          }
+        },
+
+        {
+          "_key": "cs_lateral_psexec",
+          "id": "cs-lateral-psexec",
+          "name": "Lateral Move (PSExec)",
+          "description": "Move laterally to target system using PSExec64",
+          "type": "LibraryModule",
+          "icon": "🔀",
+          "tactic": "TA0008",
+          "category": "Cobalt Strike",
+          "subcategory": "Lateral Movement",
+          "riskLevel": "high",
+          "estimatedDuration": 30,
+          
+          "inputs": [
+            {
+              "id": "session",
+              "label": "Active Session",
+              "type": "session",
+              "required": true
+            }
+          ],
+          "outputs": [
+            {
+              "id": "new_session",
+              "label": "New Session",
+              "type": "session",
+              "description": "Beacon session on target system"
+            }
+          ],
+          
+          "parameters": [
+            {
+              "id": "session",
+              "label": "Current Session",
+              "type": "select",
+              "required": true,
+              "description": "Session with access to target",
+              "dynamicOptions": {
+                "sourceType": "canvasVariable",
+                "variablePattern": ".*SESSION.*",
+                "fallback": "manual",
+                "emptyMessage": "No sessions available",
+                "allowManualEntry": true
+              }
+            },
+            {
+              "id": "targetIp",
+              "label": "Target IP",
+              "type": "string",
+              "required": true,
+              "placeholder": "172.16.2.3",
+              "description": "Target system IP address"
+            },
+            {
+              "id": "listenerName",
+              "label": "Listener Name",
+              "type": "select",
+              "required": true,
+              "description": "Listener for new beacon",
+              "dynamicOptions": {
+                "sourceType": "canvasVariable",
+                "variablePattern": "LISTENER_NAME",
+                "fallback": "manual",
+                "emptyMessage": "No listeners — add Create Listener first",
+                "allowManualEntry": true
+              }
+            }
+          ],
+          
+          "requirements": {
+            "c2Server": true,
+            "elevated": true
+          },
+          
+          "robotFramework": {
+            "libraries": ["cobaltstrikec2/cobaltstrike.py"],
+            "resources": [],
+            "keyword": "Lateral Move With Psexec64",
+            "keywordArgs": [
+              { "param": "session", "position": 1, "variableRef": false },
+              { "param": "targetIp", "position": 2, "variableRef": true, "variableName": "LATERAL_TARGET" },
+              { "param": "listenerName", "position": 3, "variableRef": false }
+            ],
+            "variables": [
+              { "name": "LATERAL_TARGET", "fromParam": "targetIp", "scope": "suite" }
+            ],
+            "captureOutput": "lateral_result",
+            "preKeywordLog": "Laterally moving to ${LATERAL_TARGET}",
+            "documentation": "Lateral movement using PSExec64 via beacon",
+            "tags": ["tid:t1569.002", "lateral-movement", "psexec", "smb"]
+          }
+        },
+
+        {
+          "_key": "cs_elevate_spawnas",
+          "id": "cs-elevate-spawnas",
+          "name": "Elevate With Spawnas",
+          "description": "Spawn a new elevated beacon using valid credentials",
+          "type": "LibraryModule",
+          "icon": "⬆️",
+          "tactic": "TA0004",
+          "category": "Cobalt Strike",
+          "subcategory": "Privilege Escalation",
+          "riskLevel": "high",
+          "estimatedDuration": 15,
+          
+          "inputs": [
+            {
+              "id": "session",
+              "label": "Active Session",
+              "type": "session",
+              "required": true
+            }
+          ],
+          "outputs": [
+            {
+              "id": "elevated_session",
+              "label": "Elevated Session",
+              "type": "session",
+              "description": "New session with elevated privileges"
+            }
+          ],
+          
+          "parameters": [
+            {
+              "id": "session",
+              "label": "Current Session",
+              "type": "select",
+              "required": true,
+              "description": "Current beacon session",
+              "dynamicOptions": {
+                "sourceType": "canvasVariable",
+                "variablePattern": ".*SESSION.*",
+                "fallback": "manual",
+                "emptyMessage": "No sessions available",
+                "allowManualEntry": true
+              }
+            },
+            {
+              "id": "domain",
+              "label": "Domain",
+              "type": "string",
+              "required": true,
+              "placeholder": "DOMAIN",
+              "description": "Target domain name"
+            },
+            {
+              "id": "username",
+              "label": "Username",
+              "type": "string",
+              "required": true,
+              "placeholder": "Administrator",
+              "description": "Account username"
+            },
+            {
+              "id": "password",
+              "label": "Password",
+              "type": "credential",
+              "required": true,
+              "placeholder": "",
+              "description": "Account password"
+            },
+            {
+              "id": "listenerName",
+              "label": "Listener Name",
+              "type": "select",
+              "required": true,
+              "description": "Listener for elevated beacon",
+              "dynamicOptions": {
+                "sourceType": "canvasVariable",
+                "variablePattern": "LISTENER_NAME",
+                "fallback": "manual",
+                "emptyMessage": "No listeners — add Create Listener first",
+                "allowManualEntry": true
+              }
+            }
+          ],
+          
+          "requirements": {
+            "c2Server": true
+          },
+          
+          "robotFramework": {
+            "libraries": ["cobaltstrikec2/cobaltstrike.py"],
+            "resources": [],
+            "keyword": "Elevate With Spawnas",
+            "keywordArgs": [
+              { "param": "session", "position": 1, "variableRef": false },
+              { "param": "domain", "position": 2, "variableRef": true, "variableName": "TARGET_DOMAIN" },
+              { "param": "username", "position": 3, "variableRef": true, "variableName": "ADMIN_USER" },
+              { "param": "password", "position": 4, "variableRef": true, "variableName": "ADMIN_PASS" },
+              { "param": "listenerName", "position": 5, "variableRef": false }
+            ],
+            "variables": [
+              { "name": "TARGET_DOMAIN", "fromParam": "domain", "scope": "suite" },
+              { "name": "ADMIN_USER", "fromParam": "username", "scope": "suite" },
+              { "name": "ADMIN_PASS", "fromParam": "password", "scope": "suite" },
+              { "name": "ELEVATED_SESSION", "scope": "suite", "default": "${elevated_result}" }
+            ],
+            "captureOutput": "elevated_result",
+            "preKeywordLog": "Elevating with Spawnas",
+            "documentation": "Spawn elevated beacon using valid credentials",
+            "tags": ["tid:t1078", "privilege-escalation", "spawnas", "runas"]
+          }
+        },
+
+        {
+          "_key": "cs_inject_process",
+          "id": "cs-inject-process",
+          "name": "Inject Process",
+          "description": "Inject beacon shellcode into a target process (e.g., explorer.exe)",
+          "type": "LibraryModule",
+          "icon": "💉",
+          "tactic": "TA0005",
+          "category": "Cobalt Strike",
+          "subcategory": "Defense Evasion",
+          "riskLevel": "high",
+          "estimatedDuration": 10,
+          
+          "inputs": [
+            {
+              "id": "session",
+              "label": "Active Session",
+              "type": "session",
+              "required": true
+            }
+          ],
+          "outputs": [
+            {
+              "id": "injected_session",
+              "label": "Injected Session",
+              "type": "session",
+              "description": "New session running in target process"
+            }
+          ],
+          
+          "parameters": [
+            {
+              "id": "session",
+              "label": "Session",
+              "type": "select",
+              "required": true,
+              "description": "Current beacon session",
+              "dynamicOptions": {
+                "sourceType": "canvasVariable",
+                "variablePattern": ".*SESSION.*",
+                "fallback": "manual",
+                "emptyMessage": "No sessions available",
+                "allowManualEntry": true
+              }
+            },
+            {
+              "id": "pid",
+              "label": "Target PID",
+              "type": "string",
+              "required": true,
+              "placeholder": "${explorer_pid}",
+              "description": "Process ID to inject into"
+            },
+            {
+              "id": "listenerName",
+              "label": "Listener Name",
+              "type": "select",
+              "required": true,
+              "description": "Listener for injected beacon",
+              "dynamicOptions": {
+                "sourceType": "canvasVariable",
+                "variablePattern": "LISTENER_NAME",
+                "fallback": "manual",
+                "emptyMessage": "No listeners — add Create Listener first",
+                "allowManualEntry": true
+              }
+            },
+            {
+              "id": "arch",
+              "label": "Architecture",
+              "type": "select",
+              "required": true,
+              "options": ["x64", "x86"],
+              "default": "x64",
+              "description": "Target process architecture"
+            }
+          ],
+          
+          "requirements": {
+            "c2Server": true,
+            "elevated": true
+          },
+          
+          "robotFramework": {
+            "libraries": ["cobaltstrikec2/cobaltstrike.py"],
+            "resources": [],
+            "keyword": "Inject Process",
+            "keywordArgs": [
+              { "param": "session", "position": 1, "variableRef": false },
+              { "param": "pid", "position": 2, "variableRef": false }
+            ],
+            "variables": [
+              { "name": "INJECT_ARCH", "fromParam": "arch", "scope": "suite" }
+            ],
+            "captureOutput": "inject_output",
+            "preKeywordLog": "Injecting into process (PID: ${pid})",
+            "documentation": "Inject beacon shellcode into specified process",
+            "tags": ["tid:t1055.002", "defense-evasion", "injection", "process"]
+          }
+        },
+
+        {
+          "_key": "cs_dump_credentials",
+          "id": "cs-dump-credentials",
+          "name": "Dump Credentials",
+          "description": "Dump credentials from memory using Mimikatz",
+          "type": "LibraryModule",
+          "icon": "🔑",
+          "tactic": "TA0006",
+          "category": "Cobalt Strike",
+          "subcategory": "Credential Access",
+          "riskLevel": "critical",
+          "estimatedDuration": 30,
+          
+          "inputs": [
+            {
+              "id": "session",
+              "label": "Active Session",
+              "type": "session",
+              "required": true
+            }
+          ],
+          "outputs": [
+            {
+              "id": "credentials",
+              "label": "Credentials",
+              "type": "credentials",
+              "description": "Extracted credential data"
+            }
+          ],
+          
+          "parameters": [
+            {
+              "id": "session",
+              "label": "Session",
+              "type": "select",
+              "required": true,
+              "description": "Elevated beacon session (requires SYSTEM or admin)",
+              "dynamicOptions": {
+                "sourceType": "canvasVariable",
+                "variablePattern": ".*SESSION.*",
+                "fallback": "manual",
+                "emptyMessage": "No sessions available",
+                "allowManualEntry": true
+              }
+            }
+          ],
+          
+          "requirements": {
+            "c2Server": true,
+            "elevated": true
+          },
+          
+          "robotFramework": {
+            "libraries": ["cobaltstrikec2/cobaltstrike.py"],
+            "resources": [],
+            "keyword": "Dump Credentials",
+            "keywordArgs": [
+              { "param": "session", "position": 1, "variableRef": false }
+            ],
+            "variables": [],
+            "captureOutput": "mimikatz_output",
+            "preKeywordLog": "Dumping Credentials",
+            "documentation": "Dump credentials from memory using Mimikatz",
+            "tags": ["tid:t1003.001", "credential-access", "mimikatz", "lsass"]
+          }
+        },
+
+        {
+          "_key": "cs_persistence_registry",
+          "id": "cs-persistence-registry",
+          "name": "Persistence (Registry)",
+          "description": "Establish persistence via Windows Registry Run key",
+          "type": "LibraryModule",
+          "icon": "📌",
+          "tactic": "TA0003",
+          "category": "Cobalt Strike",
+          "subcategory": "Persistence",
+          "riskLevel": "medium",
+          "estimatedDuration": 10,
+          
+          "inputs": [
+            {
+              "id": "session",
+              "label": "Active Session",
+              "type": "session",
+              "required": true
+            }
+          ],
+          "outputs": [],
+          
+          "parameters": [
+            {
+              "id": "session",
+              "label": "Session",
+              "type": "select",
+              "required": true,
+              "description": "Beacon session on target",
+              "dynamicOptions": {
+                "sourceType": "canvasVariable",
+                "variablePattern": ".*SESSION.*",
+                "fallback": "manual",
+                "emptyMessage": "No sessions available",
+                "allowManualEntry": true
+              }
+            },
+            {
+              "id": "beaconLocation",
+              "label": "Beacon Path",
+              "type": "string",
+              "required": true,
+              "placeholder": "C:\\Users\\Admin\\AppData\\Local\\Temp\\update.exe",
+              "description": "Full path to beacon executable on target"
+            }
+          ],
+          
+          "requirements": {
+            "c2Server": true
+          },
+          
+          "robotFramework": {
+            "libraries": ["cobaltstrikec2/cobaltstrike.py"],
+            "resources": [],
+            "keyword": "Persistence With Registry",
+            "keywordArgs": [
+              { "param": "session", "position": 1, "variableRef": false },
+              { "param": "beaconLocation", "position": 2, "variableRef": true, "variableName": "BEACON_PATH" }
+            ],
+            "variables": [
+              { "name": "BEACON_PATH", "fromParam": "beaconLocation", "scope": "suite" }
+            ],
+            "preKeywordLog": "Creating persistence via registry",
+            "documentation": "Establish persistence using Registry Run key",
+            "tags": ["tid:t1547.001", "persistence", "registry", "run-key"]
+          }
+        },
+
+        {
+          "_key": "cs_network_enumerate",
+          "id": "cs-network-enumerate",
+          "name": "Network Enumerate",
+          "description": "Port scan network targets from beacon for discovery",
+          "type": "LibraryModule",
+          "icon": "🌐",
+          "tactic": "TA0007",
+          "category": "Cobalt Strike",
+          "subcategory": "Discovery",
+          "riskLevel": "medium",
+          "estimatedDuration": 60,
+          
+          "inputs": [
+            {
+              "id": "session",
+              "label": "Active Session",
+              "type": "session",
+              "required": true
+            }
+          ],
+          "outputs": [
+            {
+              "id": "scan_results",
+              "label": "Scan Results",
+              "type": "string",
+              "description": "Port scan results"
+            }
+          ],
+          
+          "parameters": [
+            {
+              "id": "session",
+              "label": "Session",
+              "type": "select",
+              "required": true,
+              "description": "Beacon session to scan from",
+              "dynamicOptions": {
+                "sourceType": "canvasVariable",
+                "variablePattern": ".*SESSION.*",
+                "fallback": "manual",
+                "emptyMessage": "No sessions available",
+                "allowManualEntry": true
+              }
+            },
+            {
+              "id": "targetRange",
+              "label": "Target IP/Range",
+              "type": "string",
+              "required": true,
+              "placeholder": "172.16.2.0/24",
+              "description": "IP, range (192.168.1.1-192.168.1.254), or CIDR"
+            },
+            {
+              "id": "ports",
+              "label": "Ports",
+              "type": "string",
+              "required": true,
+              "default": "445,5985,135,80,22",
+              "description": "Comma-separated ports or ranges (e.g., 1-1024)"
+            },
+            {
+              "id": "method",
+              "label": "Scan Method",
+              "type": "select",
+              "required": true,
+              "options": ["arp", "icmp"],
+              "default": "icmp",
+              "description": "Host discovery method"
+            }
+          ],
+          
+          "requirements": {
+            "c2Server": true
+          },
+          
+          "robotFramework": {
+            "libraries": ["cobaltstrikec2/cobaltstrike.py"],
+            "resources": [],
+            "keyword": "Network Enumerate",
+            "keywordArgs": [
+              { "param": "session", "position": 1, "variableRef": false },
+              { "param": "targetRange", "position": 2, "variableRef": true, "variableName": "SCAN_RANGE" },
+              { "param": "ports", "position": 3, "variableRef": true, "variableName": "SCAN_PORTS" },
+              { "param": "method", "position": 4, "variableRef": true, "variableName": "SCAN_METHOD" }
+            ],
+            "variables": [
+              { "name": "SCAN_RANGE", "fromParam": "targetRange", "scope": "suite" },
+              { "name": "SCAN_PORTS", "fromParam": "ports", "scope": "suite" },
+              { "name": "SCAN_METHOD", "fromParam": "method", "scope": "suite" }
+            ],
+            "captureOutput": "scan_result",
+            "preKeywordLog": "Scanning ${SCAN_RANGE}, Ports: ${SCAN_PORTS}",
+            "documentation": "Run port scan on target range from beacon",
+            "tags": ["tid:t1046", "discovery", "portscan", "network"]
+          }
+        },
+
+        {
+          "_key": "cs_upload_file",
+          "id": "cs-upload-file",
+          "name": "Upload File",
+          "description": "Upload file to target system through C2 beacon",
+          "type": "LibraryModule",
+          "icon": "⬆️",
+          "tactic": "TA0011",
+          "category": "Cobalt Strike",
+          "subcategory": "File Operations",
+          "riskLevel": "medium",
+          "estimatedDuration": 30,
+          
+          "inputs": [
+            {
+              "id": "session",
+              "label": "Active Session",
+              "type": "session",
+              "required": true
+            }
+          ],
+          "outputs": [],
+          
+          "parameters": [
+            {
+              "id": "session",
+              "label": "Session",
+              "type": "select",
+              "required": true,
+              "description": "Beacon session on target",
+              "dynamicOptions": {
+                "sourceType": "canvasVariable",
+                "variablePattern": ".*SESSION.*",
+                "fallback": "manual",
+                "emptyMessage": "No sessions available",
+                "allowManualEntry": true
+              }
+            },
+            {
+              "id": "localFile",
+              "label": "Local File Path",
+              "type": "string",
+              "required": true,
+              "placeholder": "/home/operator/tools/update.exe",
+              "description": "Path to file on operator machine"
+            },
+            {
+              "id": "uploadPath",
+              "label": "Remote Upload Path",
+              "type": "string",
+              "required": true,
+              "placeholder": "C:\\Users\\Admin\\Downloads\\update.exe",
+              "description": "Destination path on target"
+            }
+          ],
+          
+          "requirements": {
+            "c2Server": true
+          },
+          
+          "robotFramework": {
+            "libraries": ["cobaltstrikec2/cobaltstrike.py"],
+            "resources": [],
+            "keyword": "Upload File",
+            "keywordArgs": [
+              { "param": "session", "position": 1, "variableRef": false },
+              { "param": "localFile", "position": 2, "variableRef": true, "variableName": "LOCAL_FILE" },
+              { "param": "uploadPath", "position": 3, "variableRef": true, "variableName": "REMOTE_PATH" }
+            ],
+            "variables": [
+              { "name": "LOCAL_FILE", "fromParam": "localFile", "scope": "suite" },
+              { "name": "REMOTE_PATH", "fromParam": "uploadPath", "scope": "suite" }
+            ],
+            "preKeywordLog": "Uploading ${LOCAL_FILE}",
+            "documentation": "Upload file to target through C2 beacon",
+            "tags": ["tid:t1105", "c2", "upload", "file-transfer"]
+          }
+        },
+
+        {
+          "_key": "cs_getuid",
+          "id": "cs-getuid",
+          "name": "Get UID",
+          "description": "Get current user identity from beacon session",
+          "type": "LibraryModule",
+          "icon": "👤",
+          "tactic": "TA0007",
+          "category": "Cobalt Strike",
+          "subcategory": "Discovery",
+          "riskLevel": "low",
+          "estimatedDuration": 5,
+          
+          "inputs": [
+            {
+              "id": "session",
+              "label": "Active Session",
+              "type": "session",
+              "required": true
+            }
+          ],
+          "outputs": [
+            {
+              "id": "user_info",
+              "label": "User Info",
+              "type": "string",
+              "description": "Current user identity"
+            }
+          ],
+          
+          "parameters": [
+            {
+              "id": "session",
+              "label": "Session",
+              "type": "select",
+              "required": true,
+              "description": "Beacon session to query",
+              "dynamicOptions": {
+                "sourceType": "canvasVariable",
+                "variablePattern": ".*SESSION.*",
+                "fallback": "manual",
+                "emptyMessage": "No sessions available",
+                "allowManualEntry": true
+              }
+            }
+          ],
+          
+          "requirements": {
+            "c2Server": true
+          },
+          
+          "robotFramework": {
+            "libraries": ["cobaltstrikec2/cobaltstrike.py"],
+            "resources": [],
+            "keyword": "GetUID",
+            "keywordArgs": [
+              { "param": "session", "position": 1, "variableRef": false }
+            ],
+            "variables": [],
+            "captureOutput": "uid_output",
+            "preKeywordLog": "Running getuid",
+            "documentation": "Get current user identity from beacon",
+            "tags": ["tid:t1033", "discovery", "whoami", "user"]
+          }
+        },
+
+        {
+          "_key": "cs_get_sessions_by_ip",
+          "id": "cs-get-sessions-by-ip",
+          "name": "Get Sessions By IP",
+          "description": "Retrieve all beacon sessions for a specific target IP address",
+          "type": "LibraryModule",
+          "icon": "🔍",
+          "tactic": "TA0011",
+          "category": "Cobalt Strike",
+          "subcategory": "Session Management",
+          "riskLevel": "low",
+          "estimatedDuration": 5,
+          
+          "inputs": [
+            {
+              "id": "c2_ready",
+              "label": "C2 Ready",
+              "type": "boolean",
+              "required": true
+            }
+          ],
+          "outputs": [
+            {
+              "id": "sessions",
+              "label": "Sessions List",
+              "type": "list",
+              "description": "List of beacon session objects"
+            }
+          ],
+          
+          "parameters": [
+            {
+              "id": "targetIp",
+              "label": "Target IP",
+              "type": "string",
+              "required": true,
+              "placeholder": "172.16.2.5",
+              "description": "IP address to find sessions for"
+            }
+          ],
+          
+          "requirements": {
+            "c2Server": true
+          },
+          
+          "robotFramework": {
+            "libraries": ["cobaltstrikec2/cobaltstrike.py"],
+            "resources": [],
+            "keyword": "Get Sessions By Ip",
+            "keywordArgs": [
+              { "param": "targetIp", "position": 1, "variableRef": true, "variableName": "TARGET_IP" }
+            ],
+            "variables": [
+              { "name": "TARGET_IP", "fromParam": "targetIp", "scope": "suite" },
+              { "name": "CURRENT_SESSION", "scope": "suite", "default": "${sessions[0]}" }
+            ],
+            "captureOutput": "sessions",
+            "documentation": "Retrieve all beacon sessions for a specific IP",
+            "tags": ["c2", "session", "discovery"]
+          }
+        },
+        {
+          "_key": "cs_create_payload",
+          "id": "cs-create-payload",
+          "name": "Create Payload",
+          "description": "Generate a beacon payload for the specified listener",
+          "type": "LibraryModule",
+          "icon": "💾",
+          "tactic": "TA0002",
+          "category": "Cobalt Strike",
+          "subcategory": "Payload Generation",
+          "riskLevel": "high",
+          "estimatedDuration": 10,
+          "inputs": [
+            {
+              "id": "listener_active",
+              "label": "Listener Active",
+              "type": "boolean",
+              "required": true
+            }
+          ],
+          "outputs": [
+            {
+              "id": "payload_path",
+              "label": "Payload Path",
+              "type": "string",
+              "description": "Full path to generated payload file"
+            }
+          ],
+          "parameters": [
+            {
+              "id": "payloadName",
+              "label": "Payload Name",
+              "type": "string",
+              "required": true,
+              "default": "beacon",
+              "description": "Name for the generated payload file (without extension)"
+            },
+            {
+              "id": "payloadTemplate",
+              "label": "Payload Template",
+              "type": "select",
+              "required": true,
+              "options": [
+                "exe",
+                "dll",
+                "powershell",
+                "raw",
+                "vba",
+                "hta"
+              ],
+              "default": "exe",
+              "description": "Output format for the payload"
+            },
+            {
+              "id": "listenerName",
+              "label": "Listener",
+              "type": "select",
+              "required": true,
+              "description": "Listener to bind the payload to",
+              "dynamicOptions": {
+                "sourceType": "canvasVariable",
+                "variablePattern": "LISTENER_NAME",
+                "fallback": "manual",
+                "emptyMessage": "No listeners — add Create Listener first",
+                "allowManualEntry": true
+              }
+            },
+            {
+              "id": "outputDir",
+              "label": "Output Directory",
+              "type": "string",
+              "required": true,
+              "default": "/home/bah/payloads/",
+              "description": "Directory to save the generated payload"
+            },
+            {
+              "id": "retries",
+              "label": "Retries",
+              "type": "number",
+              "required": false,
+              "default": 5,
+              "description": "Number of generation retry attempts"
+            }
+          ],
+          "requirements": {
+            "c2Server": true
+          },
+          "robotFramework": {
+            "libraries": [
+              "cobaltstrikec2/cobaltstrike.py"
+            ],
+            "resources": [],
+            "keyword": "Create Payload",
+            "keywordArgs": [
+              {
+                "param": "payloadName",
+                "position": 1,
+                "variableRef": true,
+                "variableName": "PAYLOAD_NAME"
+              },
+              {
+                "param": "payloadTemplate",
+                "position": 2,
+                "variableRef": true,
+                "variableName": "PAYLOAD_TEMPLATE"
+              },
+              {
+                "param": "listenerName",
+                "position": 3,
+                "variableRef": false
+              },
+              {
+                "param": "outputDir",
+                "position": 4,
+                "variableRef": true,
+                "variableName": "PAYLOAD_OUTPUT_DIR"
+              },
+              {
+                "param": "retries",
+                "position": 5,
+                "variableRef": true,
+                "variableName": "PAYLOAD_RETRIES"
+              }
+            ],
+            "variables": [
+              {
+                "name": "PAYLOAD_NAME",
+                "fromParam": "payloadName",
+                "scope": "suite"
+              },
+              {
+                "name": "PAYLOAD_TEMPLATE",
+                "fromParam": "payloadTemplate",
+                "scope": "suite"
+              },
+              {
+                "name": "PAYLOAD_OUTPUT_DIR",
+                "fromParam": "outputDir",
+                "scope": "suite"
+              },
+              {
+                "name": "PAYLOAD_RETRIES",
+                "fromParam": "retries",
+                "scope": "suite"
+              }
+            ],
+            "captureOutput": "payload_path",
+            "preKeywordLog": "=== Generating Payload ===",
+            "postKeywordLog": "Payload created at: ${payload_path}",
+            "documentation": "Generate a beacon payload for initial access",
+            "tags": [
+              "tid:t1587.001",
+              "execution",
+              "payload",
+              "artifact"
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

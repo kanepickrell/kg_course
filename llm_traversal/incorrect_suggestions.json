@@ -1,0 +1,2968 @@
+[
+    {
+    "src_node": {
+        "_key": "4018",
+        "_id": "DevelopmentStep/4018",
+        "name": "Test1_Build Executions",
+        "description": "The team built executions for the event.",
+        "is_initial_step": false,
+        "next_steps": [
+            "Test1_Run Event",
+            "Test1_Test Automations"
+        ],
+        "artifacts": [
+            "BAQT1_RL_12",
+            "BAQT1_RL_13",
+            "BAQT1_RL_14",
+            "BAQT1_RL_15",
+            "Robot_Log_Parser_KW_DS"
+        ]
+    },
+    "pair_node": {
+        "_key": "2024",
+        "_id": "SprintLogArtifact/2024",
+        "id": "C2_Ontology_ListenerSchema_DS",
+        "sprint": "1",
+        "story_name": "Define Listener schema and map to ontology",
+        "description": "Create ontology-backed schema for Listener (HTTP/HTTPS/DNS/SMB) with properties that align to our C2 Abstract Class (name, transport, host, profile, port, beacon_ip, jitter, strategy).",
+        "requirements": "Add Listener entity to ontology; implement validation models; expose factory methods that accept Data field object and output normalized Listener JSON.",
+        "assigned": "08/12/2025",
+        "complete": "08/21/2025"
+    },
+    "suggested_edges": [
+        {
+            "src_attr": "next_steps",
+            "dest_attr": "story_name",
+            "type": "LEADS_TO",
+            "_from": "DevelopmentStep/4018",
+            "_to": "SprintLogArtifact/2024"
+        }
+    ],
+    "truth_edge": {
+        "_from": "DevelopmentStep/4018",
+        "_to": "SprintLogArtifact/2024",
+        "src_attr": "artifacts",
+        "dest_attr": "name",
+        "type": "PRODUCES"
+    }
+},
+{
+    "src_node": {
+        "_key": "4018",
+        "_id": "DevelopmentStep/4018",
+        "name": "Test1_Build Executions",
+        "description": "The team built executions for the event.",
+        "is_initial_step": false,
+        "next_steps": [
+            "Test1_Run Event",
+            "Test1_Test Automations"
+        ],
+        "artifacts": [
+            "BAQT1_RL_12",
+            "BAQT1_RL_13",
+            "BAQT1_RL_14",
+            "BAQT1_RL_15",
+            "Robot_Log_Parser_KW_DS"
+        ]
+    },
+    "pair_node": {
+        "_key": "2127",
+        "_id": "RobotLogArtifact/2127",
+        "log_set": "BAQT1_RL",
+        "id": "BAQT1_RL_12",
+        "sprint": "1",
+        "timestamp": "2025-07-18T01:51:10.192Z",
+        "scenario_id": "OBAP",
+        "technique_id": "T1059",
+        "command": "RF: Setup C2 Environment(ip=${CS_IP}, user=${CS_USER}, ...)",
+        "result_status": "FAIL",
+        "error_message": "No keyword with name 'Setup C2 Environment' found."
+    },
+    "suggested_edges": [
+        {
+            "src_attr": "artifacts",
+            "dest_attr": "id",
+            "type": "CONTAINS",
+            "_from": "DevelopmentStep/4018",
+            "_to": "RobotLogArtifact/2127"
+        }
+    ],
+    "truth_edge": {
+        "_from": "DevelopmentStep/4018",
+        "_to": "RobotLogArtifact/2127",
+        "src_attr": "artifacts",
+        "dest_attr": "name",
+        "type": "PRODUCES"
+    }
+},
+{
+    "src_node": {
+        "_key": "4018",
+        "_id": "DevelopmentStep/4018",
+        "name": "Test1_Build Executions",
+        "description": "The team built executions for the event.",
+        "is_initial_step": false,
+        "next_steps": [
+            "Test1_Run Event",
+            "Test1_Test Automations"
+        ],
+        "artifacts": [
+            "BAQT1_RL_12",
+            "BAQT1_RL_13",
+            "BAQT1_RL_14",
+            "BAQT1_RL_15",
+            "Robot_Log_Parser_KW_DS"
+        ]
+    },
+    "pair_node": {
+        "_key": "2128",
+        "_id": "RobotLogArtifact/2128",
+        "log_set": "BAQT1_RL",
+        "id": "BAQT1_RL_13",
+        "sprint": "1",
+        "timestamp": "2025-07-18T01:51:10.002Z",
+        "scenario_id": "OBAP",
+        "technique_id": "T1059",
+        "command": "python -c \"import cobaltstrike\"",
+        "result_status": "FAIL",
+        "error_message": "ModuleNotFoundError: No module named 'cobaltstrike'"
+    },
+    "suggested_edges": [
+        {
+            "src_attr": "artifacts",
+            "dest_attr": "id",
+            "type": "CONTAINS",
+            "_from": "DevelopmentStep/4018",
+            "_to": "RobotLogArtifact/2128"
+        }
+    ],
+    "truth_edge": {
+        "_from": "DevelopmentStep/4018",
+        "_to": "RobotLogArtifact/2128",
+        "src_attr": "artifacts",
+        "dest_attr": "name",
+        "type": "PRODUCES"
+    }
+},
+{
+    "src_node": {
+        "_key": "4018",
+        "_id": "DevelopmentStep/4018",
+        "name": "Test1_Build Executions",
+        "description": "The team built executions for the event.",
+        "is_initial_step": false,
+        "next_steps": [
+            "Test1_Run Event",
+            "Test1_Test Automations"
+        ],
+        "artifacts": [
+            "BAQT1_RL_12",
+            "BAQT1_RL_13",
+            "BAQT1_RL_14",
+            "BAQT1_RL_15",
+            "Robot_Log_Parser_KW_DS"
+        ]
+    },
+    "pair_node": {
+        "_key": "2129",
+        "_id": "RobotLogArtifact/2129",
+        "log_set": "BAQT1_RL",
+        "id": "BAQT1_RL_14",
+        "sprint": "1",
+        "timestamp": "2025-07-18T01:51:10.176Z",
+        "scenario_id": "OBAP",
+        "technique_id": "T1059",
+        "command": "Import library '/home/bah/PycharmProjects/obap/obap/cobaltstrike/cobaltstrike.py'",
+        "result_status": "FAIL",
+        "error_message": "Imported library contains no keywords."
+    },
+    "suggested_edges": [
+        {
+            "src_attr": "artifacts",
+            "dest_attr": "id",
+            "type": "CONTAINS",
+            "_from": "DevelopmentStep/4018",
+            "_to": "RobotLogArtifact/2129"
+        }
+    ],
+    "truth_edge": {
+        "_from": "DevelopmentStep/4018",
+        "_to": "RobotLogArtifact/2129",
+        "src_attr": "artifacts",
+        "dest_attr": "name",
+        "type": "PRODUCES"
+    }
+},
+{
+    "src_node": {
+        "_key": "4018",
+        "_id": "DevelopmentStep/4018",
+        "name": "Test1_Build Executions",
+        "description": "The team built executions for the event.",
+        "is_initial_step": false,
+        "next_steps": [
+            "Test1_Run Event",
+            "Test1_Test Automations"
+        ],
+        "artifacts": [
+            "BAQT1_RL_12",
+            "BAQT1_RL_13",
+            "BAQT1_RL_14",
+            "BAQT1_RL_15",
+            "Robot_Log_Parser_KW_DS"
+        ]
+    },
+    "pair_node": {
+        "_key": "2130",
+        "_id": "RobotLogArtifact/2130",
+        "log_set": "BAQT1_RL",
+        "id": "BAQT1_RL_15",
+        "sprint": "1",
+        "timestamp": "2025-07-18T01:51:10.193Z",
+        "scenario_id": "OBAP",
+        "technique_id": "T1059",
+        "command": "robot --test 'Execution Initialization' obap.robot",
+        "result_status": "FAIL",
+        "error_message": "Parent suite setup failed: missing keyword 'Setup C2 Environment'."
+    },
+    "suggested_edges": [
+        {
+            "src_attr": "artifacts",
+            "dest_attr": "id",
+            "type": "CONTAINS",
+            "_from": "DevelopmentStep/4018",
+            "_to": "RobotLogArtifact/2130"
+        }
+    ],
+    "truth_edge": {
+        "_from": "DevelopmentStep/4018",
+        "_to": "RobotLogArtifact/2130",
+        "src_attr": "artifacts",
+        "dest_attr": "name",
+        "type": "PRODUCES"
+    }
+},
+{
+    "src_node": {
+        "_key": "4735",
+        "_id": "ExecutionStep/4735",
+        "name": "Test1_Run Event",
+        "description": "The team ran the automated executions for the event.",
+        "is_initial_step": false,
+        "next_steps": [
+            "Test1_Capabilities",
+            "Test1_Requirements"
+        ],
+        "artifacts": [
+            "baqt-whitecell-1",
+            "baqt-whitecell-2",
+            "baqt-whitecell-3"
+        ]
+    },
+    "pair_node": {
+        "_key": "4387",
+        "_id": "ProcessLogArtifact/4387",
+        "timestamp": "2024-09-17T14:58:55.000Z",
+        "event": "baqt",
+        "name": "baqt-whitecell-1",
+        "action": "Download F-35_Results.docx to attacker machine using koadic download implant",
+        "machine": "172.48.3.5",
+        "log_artifact": "File F-35_Results.docx exfiltrated from C:\\Users\\ty.wilkerson\\Desktop\\Research\\",
+        "tid": "T1041"
+    },
+    "suggested_edges": [
+        {
+            "src_attr": "artifacts",
+            "dest_attr": "name",
+            "type": "CONTAINS",
+            "_from": "ExecutionStep/4735",
+            "_to": "ProcessLogArtifact/4387"
+        }
+    ],
+    "truth_edge": {
+        "_from": "ExecutionStep/4735",
+        "_to": "ProcessLogArtifact/4387",
+        "src_attr": "artifacts",
+        "dest_attr": "name",
+        "type": "PRODUCES"
+    }
+},
+{
+    "src_node": {
+        "_key": "4735",
+        "_id": "ExecutionStep/4735",
+        "name": "Test1_Run Event",
+        "description": "The team ran the automated executions for the event.",
+        "is_initial_step": false,
+        "next_steps": [
+            "Test1_Capabilities",
+            "Test1_Requirements"
+        ],
+        "artifacts": [
+            "baqt-whitecell-1",
+            "baqt-whitecell-2",
+            "baqt-whitecell-3"
+        ]
+    },
+    "pair_node": {
+        "_key": "4388",
+        "_id": "ProcessLogArtifact/4388",
+        "timestamp": "2024-09-17T14:59:12.000Z",
+        "event": "baqt",
+        "name": "baqt-whitecell-2",
+        "action": "Execute net view command to discover network shares",
+        "machine": "172.48.3.5",
+        "log_artifact": "Network discovery command: net view /domain",
+        "tid": "T1018"
+    },
+    "suggested_edges": [
+        {
+            "src_attr": "artifacts",
+            "dest_attr": "name",
+            "type": "CONTAINS",
+            "_from": "ExecutionStep/4735",
+            "_to": "ProcessLogArtifact/4388"
+        }
+    ],
+    "truth_edge": {
+        "_from": "ExecutionStep/4735",
+        "_to": "ProcessLogArtifact/4388",
+        "src_attr": "artifacts",
+        "dest_attr": "name",
+        "type": "PRODUCES"
+    }
+},
+{
+    "src_node": {
+        "_key": "4735",
+        "_id": "ExecutionStep/4735",
+        "name": "Test1_Run Event",
+        "description": "The team ran the automated executions for the event.",
+        "is_initial_step": false,
+        "next_steps": [
+            "Test1_Capabilities",
+            "Test1_Requirements"
+        ],
+        "artifacts": [
+            "baqt-whitecell-1",
+            "baqt-whitecell-2",
+            "baqt-whitecell-3"
+        ]
+    },
+    "pair_node": {
+        "_key": "4389",
+        "_id": "ProcessLogArtifact/4389",
+        "timestamp": "2024-09-17T14:59:25.000Z",
+        "event": "baqt",
+        "name": "baqt-whitecell-3",
+        "action": "Attempt to access shared drive \\\\172.48.3.10\\shared using stolen credentials",
+        "machine": "172.48.3.5",
+        "log_artifact": "SMB connection attempt to \\\\172.48.3.10\\shared",
+        "tid": "T1021.002"
+    },
+    "suggested_edges": [
+        {
+            "src_attr": "artifacts",
+            "dest_attr": "name",
+            "type": "CONTAINS",
+            "_from": "ExecutionStep/4735",
+            "_to": "ProcessLogArtifact/4389"
+        }
+    ],
+    "truth_edge": {
+        "_from": "ExecutionStep/4735",
+        "_to": "ProcessLogArtifact/4389",
+        "src_attr": "artifacts",
+        "dest_attr": "name",
+        "type": "PRODUCES"
+    }
+},
+{
+    "src_node": {
+        "_key": "2542",
+        "_id": "PlanningStep/2542",
+        "name": "Test1_Requirements",
+        "description": "The team gathered requirements from stakeholders to define the problem set.",
+        "is_initial_step": false,
+        "next_steps": [
+            "Test1_Build Executions",
+            "Test1_Capabilities",
+            "Test1_Test Automations"
+        ],
+        "artifacts": [
+            "Test_ExecPlan_01"
+        ]
+    },
+    "pair_node": {
+        "_key": "2991",
+        "_id": "ExecutionPlanArtifact/2991",
+        "name": "Test_ExecPlan_01",
+        "description": "Document containing execution plan for the event.",
+        "TTPs": [
+            "Initial Access",
+            "Privilege Escalation",
+            "Phishing",
+            "Process Injection"
+        ],
+        "tids": [
+            "TA0001",
+            "TA0004",
+            "T1566",
+            "T1055",
+            "T1059"
+        ]
+    },
+    "suggested_edges": [
+        {
+            "src_attr": "artifacts",
+            "dest_attr": "_key",
+            "type": "CONTAINS",
+            "_from": "PlanningStep/2542",
+            "_to": "ExecutionPlanArtifact/2991"
+        }
+    ],
+    "truth_edge": {
+        "_from": "PlanningStep/2542",
+        "_to": "ExecutionPlanArtifact/2991",
+        "src_attr": "artifacts",
+        "dest_attr": "name",
+        "type": "PRODUCES"
+    }
+},
+{
+    "src_node": {
+        "_key": "Planning_with_Content_Dev_Team",
+        "_id": "PlanningStep/Planning_with_Content_Dev_Team",
+        "name": "Planning with Content Dev Team",
+        "description": "Planning with Content Dev Team.",
+        "is_initial_step": true,
+        "next_steps": [
+            "DevelopmentStep/Draft_campaign_plan_with_Content_Dev_Team"
+        ],
+        "artifacts": [
+            "CustomerRequirementArtifact/obap_cust_req_001",
+            "CapabilityRequestArtifact/obap_cap_req_001",
+            "StorylineArtifact/obap_storyline_001"
+        ]
+    },
+    "pair_node": {
+        "_key": "obap_cust_req_001",
+        "_id": "CustomerRequirementArtifact/obap_cust_req_001",
+        "name": "OBAP_CustReq01",
+        "descriptions": "Customer requirements for OBAP scenario.",
+        "scenario_name": "OBAP",
+        "proficiency_level": "intermediate",
+        "jqr_reference": "JQR-2024-CYDEF-08",
+        "jqs_reference": "JQS-DETECT-RESPOND-L2",
+        "range_type": "dead_and_live",
+        "target_audience": "cyber_defense_analysts",
+        "duration_hours": 40,
+        "collaboration_with": [
+            "ContentDev"
+        ],
+        "created_date": "2024-06-15"
+    },
+    "suggested_edges": [
+        {
+            "src_attr": "artifacts",
+            "dest_attr": "_key",
+            "type": "CONTAINS",
+            "_from": "PlanningStep/Planning_with_Content_Dev_Team",
+            "_to": "CustomerRequirementArtifact/obap_cust_req_001"
+        }
+    ],
+    "truth_edge": {
+        "_from": "PlanningStep/Planning_with_Content_Dev_Team",
+        "_to": "CustomerRequirementArtifact/obap_cust_req_001",
+        "src_attr": "artifacts",
+        "dest_attr": "_key",
+        "type": "PRODUCES"
+    }
+},
+{
+    "src_node": {
+        "_key": "Planning_with_Content_Dev_Team",
+        "_id": "PlanningStep/Planning_with_Content_Dev_Team",
+        "name": "Planning with Content Dev Team",
+        "description": "Planning with Content Dev Team.",
+        "is_initial_step": true,
+        "next_steps": [
+            "DevelopmentStep/Draft_campaign_plan_with_Content_Dev_Team"
+        ],
+        "artifacts": [
+            "CustomerRequirementArtifact/obap_cust_req_001",
+            "CapabilityRequestArtifact/obap_cap_req_001",
+            "StorylineArtifact/obap_storyline_001"
+        ]
+    },
+    "pair_node": {
+        "_key": "obap_cap_req_001",
+        "_id": "CapabilityRequestArtifact/obap_cap_req_001",
+        "name": "OBAP_CapReq01",
+        "capability_type": "range_infrastructure",
+        "required_vms": [
+            "DC01-WIN2019",
+            "WEB01-UBUNTU",
+            "WORKSTATION-WIN10"
+        ],
+        "required_tools": [
+            "CobaltStrike",
+            "Koadic",
+            "Mimikatz",
+            "BloodHound"
+        ],
+        "exploits_needed": [
+            "CVE-2021-34527",
+            "CVE-2020-1472"
+        ],
+        "custom_content": [
+            "F-35_Results.docx",
+            "employee_database.xlsx"
+        ],
+        "collaboration_with": [
+            "Range"
+        ],
+        "status": "approved"
+    },
+    "suggested_edges": [
+        {
+            "src_attr": "next_steps",
+            "dest_attr": "_key",
+            "type": "LEADS_TO",
+            "_from": "PlanningStep/Planning_with_Content_Dev_Team",
+            "_to": "CapabilityRequestArtifact/obap_cap_req_001"
+        }
+    ],
+    "truth_edge": {
+        "_from": "PlanningStep/Planning_with_Content_Dev_Team",
+        "_to": "CapabilityRequestArtifact/obap_cap_req_001",
+        "src_attr": "artifacts",
+        "dest_attr": "_key",
+        "type": "PRODUCES"
+    }
+},
+{
+    "src_node": {
+        "_key": "Planning_with_Content_Dev_Team",
+        "_id": "PlanningStep/Planning_with_Content_Dev_Team",
+        "name": "Planning with Content Dev Team",
+        "description": "Planning with Content Dev Team.",
+        "is_initial_step": true,
+        "next_steps": [
+            "DevelopmentStep/Draft_campaign_plan_with_Content_Dev_Team"
+        ],
+        "artifacts": [
+            "CustomerRequirementArtifact/obap_cust_req_001",
+            "CapabilityRequestArtifact/obap_cap_req_001",
+            "StorylineArtifact/obap_storyline_001"
+        ]
+    },
+    "pair_node": {
+        "_key": "obap_storyline_001",
+        "_id": "StorylineArtifact/obap_storyline_001",
+        "name": "OBAO_Story01",
+        "apt_group": "APT29",
+        "threat_profile": "nation_state_espionage",
+        "target_sector": "defense_contractor",
+        "intelligence_sources": [
+            "MITRE_ATT&CK",
+            "CISA_AA21-336A"
+        ],
+        "scenario_narrative": "APT29 targeting defense contractor for F-35 research data",
+        "collaboration_with": [
+            "ContentDev"
+        ],
+        "key_objectives": [
+            "initial_access",
+            "credential_theft",
+            "lateral_movement",
+            "exfiltration"
+        ]
+    },
+    "suggested_edges": [
+        {
+            "src_attr": "next_steps",
+            "dest_attr": "_id",
+            "type": "LEADS_TO",
+            "_from": "PlanningStep/Planning_with_Content_Dev_Team",
+            "_to": "StorylineArtifact/obap_storyline_001"
+        }
+    ],
+    "truth_edge": {
+        "_from": "PlanningStep/Planning_with_Content_Dev_Team",
+        "_to": "StorylineArtifact/obap_storyline_001",
+        "src_attr": "artifacts",
+        "dest_attr": "_key",
+        "type": "PRODUCES"
+    }
+},
+{
+    "src_node": {
+        "_key": "Draft_campaign_plan_with_Content_Dev_Team",
+        "_id": "DevelopmentStep/Draft_campaign_plan_with_Content_Dev_Team",
+        "name": "Draft campaign plan with Content Dev Team",
+        "description": "Draft campaign plan with Content Dev Team.",
+        "is_initial_step": false,
+        "next_steps": [
+            "DevelopmentStep/Testing_and_Development_with_Automation_and_Range_Team"
+        ],
+        "artifacts": [
+            "CampaignPlanArtifact/obap_campaign_plan_v1"
+        ]
+    },
+    "pair_node": {
+        "_key": "obap_campaign_plan_v1",
+        "_id": "CampaignPlanArtifact/obap_campaign_plan_v1",
+        "name": "OBAP_CampaignPlanV1",
+        "apt_name": "APT29 (Cozy Bear)",
+        "scenario_id": "OBAP",
+        "phase_mapping": [
+            {
+                "phase": "initial_access",
+                "ttp_id": "T1566.001",
+                "action": "Spearphishing with malicious attachment",
+                "target": "ty.wilkerson@defensetech.local",
+                "requirement_met": "JQR-DETECT-PHISHING"
+            },
+            {
+                "phase": "execution",
+                "ttp_id": "T1059.001",
+                "action": "PowerShell execution for C2 callback",
+                "target": "WORKSTATION-WIN10",
+                "requirement_met": "JQR-DETECT-POWERSHELL"
+            },
+            {
+                "phase": "credential_access",
+                "ttp_id": "T1003.001",
+                "action": "LSASS dump using Mimikatz",
+                "target": "DC01-WIN2019",
+                "requirement_met": "JQR-DETECT-CREDENTIAL-THEFT"
+            },
+            {
+                "phase": "exfiltration",
+                "ttp_id": "T1041",
+                "action": "C2 channel data exfiltration",
+                "target": "F-35_Results.docx",
+                "requirement_met": "JQR-DETECT-EXFILTRATION"
+            }
+        ],
+        "initial_targets": [
+            {
+                "hostname": "WORKSTATION-WIN10",
+                "ip": "172.48.3.5",
+                "user": "ty.wilkerson",
+                "priority": 1
+            },
+            {
+                "hostname": "DC01-WIN2019",
+                "ip": "172.48.1.10",
+                "user": "administrator",
+                "priority": 2
+            },
+            {
+                "hostname": "WEB01-UBUNTU",
+                "ip": "172.48.2.50",
+                "user": "webadmin",
+                "priority": 3
+            }
+        ],
+        "collaboration_with": [
+            "ContentDev"
+        ],
+        "version": "1.0",
+        "status": "draft"
+    },
+    "suggested_edges": [
+        {
+            "src_attr": "next_steps",
+            "dest_attr": "_key",
+            "type": "LEADS_TO",
+            "_from": "DevelopmentStep/Draft_campaign_plan_with_Content_Dev_Team",
+            "_to": "CampaignPlanArtifact/obap_campaign_plan_v1"
+        }
+    ],
+    "truth_edge": {
+        "_from": "DevelopmentStep/Draft_campaign_plan_with_Content_Dev_Team",
+        "_to": "CampaignPlanArtifact/obap_campaign_plan_v1",
+        "src_attr": "artifacts",
+        "dest_attr": "_key",
+        "type": "PRODUCES"
+    }
+},
+{
+    "src_node": {
+        "_key": "Testing_and_Development_with_Automation_and_Range_Team",
+        "_id": "DevelopmentStep/Testing_and_Development_with_Automation_and_Range_Team",
+        "name": "Testing and Development with Automation and Range Team",
+        "description": "Testing and Development with Automation and Range Team.",
+        "is_initial_step": false,
+        "next_steps": [
+            "DevelopmentStep/Orchestration_with_Automation_and_Range_Team"
+        ],
+        "artifacts": [
+            "TestLogArtifact/obap_test_run_003"
+        ]
+    },
+    "pair_node": {
+        "_key": "obap_test_run_003",
+        "_id": "TestLogArtifact/obap_test_run_003",
+        "name": "OBAP_IntegrationTest01",
+        "test_type": "integration_test",
+        "scenario_id": "OBAP",
+        "test_date": "2024-08-22T14:30:00Z",
+        "tested_ttp": "T1059.001",
+        "automation_script": "auba_12_RL",
+        "range_environment": "range_dev_01",
+        "test_result": "partial_success",
+        "issues_found": [
+            "C2 callback timing inconsistent",
+            "Beacon jitter not matching APT29 profile"
+        ],
+        "collaboration_with": [
+            "Automation",
+            "Range"
+        ],
+        "next_actions": "Adjust beacon timing in automation script"
+    },
+    "suggested_edges": [
+        {
+            "src_attr": "next_steps",
+            "dest_attr": "_key",
+            "type": "LEADS_TO",
+            "_from": "DevelopmentStep/Testing_and_Development_with_Automation_and_Range_Team",
+            "_to": "TestLogArtifact/obap_test_run_003"
+        }
+    ],
+    "truth_edge": {
+        "_from": "DevelopmentStep/Testing_and_Development_with_Automation_and_Range_Team",
+        "_to": "TestLogArtifact/obap_test_run_003",
+        "src_attr": "artifacts",
+        "dest_attr": "_key",
+        "type": "PRODUCES"
+    }
+},
+{
+    "src_node": {
+        "_key": "Orchestration_with_Automation_and_Range_Team",
+        "_id": "DevelopmentStep/Orchestration_with_Automation_and_Range_Team",
+        "name": "Orchestration with Automation and Range Team",
+        "description": "Orchestration with Automation and Range Team.",
+        "is_initial_step": false,
+        "next_steps": [
+            "DevelopmentStep/Execution_with_Automation_and_Range_Team"
+        ],
+        "artifacts": [
+            "OrchestrationPlanArtifact/obap_orchestration_seq_001"
+        ]
+    },
+    "pair_node": {
+        "_key": "obap_orchestration_seq_001",
+        "_id": "OrchestrationPlanArtifact/obap_orchestration_seq_001",
+        "scenario_id": "OBAP",
+        "execution_sequence": [
+            {
+                "step": 1,
+                "action": "Deploy C2 infrastructure",
+                "automation_id": "auba_TTP",
+                "range_dependency": "range_network_ready",
+                "estimated_duration_min": 15
+            },
+            {
+                "step": 2,
+                "action": "Initial access via spearphishing",
+                "automation_id": "auba_phish_001",
+                "range_dependency": "email_server_configured",
+                "estimated_duration_min": 5
+            },
+            {
+                "step": 3,
+                "action": "Establish C2 beacon",
+                "automation_id": "auba_beacon_001",
+                "range_dependency": "victim_workstation_online",
+                "estimated_duration_min": 10
+            },
+            {
+                "step": 4,
+                "action": "Credential harvesting",
+                "automation_id": "auba_mimikatz_001",
+                "range_dependency": "dc_accessible",
+                "estimated_duration_min": 20
+            }
+        ],
+        "collaboration_with": [
+            "Automation",
+            "Range"
+        ],
+        "total_runtime_min": 50,
+        "status": "finalized"
+    },
+    "suggested_edges": [
+        {
+            "src_attr": "next_steps",
+            "dest_attr": "_key",
+            "type": "LEADS_TO",
+            "_from": "DevelopmentStep/Orchestration_with_Automation_and_Range_Team",
+            "_to": "OrchestrationPlanArtifact/obap_orchestration_seq_001"
+        }
+    ],
+    "truth_edge": {
+        "_from": "DevelopmentStep/Orchestration_with_Automation_and_Range_Team",
+        "_to": "OrchestrationPlanArtifact/obap_orchestration_seq_001",
+        "src_attr": "artifacts",
+        "dest_attr": "_key",
+        "type": "PRODUCES"
+    }
+},
+{
+    "src_node": {
+        "_key": "Execution_with_Automation_and_Range_Team",
+        "_id": "ExecutionStep/Execution_with_Automation_and_Range_Team",
+        "name": "Execution with Automation and Range Team",
+        "description": "Execution with Automation and Range Team.",
+        "is_initial_step": false,
+        "next_steps": [
+            "DevelopmentStep/Finalize_documentation_with_Automation_Range_and_Content_Dev_Team"
+        ],
+        "artifacts": [
+            "DeadRangeValidationArtifact/obap_dead_range_001",
+            "CloneMgtArtifact/obap_clone_ops_001",
+            "LiveExecutionArtifact/obap_live_exec_001",
+            "ExecutionCertificationArtifact/obap_cert_001"
+        ]
+    },
+    "pair_node": {
+        "_key": "obap_dead_range_001",
+        "_id": "DeadRangeValidationArtifact/obap_dead_range_001",
+        "execution_type": "dead_range",
+        "scenario_id": "OBAP",
+        "timestamp": "2024-09-10T10:00:00Z",
+        "validation_checks": [
+            {
+                "check": "all_vms_powered_off",
+                "status": "pass"
+            },
+            {
+                "check": "no_active_network_traffic",
+                "status": "pass"
+            },
+            {
+                "check": "baseline_snapshots_created",
+                "status": "pass"
+            }
+        ],
+        "collaboration_with": [
+            "Automation",
+            "Range"
+        ],
+        "signed_off_by": "opfor_lead"
+    },
+    "suggested_edges": [
+        {
+            "src_attr": "artifacts",
+            "dest_attr": "_key",
+            "type": "CONTAINS",
+            "_from": "ExecutionStep/Execution_with_Automation_and_Range_Team",
+            "_to": "DeadRangeValidationArtifact/obap_dead_range_001"
+        }
+    ],
+    "truth_edge": {
+        "_from": "ExecutionStep/Execution_with_Automation_and_Range_Team",
+        "_to": "DeadRangeValidationArtifact/obap_dead_range_001",
+        "src_attr": "artifacts",
+        "dest_attr": "_key",
+        "type": "PRODUCES"
+    }
+},
+{
+    "src_node": {
+        "_key": "Execution_with_Automation_and_Range_Team",
+        "_id": "ExecutionStep/Execution_with_Automation_and_Range_Team",
+        "name": "Execution with Automation and Range Team",
+        "description": "Execution with Automation and Range Team.",
+        "is_initial_step": false,
+        "next_steps": [
+            "DevelopmentStep/Finalize_documentation_with_Automation_Range_and_Content_Dev_Team"
+        ],
+        "artifacts": [
+            "DeadRangeValidationArtifact/obap_dead_range_001",
+            "CloneMgtArtifact/obap_clone_ops_001",
+            "LiveExecutionArtifact/obap_live_exec_001",
+            "ExecutionCertificationArtifact/obap_cert_001"
+        ]
+    },
+    "pair_node": {
+        "_key": "obap_clone_ops_001",
+        "_id": "CloneMgtArtifact/obap_clone_ops_001",
+        "execution_type": "clone_management",
+        "scenario_id": "OBAP",
+        "clone_source_date": "2024-09-10T10:30:00Z",
+        "pre_attack_clone_date": "2024-09-12T08:00:00Z",
+        "post_attack_clone_date": "2024-09-12T16:45:00Z",
+        "artifacts_preserved": [
+            "registry_changes",
+            "file_system_modifications",
+            "event_logs",
+            "network_pcaps"
+        ],
+        "collaboration_with": [
+            "Range"
+        ],
+        "storage_location": "range_storage_01/obap/clones"
+    },
+    "suggested_edges": [
+        {
+            "src_attr": "next_steps",
+            "dest_attr": "_key",
+            "type": "LEADS_TO",
+            "_from": "ExecutionStep/Execution_with_Automation_and_Range_Team",
+            "_to": "CloneMgtArtifact/obap_clone_ops_001"
+        }
+    ],
+    "truth_edge": {
+        "_from": "ExecutionStep/Execution_with_Automation_and_Range_Team",
+        "_to": "CloneMgtArtifact/obap_clone_ops_001",
+        "src_attr": "artifacts",
+        "dest_attr": "_key",
+        "type": "PRODUCES"
+    }
+},
+{
+    "src_node": {
+        "_key": "Execution_with_Automation_and_Range_Team",
+        "_id": "ExecutionStep/Execution_with_Automation_and_Range_Team",
+        "name": "Execution with Automation and Range Team",
+        "description": "Execution with Automation and Range Team.",
+        "is_initial_step": false,
+        "next_steps": [
+            "DevelopmentStep/Finalize_documentation_with_Automation_Range_and_Content_Dev_Team"
+        ],
+        "artifacts": [
+            "DeadRangeValidationArtifact/obap_dead_range_001",
+            "CloneMgtArtifact/obap_clone_ops_001",
+            "LiveExecutionArtifact/obap_live_exec_001",
+            "ExecutionCertificationArtifact/obap_cert_001"
+        ]
+    },
+    "pair_node": {
+        "_key": "obap_live_exec_001",
+        "_id": "LiveExecutionArtifact/obap_live_exec_001",
+        "execution_type": "live_range",
+        "scenario_id": "OBAP",
+        "timestamp": "2024-09-15T13:00:00Z",
+        "attack_sequence_executed": [
+            {
+                "step": 1,
+                "ttp_id": "T1566.001",
+                "status": "success",
+                "timestamp": "2024-09-15T13:05:22Z"
+            },
+            {
+                "step": 2,
+                "ttp_id": "T1059.001",
+                "status": "success",
+                "timestamp": "2024-09-15T13:12:45Z"
+            },
+            {
+                "step": 3,
+                "ttp_id": "T1003.001",
+                "status": "success",
+                "timestamp": "2024-09-15T13:28:10Z"
+            },
+            {
+                "step": 4,
+                "ttp_id": "T1041",
+                "status": "success",
+                "timestamp": "2024-09-15T13:45:33Z"
+            }
+        ],
+        "student_performance_metrics": {
+            "detections": 3,
+            "missed_indicators": 1,
+            "response_time_avg_min": 12
+        },
+        "collaboration_with": [
+            "Automation",
+            "Range"
+        ],
+        "execution_status": "completed"
+    },
+    "suggested_edges": [
+        {
+            "src_attr": "next_steps",
+            "dest_attr": "_key",
+            "type": "LEADS_TO",
+            "_from": "ExecutionStep/Execution_with_Automation_and_Range_Team",
+            "_to": "LiveExecutionArtifact/obap_live_exec_001"
+        }
+    ],
+    "truth_edge": {
+        "_from": "ExecutionStep/Execution_with_Automation_and_Range_Team",
+        "_to": "LiveExecutionArtifact/obap_live_exec_001",
+        "src_attr": "artifacts",
+        "dest_attr": "_key",
+        "type": "PRODUCES"
+    }
+},
+{
+    "src_node": {
+        "_key": "Execution_with_Automation_and_Range_Team",
+        "_id": "ExecutionStep/Execution_with_Automation_and_Range_Team",
+        "name": "Execution with Automation and Range Team",
+        "description": "Execution with Automation and Range Team.",
+        "is_initial_step": false,
+        "next_steps": [
+            "DevelopmentStep/Finalize_documentation_with_Automation_Range_and_Content_Dev_Team"
+        ],
+        "artifacts": [
+            "DeadRangeValidationArtifact/obap_dead_range_001",
+            "CloneMgtArtifact/obap_clone_ops_001",
+            "LiveExecutionArtifact/obap_live_exec_001",
+            "ExecutionCertificationArtifact/obap_cert_001"
+        ]
+    },
+    "pair_node": {
+        "_key": "obap_cert_001",
+        "_id": "ExecutionCertificationArtifact/obap_cert_001",
+        "execution_type": "certification",
+        "scenario_id": "OBAP",
+        "certification_date": "2024-09-16T09:00:00Z",
+        "validated_by": "opfor_lead",
+        "certification_checks": [
+            {
+                "requirement": "all_jqr_objectives_met",
+                "status": "pass"
+            },
+            {
+                "requirement": "attack_chain_completeness",
+                "status": "pass"
+            },
+            {
+                "requirement": "range_stability",
+                "status": "pass"
+            },
+            {
+                "requirement": "automation_reliability",
+                "status": "pass"
+            },
+            {
+                "requirement": "student_detectability",
+                "status": "pass"
+            }
+        ],
+        "collaboration_with": [
+            "Automation",
+            "Range"
+        ],
+        "certified": true
+    },
+    "suggested_edges": [
+        {
+            "src_attr": "artifacts",
+            "dest_attr": "_key",
+            "type": "CONTAINS",
+            "_from": "ExecutionStep/Execution_with_Automation_and_Range_Team",
+            "_to": "ExecutionCertificationArtifact/obap_cert_001"
+        }
+    ],
+    "truth_edge": {
+        "_from": "ExecutionStep/Execution_with_Automation_and_Range_Team",
+        "_to": "ExecutionCertificationArtifact/obap_cert_001",
+        "src_attr": "artifacts",
+        "dest_attr": "_key",
+        "type": "PRODUCES"
+    }
+},
+{
+    "src_node": {
+        "_key": "Finalize_documentation_with_Automation_Range_and_Content_Dev_Team",
+        "_id": "DevelopmentStep/Finalize_documentation_with_Automation_Range_and_Content_Dev_Team",
+        "name": "Finalize documentation with Automation, Range and Content Dev Team",
+        "description": "Finalize documentation with Automation, Range and Content Dev Team.",
+        "is_initial_step": false,
+        "next_steps": [
+            "DevelopmentStep/Orchestration_with_Automation_and_Range_Team"
+        ],
+        "artifacts": [
+            "RedTeamDocArtifact/obap_red_doc_001",
+            "RedHandbookArtifact/obap_handbook_entry",
+            "ConfluenceDocArtifact/obap_confluence_page",
+            "OperationNotesArtifact/obap_op_notes_001"
+        ]
+    },
+    "pair_node": {
+        "_key": "obap_red_doc_001",
+        "_id": "RedTeamDocArtifact/obap_red_doc_001",
+        "scenario_id": "OBAP",
+        "document_sections": {
+            "executive_summary": "APT29 emulation targeting defense contractor",
+            "attack_timeline": "detailed_timeline_with_timestamps",
+            "ttps_used": [
+                "T1566.001",
+                "T1059.001",
+                "T1003.001",
+                "T1041"
+            ],
+            "tools_used": [
+                "CobaltStrike",
+                "Koadic",
+                "Mimikatz"
+            ],
+            "iocs_generated": [
+                "beacon_ip",
+                "file_hashes",
+                "registry_keys"
+            ],
+            "success_criteria_met": true
+        },
+        "collaboration_with": [
+            "Automation",
+            "Range",
+            "ContentDev"
+        ],
+        "version": "1.0",
+        "finalized_date": "2024-09-20"
+    },
+    "suggested_edges": [
+        {
+            "src_attr": "artifacts",
+            "dest_attr": "_key",
+            "type": "CONTAINS",
+            "_from": "DevelopmentStep/Finalize_documentation_with_Automation_Range_and_Content_Dev_Team",
+            "_to": "RedTeamDocArtifact/obap_red_doc_001"
+        }
+    ],
+    "truth_edge": {
+        "_from": "DevelopmentStep/Finalize_documentation_with_Automation_Range_and_Content_Dev_Team",
+        "_to": "RedTeamDocArtifact/obap_red_doc_001",
+        "src_attr": "artifacts",
+        "dest_attr": "_key",
+        "type": "PRODUCES"
+    }
+},
+{
+    "src_node": {
+        "_key": "Finalize_documentation_with_Automation_Range_and_Content_Dev_Team",
+        "_id": "DevelopmentStep/Finalize_documentation_with_Automation_Range_and_Content_Dev_Team",
+        "name": "Finalize documentation with Automation, Range and Content Dev Team",
+        "description": "Finalize documentation with Automation, Range and Content Dev Team.",
+        "is_initial_step": false,
+        "next_steps": [
+            "DevelopmentStep/Orchestration_with_Automation_and_Range_Team"
+        ],
+        "artifacts": [
+            "RedTeamDocArtifact/obap_red_doc_001",
+            "RedHandbookArtifact/obap_handbook_entry",
+            "ConfluenceDocArtifact/obap_confluence_page",
+            "OperationNotesArtifact/obap_op_notes_001"
+        ]
+    },
+    "pair_node": {
+        "_key": "obap_handbook_entry",
+        "_id": "RedHandbookArtifact/obap_handbook_entry",
+        "scenario_id": "OBAP",
+        "handbook_content": {
+            "scenario_overview": "APT29 nation-state espionage campaign",
+            "operator_notes": "Beacon jitter set to 30-45s to match APT29 profile",
+            "common_issues": [
+                "C2 callback can be blocked by overly aggressive EDR"
+            ],
+            "troubleshooting_steps": [
+                "Verify network egress rules",
+                "Check beacon configuration"
+            ],
+            "lessons_learned": "Pre-stage credentials to reduce noise during credential access phase"
+        },
+        "collaboration_with": [
+            "Automation",
+            "Range",
+            "ContentDev"
+        ],
+        "last_updated": "2024-09-20"
+    },
+    "suggested_edges": [
+        {
+            "src_attr": "artifacts",
+            "dest_attr": "_key",
+            "type": "CONTAINS",
+            "_from": "DevelopmentStep/Finalize_documentation_with_Automation_Range_and_Content_Dev_Team",
+            "_to": "RedHandbookArtifact/obap_handbook_entry"
+        }
+    ],
+    "truth_edge": {
+        "_from": "DevelopmentStep/Finalize_documentation_with_Automation_Range_and_Content_Dev_Team",
+        "_to": "RedHandbookArtifact/obap_handbook_entry",
+        "src_attr": "artifacts",
+        "dest_attr": "_key",
+        "type": "PRODUCES"
+    }
+},
+{
+    "src_node": {
+        "_key": "Finalize_documentation_with_Automation_Range_and_Content_Dev_Team",
+        "_id": "DevelopmentStep/Finalize_documentation_with_Automation_Range_and_Content_Dev_Team",
+        "name": "Finalize documentation with Automation, Range and Content Dev Team",
+        "description": "Finalize documentation with Automation, Range and Content Dev Team.",
+        "is_initial_step": false,
+        "next_steps": [
+            "DevelopmentStep/Orchestration_with_Automation_and_Range_Team"
+        ],
+        "artifacts": [
+            "RedTeamDocArtifact/obap_red_doc_001",
+            "RedHandbookArtifact/obap_handbook_entry",
+            "ConfluenceDocArtifact/obap_confluence_page",
+            "OperationNotesArtifact/obap_op_notes_001"
+        ]
+    },
+    "pair_node": {
+        "_key": "obap_confluence_page",
+        "_id": "ConfluenceDocArtifact/obap_confluence_page",
+        "scenario_id": "OBAP",
+        "confluence_page_id": "CYBER-RANGE-OBAP-2024",
+        "sections": [
+            {
+                "title": "Scenario Overview",
+                "status": "published"
+            },
+            {
+                "title": "Technical Implementation",
+                "status": "published"
+            },
+            {
+                "title": "Automation Scripts",
+                "status": "published",
+                "linked_artifacts": [
+                    "auba_TTP",
+                    "auba_PL"
+                ]
+            },
+            {
+                "title": "Range Configuration",
+                "status": "published"
+            },
+            {
+                "title": "Known Issues",
+                "status": "published"
+            }
+        ],
+        "collaboration_with": [
+            "Automation",
+            "Range",
+            "ContentDev"
+        ],
+        "published_date": "2024-09-22"
+    },
+    "suggested_edges": [
+        {
+            "src_attr": "artifacts",
+            "dest_attr": "_key",
+            "type": "CONTAINS",
+            "_from": "DevelopmentStep/Finalize_documentation_with_Automation_Range_and_Content_Dev_Team",
+            "_to": "ConfluenceDocArtifact/obap_confluence_page"
+        }
+    ],
+    "truth_edge": {
+        "_from": "DevelopmentStep/Finalize_documentation_with_Automation_Range_and_Content_Dev_Team",
+        "_to": "ConfluenceDocArtifact/obap_confluence_page",
+        "src_attr": "artifacts",
+        "dest_attr": "_key",
+        "type": "PRODUCES"
+    }
+},
+{
+    "src_node": {
+        "_key": "Finalize_documentation_with_Automation_Range_and_Content_Dev_Team",
+        "_id": "DevelopmentStep/Finalize_documentation_with_Automation_Range_and_Content_Dev_Team",
+        "name": "Finalize documentation with Automation, Range and Content Dev Team",
+        "description": "Finalize documentation with Automation, Range and Content Dev Team.",
+        "is_initial_step": false,
+        "next_steps": [
+            "DevelopmentStep/Orchestration_with_Automation_and_Range_Team"
+        ],
+        "artifacts": [
+            "RedTeamDocArtifact/obap_red_doc_001",
+            "RedHandbookArtifact/obap_handbook_entry",
+            "ConfluenceDocArtifact/obap_confluence_page",
+            "OperationNotesArtifact/obap_op_notes_001"
+        ]
+    },
+    "pair_node": {
+        "_key": "obap_op_notes_001",
+        "_id": "OperationNotesArtifact/obap_op_notes_001",
+        "scenario_id": "OBAP",
+        "operator": "red_team_lead",
+        "execution_date": "2024-09-15",
+        "notes": [
+            {
+                "timestamp": "2024-09-15T13:05:22Z",
+                "phase": "initial_access",
+                "observation": "User clicked phishing link within 2 minutes - excellent social engineering success"
+            },
+            {
+                "timestamp": "2024-09-15T13:28:10Z",
+                "phase": "credential_access",
+                "observation": "Mimikatz execution triggered AV alert - expected behavior for student detection"
+            },
+            {
+                "timestamp": "2024-09-15T13:45:33Z",
+                "phase": "exfiltration",
+                "observation": "Exfiltration completed successfully - student detected but failed to block"
+            }
+        ],
+        "collaboration_with": [
+            "Automation",
+            "Range"
+        ],
+        "summary": "Execution successful with expected student detection points triggered"
+    },
+    "suggested_edges": [
+        {
+            "src_attr": "artifacts",
+            "dest_attr": "_id",
+            "type": "CONTAINS",
+            "_from": "DevelopmentStep/Finalize_documentation_with_Automation_Range_and_Content_Dev_Team",
+            "_to": "OperationNotesArtifact/obap_op_notes_001"
+        }
+    ],
+    "truth_edge": {
+        "_from": "DevelopmentStep/Finalize_documentation_with_Automation_Range_and_Content_Dev_Team",
+        "_to": "OperationNotesArtifact/obap_op_notes_001",
+        "src_attr": "artifacts",
+        "dest_attr": "_key",
+        "type": "PRODUCES"
+    }
+},
+{
+    "src_node": {
+        "_key": "Requirement_Gathering_with_OPFOR_and_Automation",
+        "_id": "PlanningStep/Requirement_Gathering_with_OPFOR_and_Automation",
+        "name": "Requirement Gathering with OPFOR and Automation",
+        "description": "Requirement gathering with OPFOR and Automation Team.",
+        "is_initial_step": true,
+        "next_steps": [
+            "DevelopmentStep/Capability_Building_with_OPFOR_Automation"
+        ],
+        "artifacts": [
+            "RangeRequestArtifact/obap_range_req_001"
+        ]
+    },
+    "pair_node": {
+        "_key": "obap_range_req_001",
+        "_id": "RangeRequestArtifact/obap_range_req_001",
+        "scenario_id": "OBAP",
+        "gathered_from": [
+            "opfor",
+            "automation"
+        ],
+        "network_requirements": {
+            "subnets": [
+                "172.48.1.0/24",
+                "172.48.2.0/24",
+                "172.48.3.0/24"
+            ],
+            "vlans": [
+                "blue_team",
+                "white_team",
+                "engineering"
+            ]
+        },
+        "vm_requirements": [
+            {
+                "hostname": "DC01-WIN2019",
+                "os": "Windows Server 2019",
+                "requested_by": "opfor"
+            },
+            {
+                "hostname": "WORKSTATION-WIN10",
+                "os": "Windows 10",
+                "requested_by": "opfor"
+            }
+        ],
+        "gathered_date": "2024-07-01"
+    },
+    "suggested_edges": [
+        {
+            "src_attr": "next_steps",
+            "dest_attr": "_key",
+            "type": "LEADS_TO",
+            "_from": "PlanningStep/Requirement_Gathering_with_OPFOR_and_Automation",
+            "_to": "RangeRequestArtifact/obap_range_req_001"
+        }
+    ],
+    "truth_edge": {
+        "_from": "PlanningStep/Requirement_Gathering_with_OPFOR_and_Automation",
+        "_to": "RangeRequestArtifact/obap_range_req_001",
+        "src_attr": "artifacts",
+        "dest_attr": "_key",
+        "type": "PRODUCES"
+    }
+},
+{
+    "src_node": {
+        "_key": "Capability_Building_with_OPFOR_Automation",
+        "_id": "DevelopmentStep/Capability_Building_with_OPFOR_Automation",
+        "name": "Capability Building with OPFOR/Automation",
+        "description": "Capability Building with OPFOR/Automation.",
+        "is_initial_step": false,
+        "next_steps": [
+            "DevelopmentStep/Range_Build_JIRA_Story"
+        ],
+        "artifacts": [
+            "RangeCapabilityArtifact/obap_range_cap_001"
+        ]
+    },
+    "pair_node": {
+        "_key": "obap_range_cap_001",
+        "_id": "RangeCapabilityArtifact/obap_range_cap_001",
+        "scenario_id": "OBAP",
+        "capabilities_built": [
+            {
+                "capability": "C2_infrastructure",
+                "built_for": "automation",
+                "vm": "CS-SERVER-01",
+                "ip": "172.48.254.10"
+            },
+            {
+                "capability": "vulnerable_DC",
+                "built_for": "opfor",
+                "vm": "DC01-WIN2019",
+                "cve": "CVE-2021-34527"
+            }
+        ],
+        "build_date": "2024-07-15"
+    },
+    "suggested_edges": [
+        {
+            "src_attr": "next_steps",
+            "dest_attr": "_key",
+            "type": "LEADS_TO",
+            "_from": "DevelopmentStep/Capability_Building_with_OPFOR_Automation",
+            "_to": "RangeCapabilityArtifact/obap_range_cap_001"
+        }
+    ],
+    "truth_edge": {
+        "_from": "DevelopmentStep/Capability_Building_with_OPFOR_Automation",
+        "_to": "RangeCapabilityArtifact/obap_range_cap_001",
+        "src_attr": "artifacts",
+        "dest_attr": "_key",
+        "type": "PRODUCES"
+    }
+},
+{
+    "src_node": {
+        "_key": "Range_Build_JIRA_Story",
+        "_id": "DevelopmentStep/Range_Build_JIRA_Story",
+        "name": "Range Build - JIRA Story",
+        "description": "Range Build - JIRA Story.",
+        "is_initial_step": false,
+        "next_steps": [
+            "DevelopmentStep/Range_Build_Network_Map"
+        ],
+        "artifacts": [
+            "JIRAStoryArtifact/RANGE-847"
+        ]
+    },
+    "pair_node": {
+        "_key": "RANGE-847",
+        "_id": "JIRAStoryArtifact/RANGE-847",
+        "story_name": "Deploy OBAP network infrastructure",
+        "rangetech": "Network_Design",
+        "assigned": "range_engineer_01",
+        "completed": "2024-08-01"
+    },
+    "suggested_edges": [
+        {
+            "src_attr": "next_steps",
+            "dest_attr": "_key",
+            "type": "LEADS_TO",
+            "_from": "DevelopmentStep/Range_Build_JIRA_Story",
+            "_to": "JIRAStoryArtifact/RANGE-847"
+        }
+    ],
+    "truth_edge": {
+        "_from": "DevelopmentStep/Range_Build_JIRA_Story",
+        "_to": "JIRAStoryArtifact/RANGE-847",
+        "src_attr": "artifacts",
+        "dest_attr": "_key",
+        "type": "PRODUCES"
+    }
+},
+{
+    "src_node": {
+        "_key": "Range_Build_Network_Map",
+        "_id": "DevelopmentStep/Range_Build_Network_Map",
+        "name": "Range Build - Network Map",
+        "description": "Range Build - Network Map.",
+        "is_initial_step": false,
+        "next_steps": [
+            "DevelopmentStep/Range_Build_Deployment"
+        ],
+        "artifacts": [
+            "NetworkMapArtifact/obap_network_map_001"
+        ]
+    },
+    "pair_node": {
+        "_key": "obap_network_map_001",
+        "_id": "NetworkMapArtifact/obap_network_map_001",
+        "scenario_id": "OBAP",
+        "blue_network": {
+            "subnet": "172.48.3.0/24",
+            "os": "Windows 10",
+            "layout": "Workstations"
+        },
+        "white_network": {
+            "subnet": "172.48.1.0/24",
+            "os": "Windows Server 2019",
+            "layout": "Infrastructure"
+        },
+        "engineering_network": {
+            "subnet": "172.48.2.0/24",
+            "os": "Ubuntu 20.04",
+            "layout": "DMZ"
+        }
+    },
+    "suggested_edges": [
+        {
+            "src_attr": "next_steps",
+            "dest_attr": "_id",
+            "type": "LEADS_TO",
+            "_from": "DevelopmentStep/Range_Build_Network_Map",
+            "_to": "NetworkMapArtifact/obap_network_map_001"
+        }
+    ],
+    "truth_edge": {
+        "_from": "DevelopmentStep/Range_Build_Network_Map",
+        "_to": "NetworkMapArtifact/obap_network_map_001",
+        "src_attr": "artifacts",
+        "dest_attr": "_key",
+        "type": "PRODUCES"
+    }
+},
+{
+    "src_node": {
+        "_key": "Range_Build_Deployment",
+        "_id": "DevelopmentStep/Range_Build_Deployment",
+        "name": "Range Build - Deployment",
+        "description": "Range Build - Deployment.",
+        "is_initial_step": false,
+        "next_steps": [
+            "DevelopmentStep/Testing_OPFOR_Automation_Execution_on_Range_Feedback_Form"
+        ],
+        "artifacts": [
+            "VMDeploymentArtifact/obap_deployment_001"
+        ]
+    },
+    "pair_node": {
+        "_key": "obap_deployment_001",
+        "_id": "VMDeploymentArtifact/obap_deployment_001",
+        "scenario_id": "OBAP",
+        "platform": "VMware_vSphere",
+        "access": "RDP/SSH",
+        "deployed_vms": [
+            {
+                "vm_name": "DC01-WIN2019",
+                "ip": "172.48.1.10",
+                "os": "Windows Server 2019"
+            },
+            {
+                "vm_name": "WORKSTATION-WIN10",
+                "ip": "172.48.3.5",
+                "os": "Windows 10"
+            }
+        ]
+    },
+    "suggested_edges": [
+        {
+            "src_attr": "next_steps",
+            "dest_attr": "_key",
+            "type": "LEADS_TO",
+            "_from": "DevelopmentStep/Range_Build_Deployment",
+            "_to": "VMDeploymentArtifact/obap_deployment_001"
+        }
+    ],
+    "truth_edge": {
+        "_from": "DevelopmentStep/Range_Build_Deployment",
+        "_to": "VMDeploymentArtifact/obap_deployment_001",
+        "src_attr": "artifacts",
+        "dest_attr": "_key",
+        "type": "PRODUCES"
+    }
+},
+{
+    "src_node": {
+        "_key": "Testing_OPFOR_Automation_Execution_on_Range_Feedback_Form",
+        "_id": "DevelopmentStep/Testing_OPFOR_Automation_Execution_on_Range_Feedback_Form",
+        "name": "Testing OPFOR/Automation Execution on Range - Feedback Form",
+        "description": "Testing OPFOR/Automation Execution on Range - Feedback Form.",
+        "is_initial_step": false,
+        "next_steps": [
+            "DevelopmentStep/Implement_Feedback_for_OPFOR_Automation_Testing"
+        ],
+        "artifacts": [
+            "TestFeedbackArtifact/obap_test_feedback_001"
+        ]
+    },
+    "pair_node": {
+        "_key": "obap_test_feedback_001",
+        "_id": "TestFeedbackArtifact/obap_test_feedback_001",
+        "scenario_id": "OBAP",
+        "test_date": "2024-08-22",
+        "changes_requested": [
+            {
+                "issue": "Defender blocking Mimikatz",
+                "change": "Add AV exclusion",
+                "requested_by": "automation"
+            }
+        ],
+        "pass_fail": "fail",
+        "retest_required": true
+    },
+    "suggested_edges": [
+        {
+            "src_attr": "next_steps",
+            "dest_attr": "_key",
+            "type": "LEADS_TO",
+            "_from": "DevelopmentStep/Testing_OPFOR_Automation_Execution_on_Range_Feedback_Form",
+            "_to": "TestFeedbackArtifact/obap_test_feedback_001"
+        }
+    ],
+    "truth_edge": {
+        "_from": "DevelopmentStep/Testing_OPFOR_Automation_Execution_on_Range_Feedback_Form",
+        "_to": "TestFeedbackArtifact/obap_test_feedback_001",
+        "src_attr": "artifacts",
+        "dest_attr": "_key",
+        "type": "PRODUCES"
+    }
+},
+{
+    "src_node": {
+        "_key": "Implement_Feedback_for_OPFOR_Automation_Testing",
+        "_id": "DevelopmentStep/Implement_Feedback_for_OPFOR_Automation_Testing",
+        "name": "Implement Feedback for OPFOR/Automation Testing",
+        "description": "Implement Feedback for OPFOR/Automation Testing.",
+        "is_initial_step": false,
+        "next_steps": [
+            "ExecutionStep/Final_Execution_with_OPFOR_Automation"
+        ],
+        "artifacts": [
+            "FeedbackImplementationArtifact/obap_feedback_impl_001"
+        ]
+    },
+    "pair_node": {
+        "_key": "obap_feedback_impl_001",
+        "_id": "FeedbackImplementationArtifact/obap_feedback_impl_001",
+        "scenario_id": "OBAP",
+        "changes_made": [
+            {
+                "change_id": "CHG-001",
+                "issue": "Defender blocking Mimikatz",
+                "action": "Added exclusion C:\\temp\\mimikatz.exe",
+                "target_vm": "WORKSTATION-WIN10"
+            }
+        ],
+        "pass_fail": "pass",
+        "implemented_date": "2024-08-23"
+    },
+    "suggested_edges": [
+        {
+            "src_attr": "next_steps",
+            "dest_attr": "_key",
+            "type": "LEADS_TO",
+            "_from": "DevelopmentStep/Implement_Feedback_for_OPFOR_Automation_Testing",
+            "_to": "FeedbackImplementationArtifact/obap_feedback_impl_001"
+        }
+    ],
+    "truth_edge": {
+        "_from": "DevelopmentStep/Implement_Feedback_for_OPFOR_Automation_Testing",
+        "_to": "FeedbackImplementationArtifact/obap_feedback_impl_001",
+        "src_attr": "artifacts",
+        "dest_attr": "_key",
+        "type": "PRODUCES"
+    }
+},
+{
+    "src_node": {
+        "_key": "Final_Execution_with_OPFOR_Automation",
+        "_id": "ExecutionStep/Final_Execution_with_OPFOR_Automation",
+        "name": "Final Execution with OPFOR/Automation",
+        "description": "Final Execution with OPFOR/Automation.",
+        "is_initial_step": false,
+        "next_steps": [
+            "DevelopmentStep/Quality_Assurance"
+        ],
+        "artifacts": [
+            "ExecutionResultsArtifact/obap_final_exec_001"
+        ]
+    },
+    "pair_node": {
+        "_key": "obap_final_exec_001",
+        "_id": "ExecutionResultsArtifact/obap_final_exec_001",
+        "scenario_id": "OBAP",
+        "execution_date": "2024-09-15",
+        "logs": [
+            "Security.evtx",
+            "Sysmon.evtx"
+        ],
+        "network_data": {
+            "pcap_file": "obap_live_execution.pcap",
+            "c2_traffic": true
+        },
+        "ioc_table": [
+            {
+                "type": "ip",
+                "value": "172.48.254.10",
+                "description": "C2 server"
+            },
+            {
+                "type": "file_hash",
+                "value": "5d41402abc4b2a76b9719d911017c592",
+                "description": "mimikatz.exe"
+            }
+        ]
+    },
+    "suggested_edges": [
+        {
+            "src_attr": "name",
+            "dest_attr": "scenario_id",
+            "type": "REFERENCES",
+            "_from": "ExecutionStep/Final_Execution_with_OPFOR_Automation",
+            "_to": "ExecutionResultsArtifact/obap_final_exec_001"
+        }
+    ],
+    "truth_edge": {
+        "_from": "ExecutionStep/Final_Execution_with_OPFOR_Automation",
+        "_to": "ExecutionResultsArtifact/obap_final_exec_001",
+        "src_attr": "artifacts",
+        "dest_attr": "_key",
+        "type": "PRODUCES"
+    }
+},
+{
+    "src_node": {
+        "_key": "Quality_Assurance",
+        "_id": "DevelopmentStep/Quality_Assurance",
+        "name": "Quality Assurance",
+        "description": "Quality Assurance.",
+        "is_initial_step": false,
+        "next_steps": [
+            "DevelopmentStep/Delivery_to_Customer"
+        ],
+        "artifacts": [
+            "QualityAssuranceArtifact/obap_final_qa_001"
+        ]
+    },
+    "pair_node": {
+        "_key": "obap_final_qa_001",
+        "_id": "QualityAssuranceArtifact/obap_final_qa_001",
+        "scenario_id": "OBAP",
+        "qa_date": "2024-09-20",
+        "checks": [
+            {
+                "category": "technical_accuracy",
+                "result": "pass"
+            },
+            {
+                "category": "jqr_requirements_met",
+                "result": "pass"
+            }
+        ],
+        "status": "approved_for_delivery"
+    },
+    "suggested_edges": [
+        {
+            "src_attr": "next_steps",
+            "dest_attr": "_id",
+            "type": "LEADS_TO",
+            "_from": "DevelopmentStep/Quality_Assurance",
+            "_to": "QualityAssuranceArtifact/obap_final_qa_001"
+        }
+    ],
+    "truth_edge": {
+        "_from": "DevelopmentStep/Quality_Assurance",
+        "_to": "QualityAssuranceArtifact/obap_final_qa_001",
+        "src_attr": "artifacts",
+        "dest_attr": "_key",
+        "type": "PRODUCES"
+    }
+},
+{
+    "src_node": {
+        "_key": "Delivery_to_Customer",
+        "_id": "DevelopmentStep/Delivery_to_Customer",
+        "name": "Delivery to Customer",
+        "description": "Delivery to Customer.",
+        "is_initial_step": false,
+        "next_steps": [],
+        "artifacts": [
+            "DeliveryArtifact/obap_delivery_001"
+        ]
+    },
+    "pair_node": {
+        "_key": "obap_delivery_001",
+        "_id": "DeliveryArtifact/obap_delivery_001",
+        "scenario_id": "OBAP",
+        "delivery_date": "2024-09-25",
+        "customer": "US_Cyber_Command",
+        "package": {
+            "ova_files": [
+                "DC01-WIN2019.ova",
+                "WORKSTATION-WIN10.ova"
+            ],
+            "documentation": [
+                "Instructor_Guide.pdf",
+                "Student_Workbook.pdf"
+            ]
+        },
+        "status": "delivered"
+    },
+    "suggested_edges": [
+        {
+            "src_attr": "artifacts",
+            "dest_attr": "_key",
+            "type": "CONTAINS",
+            "_from": "DevelopmentStep/Delivery_to_Customer",
+            "_to": "DeliveryArtifact/obap_delivery_001"
+        }
+    ],
+    "truth_edge": {
+        "_from": "DevelopmentStep/Delivery_to_Customer",
+        "_to": "DeliveryArtifact/obap_delivery_001",
+        "src_attr": "artifacts",
+        "dest_attr": "_key",
+        "type": "PRODUCES"
+    }
+},
+{
+    "src_node": {
+        "_key": "Initial_Requirements_Working_Group_Area_of_Operation_AOR",
+        "_id": "PlanningStep/Initial_Requirements_Working_Group_Area_of_Operation_AOR",
+        "name": "Initial Requirements Working Group - Area of Operation (AOR)",
+        "description": "Initial Requirements Working Group - Area of Operation (AOR).",
+        "is_initial_step": false,
+        "next_steps": [
+            "PlanningStep/Initial_Requirements_Working_Group_APT_Profile"
+        ],
+        "artifacts": [
+            "AreaOfOperationArtifact/obap_aor_001"
+        ]
+    },
+    "pair_node": {
+        "_key": "obap_aor_001",
+        "_id": "AreaOfOperationArtifact/obap_aor_001",
+        "scenario_id": "OBAP",
+        "indopacom": false,
+        "eucom": true,
+        "northcom": false,
+        "centcom": false,
+        "target_region": "Eastern Europe",
+        "created_date": "2024-06-01"
+    },
+    "suggested_edges": [
+        {
+            "src_attr": "next_steps",
+            "dest_attr": "_key",
+            "type": "LEADS_TO",
+            "_from": "PlanningStep/Initial_Requirements_Working_Group_Area_of_Operation_AOR",
+            "_to": "AreaOfOperationArtifact/obap_aor_001"
+        }
+    ],
+    "truth_edge": {
+        "_from": "PlanningStep/Initial_Requirements_Working_Group_Area_of_Operation_AOR",
+        "_to": "AreaOfOperationArtifact/obap_aor_001",
+        "src_attr": "artifacts",
+        "dest_attr": "_key",
+        "type": "PRODUCES"
+    }
+},
+{
+    "src_node": {
+        "_key": "Initial_Requirements_Working_Group_Targeted_OS",
+        "_id": "PlanningStep/Initial_Requirements_Working_Group_Targeted_OS",
+        "name": "Initial Requirements Working Group - Targeted OS",
+        "description": "Initial Requirements Working Group - Targeted OS.",
+        "is_initial_step": false,
+        "next_steps": [
+            "PlanningStep/Initial_Planning_Conference_Tiger_Team"
+        ],
+        "artifacts": [
+            "OSArtifact/obap_target_os_001"
+        ]
+    },
+    "pair_node": {
+        "_key": "obap_target_os_001",
+        "_id": "OSArtifact/obap_target_os_001",
+        "scenario_id": "OBAP",
+        "windows_11": false,
+        "linux": false,
+        "windows_server_2019": true,
+        "cisco_router": false,
+        "created_date": "2024-06-01"
+    },
+    "suggested_edges": [
+        {
+            "src_attr": "artifacts",
+            "dest_attr": "_key",
+            "type": "CONTAINS",
+            "_from": "PlanningStep/Initial_Requirements_Working_Group_Targeted_OS",
+            "_to": "OSArtifact/obap_target_os_001"
+        }
+    ],
+    "truth_edge": {
+        "_from": "PlanningStep/Initial_Requirements_Working_Group_Targeted_OS",
+        "_to": "OSArtifact/obap_target_os_001",
+        "src_attr": "artifacts",
+        "dest_attr": "_key",
+        "type": "PRODUCES"
+    }
+},
+{
+    "src_node": {
+        "_key": "Initial_Planning_Conference_Tiger_Team",
+        "_id": "PlanningStep/Initial_Planning_Conference_Tiger_Team",
+        "name": "Initial Planning Conference - Tiger Team",
+        "description": "Initial Planning Conference - Tiger Team.",
+        "is_initial_step": false,
+        "next_steps": [
+            "DevelopmentStep/Scenario_Research_Intel_IPOE"
+        ],
+        "artifacts": [
+            "TigerTeamArtifact/obap_tiger_team_001"
+        ]
+    },
+    "pair_node": {
+        "_key": "obap_tiger_team_001",
+        "_id": "TigerTeamArtifact/obap_tiger_team_001",
+        "scenario_id": "OBAP",
+        "scenario_poc": "content_dev_lead",
+        "range_poc": "range_engineer_01",
+        "opfor_poc": "red_team_lead",
+        "automation_poc": "automation_lead",
+        "timeline_suspense": "2024-09-30",
+        "conference_date": "2024-06-10"
+    },
+    "suggested_edges": [
+        {
+            "src_attr": "next_steps",
+            "dest_attr": "_id",
+            "type": "LEADS_TO",
+            "_from": "PlanningStep/Initial_Planning_Conference_Tiger_Team",
+            "_to": "TigerTeamArtifact/obap_tiger_team_001"
+        }
+    ],
+    "truth_edge": {
+        "_from": "PlanningStep/Initial_Planning_Conference_Tiger_Team",
+        "_to": "TigerTeamArtifact/obap_tiger_team_001",
+        "src_attr": "artifacts",
+        "dest_attr": "_key",
+        "type": "PRODUCES"
+    }
+},
+{
+    "src_node": {
+        "_key": "Scenario_Research_Intel_IPOE",
+        "_id": "DevelopmentStep/Scenario_Research_Intel_IPOE",
+        "name": "Scenario Research - Intel IPOE",
+        "description": "Scenario Research - Intel IPOE.",
+        "is_initial_step": false,
+        "next_steps": [
+            "DevelopmentStep/Scenario_Research_Mission_Partner_Network_Type"
+        ],
+        "artifacts": [
+            "IPOEArtifact/obap_intel_ipoe_001"
+        ]
+    },
+    "pair_node": {
+        "_key": "obap_intel_ipoe_001",
+        "_id": "IPOEArtifact/obap_intel_ipoe_001",
+        "scenario_id": "OBAP",
+        "intel_reports": [
+            "CISA_AA21-336A",
+            "NSA_CSA_APT29_2021",
+            "FireEye_APT29_Profile"
+        ],
+        "threat_profile_research": "APT29 targeting defense contractors Q1 2024",
+        "intel_assessment": "High confidence APT29 active in defense sector",
+        "research_date": "2024-06-15"
+    },
+    "suggested_edges": [
+        {
+            "src_attr": "name",
+            "dest_attr": "scenario_id",
+            "type": "LEADS_TO",
+            "_from": "DevelopmentStep/Scenario_Research_Intel_IPOE",
+            "_to": "IPOEArtifact/obap_intel_ipoe_001"
+        }
+    ],
+    "truth_edge": {
+        "_from": "DevelopmentStep/Scenario_Research_Intel_IPOE",
+        "_to": "IPOEArtifact/obap_intel_ipoe_001",
+        "src_attr": "artifacts",
+        "dest_attr": "_key",
+        "type": "PRODUCES"
+    }
+},
+{
+    "src_node": {
+        "_key": "Scenario_Research_Mission_Partner_Network_Type",
+        "_id": "DevelopmentStep/Scenario_Research_Mission_Partner_Network_Type",
+        "name": "Scenario Research - Mission Partner Network Type",
+        "description": "Scenario Research - Mission Partner Network Type.",
+        "is_initial_step": false,
+        "next_steps": [
+            "DevelopmentStep/Scenario_Research_Narrative_Scenario"
+        ],
+        "artifacts": [
+            "MPNetworkArtifact/obap_mission_partner_001"
+        ]
+    },
+    "pair_node": {
+        "_key": "obap_mission_partner_001",
+        "_id": "MPNetworkArtifact/obap_mission_partner_001",
+        "scenario_id": "OBAP",
+        "network_type": "defense_contractor",
+        "mission_partners": [
+            "DoD",
+            "NATO",
+            "Five_Eyes"
+        ],
+        "sector": "aerospace_defense",
+        "research_date": "2024-06-15"
+    },
+    "suggested_edges": [
+        {
+            "src_attr": "next_steps",
+            "dest_attr": "_key",
+            "type": "LEADS_TO",
+            "_from": "DevelopmentStep/Scenario_Research_Mission_Partner_Network_Type",
+            "_to": "MPNetworkArtifact/obap_mission_partner_001"
+        }
+    ],
+    "truth_edge": {
+        "_from": "DevelopmentStep/Scenario_Research_Mission_Partner_Network_Type",
+        "_to": "MPNetworkArtifact/obap_mission_partner_001",
+        "src_attr": "artifacts",
+        "dest_attr": "_key",
+        "type": "PRODUCES"
+    }
+},
+{
+    "src_node": {
+        "_key": "Scenario_Research_Narrative_Scenario",
+        "_id": "DevelopmentStep/Scenario_Research_Narrative_Scenario",
+        "name": "Scenario Research - Narrative Scenario",
+        "description": "Scenario Research - Narrative Scenario.",
+        "is_initial_step": false,
+        "next_steps": [
+            "DevelopmentStep/Scenario_Design_Intel"
+        ],
+        "artifacts": [
+            "ScenarioNarrativeArtifact/obap_narrative_001"
+        ]
+    },
+    "pair_node": {
+        "_key": "obap_narrative_001",
+        "_id": "ScenarioNarrativeArtifact/obap_narrative_001",
+        "scenario_id": "OBAP",
+        "narrative": "APT29 targeting DefenseTech Corp for F-35 research data. Initial access via spearphishing, credential theft from domain controller, lateral movement to engineering workstations, exfiltration of classified research documents.",
+        "research_date": "2024-06-15"
+    },
+    "suggested_edges": [
+        {
+            "src_attr": "next_steps",
+            "dest_attr": "_key",
+            "type": "LEADS_TO",
+            "_from": "DevelopmentStep/Scenario_Research_Narrative_Scenario",
+            "_to": "ScenarioNarrativeArtifact/obap_narrative_001"
+        }
+    ],
+    "truth_edge": {
+        "_from": "DevelopmentStep/Scenario_Research_Narrative_Scenario",
+        "_to": "ScenarioNarrativeArtifact/obap_narrative_001",
+        "src_attr": "artifacts",
+        "dest_attr": "_key",
+        "type": "PRODUCES"
+    }
+},
+{
+    "src_node": {
+        "_key": "Scenario_Design_Intel",
+        "_id": "DevelopmentStep/Scenario_Design_Intel",
+        "name": "Scenario Design - Intel",
+        "description": "Scenario Design - Intel.",
+        "is_initial_step": false,
+        "next_steps": [
+            "DevelopmentStep/Scenario_Design_Range_Inputs"
+        ],
+        "artifacts": [
+            "IntelArtifact/obap_design_intel_001"
+        ]
+    },
+    "pair_node": {
+        "_key": "obap_design_intel_001",
+        "_id": "IntelArtifact/obap_design_intel_001",
+        "scenario_id": "OBAP",
+        "road_to_war": "Escalating tensions Eastern Europe, APT29 increasing cyber espionage operations against NATO partners",
+        "intel_report": "DefenseTech_Threat_Assessment_2024.pdf",
+        "intel_assessment": "F-35_Vulnerability_Analysis.pdf",
+        "threat_profiles": [
+            "APT29_TTP_Profile.pdf"
+        ],
+        "sigint": "Intercepted communications indicating APT29 interest in F-35 program",
+        "humint": "Source reports APT29 operatives targeting defense contractors",
+        "reporting": "Daily intelligence summary 2024-07-01",
+        "design_date": "2024-07-01"
+    },
+    "suggested_edges": [
+        {
+            "src_attr": "next_steps",
+            "dest_attr": "_key",
+            "type": "LEADS_TO",
+            "_from": "DevelopmentStep/Scenario_Design_Intel",
+            "_to": "IntelArtifact/obap_design_intel_001"
+        }
+    ],
+    "truth_edge": {
+        "_from": "DevelopmentStep/Scenario_Design_Intel",
+        "_to": "IntelArtifact/obap_design_intel_001",
+        "src_attr": "artifacts",
+        "dest_attr": "_key",
+        "type": "PRODUCES"
+    }
+},
+{
+    "src_node": {
+        "_key": "Scenario_Design_Range_Inputs",
+        "_id": "DevelopmentStep/Scenario_Design_Range_Inputs",
+        "name": "Scenario Design - Range Inputs",
+        "description": "Scenario Design - Range Inputs.",
+        "is_initial_step": false,
+        "next_steps": [
+            "DevelopmentStep/Scenario_Design_OPFOR_Inputs"
+        ],
+        "artifacts": [
+            "RangeInputArtifact/obap_range_inputs_001"
+        ]
+    },
+    "pair_node": {
+        "_key": "obap_range_inputs_001",
+        "_id": "RangeInputArtifact/obap_range_inputs_001",
+        "scenario_id": "OBAP",
+        "blue_network_topo": "172.48.3.0/24 - Workstation subnet",
+        "white_network_topo": "172.48.1.0/24 - Infrastructure subnet",
+        "network_device_credentials": {
+            "firewall": {
+                "user": "admin",
+                "vault_ref": "range_vault_fw_001"
+            },
+            "switches": {
+                "user": "netadmin",
+                "vault_ref": "range_vault_sw_001"
+            }
+        },
+        "domain_user_list": [
+            {
+                "username": "ty.wilkerson",
+                "role": "engineer",
+                "access": "workstation"
+            },
+            {
+                "username": "sarah.johnson",
+                "role": "administrator",
+                "access": "domain_admin"
+            }
+        ],
+        "weapon_system_topo": "F-35_Research_Network_Segment",
+        "weapon_system_credentials": {
+            "system": "research_db",
+            "vault_ref": "range_vault_ws_001"
+        },
+        "design_date": "2024-07-01"
+    },
+    "suggested_edges": [
+        {
+            "src_attr": "next_steps",
+            "dest_attr": "_key",
+            "type": "LEADS_TO",
+            "_from": "DevelopmentStep/Scenario_Design_Range_Inputs",
+            "_to": "RangeInputArtifact/obap_range_inputs_001"
+        }
+    ],
+    "truth_edge": {
+        "_from": "DevelopmentStep/Scenario_Design_Range_Inputs",
+        "_to": "RangeInputArtifact/obap_range_inputs_001",
+        "src_attr": "artifacts",
+        "dest_attr": "_key",
+        "type": "PRODUCES"
+    }
+},
+{
+    "src_node": {
+        "_key": "Scenario_Design_OPFOR_Inputs",
+        "_id": "DevelopmentStep/Scenario_Design_OPFOR_Inputs",
+        "name": "Scenario Design - OPFOR Inputs",
+        "description": "Scenario Design - OPFOR Inputs.",
+        "is_initial_step": false,
+        "next_steps": [
+            "DevelopmentStep/Scenario_Development_Blue_Team_Handbook"
+        ],
+        "artifacts": [
+            "OPFORInputArtifact/obap_opfor_inputs_001"
+        ]
+    },
+    "pair_node": {
+        "_key": "obap_opfor_inputs_001",
+        "_id": "OPFORInputArtifact/obap_opfor_inputs_001",
+        "scenario_id": "OBAP",
+        "emulated_apt": "APT29",
+        "adversarial_obj": "Exfiltrate F-35 research data",
+        "opfor_tool_list": [
+            "CobaltStrike",
+            "Mimikatz",
+            "BloodHound",
+            "Koadic"
+        ],
+        "opfor_execution_plan": "obap_campaign_plan_v1",
+        "opfor_mitre_tid": [
+            "T1566.001",
+            "T1059.001",
+            "T1003.001",
+            "T1041"
+        ],
+        "opfor_artifacts_iocs": [
+            {
+                "type": "ip",
+                "value": "172.48.254.10"
+            },
+            {
+                "type": "file_hash",
+                "value": "5d41402abc4b2a76b9719d911017c592"
+            }
+        ],
+        "design_date": "2024-07-01"
+    },
+    "suggested_edges": [
+        {
+            "src_attr": "next_steps",
+            "dest_attr": "_id",
+            "type": "LEADS_TO",
+            "_from": "DevelopmentStep/Scenario_Design_OPFOR_Inputs",
+            "_to": "OPFORInputArtifact/obap_opfor_inputs_001"
+        }
+    ],
+    "truth_edge": {
+        "_from": "DevelopmentStep/Scenario_Design_OPFOR_Inputs",
+        "_to": "OPFORInputArtifact/obap_opfor_inputs_001",
+        "src_attr": "artifacts",
+        "dest_attr": "_key",
+        "type": "PRODUCES"
+    }
+},
+{
+    "src_node": {
+        "_key": "Scenario_Development_Blue_Team_Handbook",
+        "_id": "DevelopmentStep/Scenario_Development_Blue_Team_Handbook",
+        "name": "Scenario Development - Blue Team Handbook",
+        "description": "Scenario Development - Blue Team Handbook.",
+        "is_initial_step": false,
+        "next_steps": [
+            "DevelopmentStep/Scenario_Development_White_Cell_Handbook"
+        ],
+        "artifacts": [
+            "BlueHandbookArtifact/obap_blue_handbook_001"
+        ]
+    },
+    "pair_node": {
+        "_key": "obap_blue_handbook_001",
+        "_id": "BlueHandbookArtifact/obap_blue_handbook_001",
+        "scenario_id": "OBAP",
+        "scenario": "APT29 Defense Contractor Intrusion",
+        "mission": "Detect and respond to APT29 campaign targeting F-35 research",
+        "opord": "OPORD_OBAP_2024",
+        "taskord": "TASKORD_BLUE_TEAM_001",
+        "warnord": "WARNORD_APT29_THREAT",
+        "special_instructions": "Monitor for spearphishing and C2 callbacks",
+        "blue_network_topology": "obap_network_map_001",
+        "range_credentials": {
+            "vm": "WORKSTATION-WIN10",
+            "vault_ref": "range_vault_blue_001"
+        },
+        "weapon_system_topo": "F-35_Research_Network_Segment",
+        "weapon_system_credentials": {
+            "vault_ref": "range_vault_ws_001"
+        },
+        "development_date": "2024-07-20"
+    },
+    "suggested_edges": [
+        {
+            "src_attr": "next_steps",
+            "dest_attr": "_key",
+            "type": "LEADS_TO",
+            "_from": "DevelopmentStep/Scenario_Development_Blue_Team_Handbook",
+            "_to": "BlueHandbookArtifact/obap_blue_handbook_001"
+        }
+    ],
+    "truth_edge": {
+        "_from": "DevelopmentStep/Scenario_Development_Blue_Team_Handbook",
+        "_to": "BlueHandbookArtifact/obap_blue_handbook_001",
+        "src_attr": "artifacts",
+        "dest_attr": "_key",
+        "type": "PRODUCES"
+    }
+},
+{
+    "src_node": {
+        "_key": "Scenario_Development_White_Cell_Handbook",
+        "_id": "DevelopmentStep/Scenario_Development_White_Cell_Handbook",
+        "name": "Scenario Development - White Cell Handbook",
+        "description": "Scenario Development - White Cell Handbook.",
+        "is_initial_step": false,
+        "next_steps": [
+            "DevelopmentStep/Scenario_Development_Intel_Injects"
+        ],
+        "artifacts": [
+            "WhiteCellHandbookArtifact/obap_white_handbook_001"
+        ]
+    },
+    "pair_node": {
+        "_key": "obap_white_handbook_001",
+        "_id": "WhiteCellHandbookArtifact/obap_white_handbook_001",
+        "scenario_id": "OBAP",
+        "scenario": "APT29 Defense Contractor Intrusion",
+        "mission": "Facilitate realistic APT29 emulation exercise",
+        "network_topology": "obap_network_map_001",
+        "intel": "APT29_Intelligence_Package.pdf",
+        "blue_team_admin": {
+            "splunk_access": {
+                "user": "blue_admin",
+                "vault_ref": "range_vault_splunk"
+            },
+            "vm_access": {
+                "platform": "vSphere",
+                "vault_ref": "range_vault_vcenter"
+            }
+        },
+        "red_team_admin": {
+            "c2_access": {
+                "server": "CS-SERVER-01",
+                "vault_ref": "range_vault_cs"
+            },
+            "tool_access": {
+                "vault_ref": "range_vault_opfor"
+            }
+        },
+        "rfi_ffir_response": "White cell responds to RFI within 15 minutes during exercise",
+        "rules_of_engagement": "No destructive actions, log all red team activity, pause exercise for safety issues",
+        "development_date": "2024-07-20"
+    },
+    "suggested_edges": [
+        {
+            "src_attr": "next_steps",
+            "dest_attr": "_key",
+            "type": "LEADS_TO",
+            "_from": "DevelopmentStep/Scenario_Development_White_Cell_Handbook",
+            "_to": "WhiteCellHandbookArtifact/obap_white_handbook_001"
+        }
+    ],
+    "truth_edge": {
+        "_from": "DevelopmentStep/Scenario_Development_White_Cell_Handbook",
+        "_to": "WhiteCellHandbookArtifact/obap_white_handbook_001",
+        "src_attr": "artifacts",
+        "dest_attr": "_key",
+        "type": "PRODUCES"
+    }
+},
+{
+    "src_node": {
+        "_key": "Scenario_Development_Intel_Injects",
+        "_id": "DevelopmentStep/Scenario_Development_Intel_Injects",
+        "name": "Scenario Development - Intel Injects",
+        "description": "Scenario Development - Intel Injects.",
+        "is_initial_step": false,
+        "next_steps": [
+            "DevelopmentStep/Handbook_Assembly"
+        ],
+        "artifacts": [
+            "IntelInjectArtifact/obap_intel_injects_001"
+        ]
+    },
+    "pair_node": {
+        "_key": "obap_intel_injects_001",
+        "_id": "IntelInjectArtifact/obap_intel_injects_001",
+        "scenario_id": "OBAP",
+        "intel_report": "APT29_Activity_Spike_Report.pdf",
+        "intel_road_to_war": "Geopolitical_Tensions_Analysis.pdf",
+        "intel_threat_profiles": [
+            "APT29_Detailed_Profile.pdf"
+        ],
+        "daily_intel_injects": [
+            {
+                "day": 1,
+                "inject": "SIGINT: APT29 C2 infrastructure detected",
+                "time": "0800"
+            },
+            {
+                "day": 2,
+                "inject": "HUMINT: Source reports spearphishing campaign",
+                "time": "1000"
+            },
+            {
+                "day": 3,
+                "inject": "OSINT: APT29 targeting defense contractors",
+                "time": "1400"
+            }
+        ],
+        "development_date": "2024-07-25"
+    },
+    "suggested_edges": [
+        {
+            "src_attr": "next_steps",
+            "dest_attr": "_key",
+            "type": "LEADS_TO",
+            "_from": "DevelopmentStep/Scenario_Development_Intel_Injects",
+            "_to": "IntelInjectArtifact/obap_intel_injects_001"
+        }
+    ],
+    "truth_edge": {
+        "_from": "DevelopmentStep/Scenario_Development_Intel_Injects",
+        "_to": "IntelInjectArtifact/obap_intel_injects_001",
+        "src_attr": "artifacts",
+        "dest_attr": "_key",
+        "type": "PRODUCES"
+    }
+},
+{
+    "src_node": {
+        "_key": "Handbook_Assembly",
+        "_id": "DevelopmentStep/Handbook_Assembly",
+        "name": "Handbook Assembly",
+        "description": "Handbook Assembly.",
+        "is_initial_step": false,
+        "next_steps": [
+            "ExecutionStep/Delivery"
+        ],
+        "artifacts": [
+            "HandbookAssemblyArtifact/obap_handbook_assembly_001"
+        ]
+    },
+    "pair_node": {
+        "_key": "obap_handbook_assembly_001",
+        "_id": "HandbookAssemblyArtifact/obap_handbook_assembly_001",
+        "scenario_id": "OBAP",
+        "conversion_status": "word_to_pdf_complete",
+        "blue_handbook": "OBAP_Blue_Team_Handbook_v1.pdf",
+        "white_handbook": "OBAP_White_Cell_Handbook_v1.pdf",
+        "aggregated_handbook": "OBAP_Master_Handbook_v1.pdf",
+        "assembly_date": "2024-08-01"
+    },
+    "suggested_edges": [
+        {
+            "src_attr": "next_steps",
+            "dest_attr": "_key",
+            "type": "LEADS_TO",
+            "_from": "DevelopmentStep/Handbook_Assembly",
+            "_to": "HandbookAssemblyArtifact/obap_handbook_assembly_001"
+        }
+    ],
+    "truth_edge": {
+        "_from": "DevelopmentStep/Handbook_Assembly",
+        "_to": "HandbookAssemblyArtifact/obap_handbook_assembly_001",
+        "src_attr": "artifacts",
+        "dest_attr": "_key",
+        "type": "PRODUCES"
+    }
+},
+{
+    "src_node": {
+        "_key": "Initial_Requirements_Working_Group_APT_Profile",
+        "_id": "PlanningStep/Initial_Requirements_Working_Group_APT_Profile",
+        "name": "Initial Requirements Working Group - APT Profile",
+        "description": "Initial Requirements Working Group - APT Profile.",
+        "is_initial_step": false,
+        "next_steps": [
+            "PlanningStep/Initial_Requirements_Working_Group_Targeted_OS"
+        ],
+        "artifacts": [
+            "APTProfile/obap_apt_001"
+        ]
+    },
+    "pair_node": {
+        "_key": "obap_apt_001",
+        "_id": "APTProfileArtifact/obap_apt_001",
+        "scenario_id": "OBAP",
+        "apt_name": "APT29",
+        "apt_number": "APT29",
+        "mitre_tid": "G0016",
+        "malware_samples": [
+            "WellMess",
+            "WellMail"
+        ],
+        "created_date": "2024-06-01"
+    },
+    "suggested_edges": [
+        {
+            "src_attr": "artifacts",
+            "dest_attr": "_key",
+            "type": "CONTAINS",
+            "_from": "PlanningStep/Initial_Requirements_Working_Group_APT_Profile",
+            "_to": "APTProfileArtifact/obap_apt_001"
+        }
+    ],
+    "truth_edge": {
+        "_from": "PlanningStep/Initial_Requirements_Working_Group_APT_Profile",
+        "_to": "APTProfileArtifact/obap_apt_001",
+        "src_attr": "artifacts",
+        "dest_attr": "_key",
+        "type": "PRODUCES"
+    }
+},
+{
+    "src_node": {
+        "_key": "2991",
+        "_id": "ExecutionPlanArtifact/2991",
+        "name": "Test_ExecPlan_01",
+        "description": "Document containing execution plan for the event.",
+        "TTPs": [
+            "Initial Access",
+            "Privilege Escalation",
+            "Phishing",
+            "Process Injection"
+        ],
+        "tids": [
+            "TA0001",
+            "TA0004",
+            "T1566",
+            "T1055",
+            "T1059"
+        ]
+    },
+    "pair_node": {
+        "_key": "T1566",
+        "_id": "TTPArtifact/T1566",
+        "tid": "T1566",
+        "name": "Phishing",
+        "description": "Adversaries may send phishing messages to gain access to victim systems. All forms of phishing are electronically delivered social engineering. Phishing can be targeted, known as spearphishing. In spearphishing, a specific individual, company, or industry will be targeted by the adversary. More generally, adversaries can conduct non-targeted phishing, such as in mass malware spam campaigns.\n\nAdversaries may send victims emails containing malicious attachments or links, typically to execute malicious code on victim systems. Phishing may also be conducted via third-party services, like social media platforms. Phishing may also involve social engineering techniques, such as posing as a trusted source, as well as evasive techniques such as removing or manipulating emails or metadata/headers from compromised accounts being abused to send messages (e.g., [Email Hiding Rules](https://attack.mitre.org/techniques/T1564/008)).(Citation: Microsoft OAuth Spam 2022)(Citation: Palo Alto Unit 42 VBA Infostealer 2014) Another way to accomplish this is by [Email Spoofing](https://attack.mitre.org/techniques/T1672)(Citation: Proofpoint-spoof) the identity of the sender, which can be used to fool both the human recipient as well as automated security tools,(Citation: cyberproof-double-bounce) or by including the intended target as a party to an existing email thread that includes malicious files or links (i.e., \"thread hijacking\").(Citation: phishing-krebs)\n\nVictims may also receive phishing messages that instruct them to call a phone number where they are directed to visit a malicious URL, download malware,(Citation: sygnia Luna Month)(Citation: CISA Remote Monitoring and Management Software) or install adversary-accessible remote management tools onto their computer (i.e., [User Execution](https://attack.mitre.org/techniques/T1204)).(Citation: Unit42 Luna Moth)",
+        "url": "https://attack.mitre.org/techniques/T1566",
+        "domain": "enterprise-attack",
+        "tactics": "Initial Access",
+        "platforms": "Identity Provider, Linux, Office Suite, SaaS, Windows, macOS",
+        "data_sources": "Application Log: Application Log Content, File: File Creation, Network Traffic: Network Traffic Content, Network Traffic: Network Traffic Flow"
+    },
+    "suggested_edges": [
+        {
+            "src_attr": "TTPs",
+            "dest_attr": "name",
+            "type": "LEADS_TO",
+            "_from": "ExecutionPlanArtifact/2991",
+            "_to": "TTPArtifact/T1566"
+        }
+    ],
+    "truth_edge": {
+        "_from": "ExecutionPlanArtifact/2991",
+        "_to": "TTPArtifact/T1566",
+        "dest_attr": "tid",
+        "src_attr": "tids",
+        "type": "REFERENCES"
+    }
+},
+{
+    "src_node": {
+        "_key": "2991",
+        "_id": "ExecutionPlanArtifact/2991",
+        "name": "Test_ExecPlan_01",
+        "description": "Document containing execution plan for the event.",
+        "TTPs": [
+            "Initial Access",
+            "Privilege Escalation",
+            "Phishing",
+            "Process Injection"
+        ],
+        "tids": [
+            "TA0001",
+            "TA0004",
+            "T1566",
+            "T1055",
+            "T1059"
+        ]
+    },
+    "pair_node": {
+        "_key": "T1055",
+        "_id": "TTPArtifact/T1055",
+        "tid": "T1055",
+        "name": "Process Injection",
+        "description": "Adversaries may inject code into processes in order to evade process-based defenses as well as possibly elevate privileges. Process injection is a method of executing arbitrary code in the address space of a separate live process. Running code in the context of another process may allow access to the process's memory, system/network resources, and possibly elevated privileges. Execution via process injection may also evade detection from security products since the execution is masked under a legitimate process. \n\nThere are many different ways to inject code into a process, many of which abuse legitimate functionalities. These implementations exist for every major OS but are typically platform specific. \n\nMore sophisticated samples may perform multiple process injections to segment modules and further evade detection, utilizing named pipes or other inter-process communication (IPC) mechanisms as a communication channel. ",
+        "url": "https://attack.mitre.org/techniques/T1055",
+        "domain": "enterprise-attack",
+        "tactics": "Defense Evasion, Privilege Escalation",
+        "platforms": "Linux, Windows, macOS",
+        "data_sources": "File: File Metadata, File: File Modification, Module: Module Load, Process: OS API Execution, Process: Process Access, Process: Process Metadata, Process: Process Modification"
+    },
+    "suggested_edges": [
+        {
+            "src_attr": "TTPs",
+            "dest_attr": "name",
+            "type": "CONTAINS",
+            "_from": "ExecutionPlanArtifact/2991",
+            "_to": "TTPArtifact/T1055"
+        }
+    ],
+    "truth_edge": {
+        "_from": "ExecutionPlanArtifact/2991",
+        "_to": "TTPArtifact/T1055",
+        "dest_attr": "tid",
+        "src_attr": "tids",
+        "type": "REFERENCES"
+    }
+},
+{
+    "src_node": {
+        "_key": "4387",
+        "_id": "ProcessLogArtifact/4387",
+        "timestamp": "2024-09-17T14:58:55.000Z",
+        "event": "baqt",
+        "name": "baqt-whitecell-1",
+        "action": "Download F-35_Results.docx to attacker machine using koadic download implant",
+        "machine": "172.48.3.5",
+        "log_artifact": "File F-35_Results.docx exfiltrated from C:\\Users\\ty.wilkerson\\Desktop\\Research\\",
+        "tid": "T1041"
+    },
+    "pair_node": {
+        "_key": "T1041",
+        "_id": "TTPArtifact/T1041",
+        "tid": "T1041",
+        "name": "Exfiltration Over C2 Channel",
+        "description": "Adversaries may steal data by exfiltrating it over an existing command and control channel. Stolen data is encoded into the normal communications channel using the same protocol as command and control communications.",
+        "url": "https://attack.mitre.org/techniques/T1041",
+        "domain": "enterprise-attack",
+        "tactics": "Exfiltration",
+        "platforms": "ESXi, Linux, Windows, macOS",
+        "data_sources": "Command: Command Execution, File: File Access, Network Traffic: Network Connection Creation, Network Traffic: Network Traffic Content, Network Traffic: Network Traffic Flow"
+    },
+    "suggested_edges": [
+        {
+            "src_attr": "action",
+            "dest_attr": "name",
+            "type": "LEADS_TO",
+            "_from": "ProcessLogArtifact/4387",
+            "_to": "TTPArtifact/T1041"
+        }
+    ],
+    "truth_edge": {
+        "_from": "ProcessLogArtifact/4387",
+        "_to": "TTPArtifact/T1041",
+        "dest_attr": "tid",
+        "src_attr": "tids",
+        "type": "REFERENCES"
+    }
+},
+{
+    "src_node": {
+        "_key": "4388",
+        "_id": "ProcessLogArtifact/4388",
+        "timestamp": "2024-09-17T14:59:12.000Z",
+        "event": "baqt",
+        "name": "baqt-whitecell-2",
+        "action": "Execute net view command to discover network shares",
+        "machine": "172.48.3.5",
+        "log_artifact": "Network discovery command: net view /domain",
+        "tid": "T1018"
+    },
+    "pair_node": {
+        "_key": "T1018",
+        "_id": "TTPArtifact/T1018",
+        "tid": "T1018",
+        "name": "Remote System Discovery",
+        "description": "Adversaries may attempt to get a listing of other systems by IP address, hostname, or other logical identifier on a network that may be used for Lateral Movement from the current system. Functionality could exist within remote access tools to enable this, but utilities available on the operating system could also be used such as  [Ping](https://attack.mitre.org/software/S0097), <code>net view</code> using [Net](https://attack.mitre.org/software/S0039), or, on ESXi servers, `esxcli network diag ping`.\n\nAdversaries may also analyze data from local host files (ex: <code>C:\\Windows\\System32\\Drivers\\etc\\hosts</code> or <code>/etc/hosts</code>) or other passive means (such as local [Arp](https://attack.mitre.org/software/S0099) cache entries) in order to discover the presence of remote systems in an environment.\n\nAdversaries may also target discovery of network infrastructure as well as leverage [Network Device CLI](https://attack.mitre.org/techniques/T1059/008) commands on network devices to gather detailed information about systems within a network (e.g. <code>show cdp neighbors</code>, <code>show arp</code>).(Citation: US-CERT-TA18-106A)(Citation: CISA AR21-126A FIVEHANDS May 2021)  \n",
+        "url": "https://attack.mitre.org/techniques/T1018",
+        "domain": "enterprise-attack",
+        "tactics": "Discovery",
+        "platforms": "ESXi, Linux, Network Devices, Windows, macOS",
+        "data_sources": "Command: Command Execution, File: File Access, Network Traffic: Network Connection Creation, Process: Process Creation"
+    },
+    "suggested_edges": [
+        {
+            "src_attr": "action",
+            "dest_attr": "name",
+            "type": "LEADS_TO",
+            "_from": "ProcessLogArtifact/4388",
+            "_to": "TTPArtifact/T1018"
+        }
+    ],
+    "truth_edge": {
+        "_from": "ProcessLogArtifact/4388",
+        "_to": "TTPArtifact/T1018",
+        "dest_attr": "tid",
+        "src_attr": "tids",
+        "type": "REFERENCES"
+    }
+},
+{
+    "src_node": {
+        "_key": "4389",
+        "_id": "ProcessLogArtifact/4389",
+        "timestamp": "2024-09-17T14:59:25.000Z",
+        "event": "baqt",
+        "name": "baqt-whitecell-3",
+        "action": "Attempt to access shared drive \\\\172.48.3.10\\shared using stolen credentials",
+        "machine": "172.48.3.5",
+        "log_artifact": "SMB connection attempt to \\\\172.48.3.10\\shared",
+        "tid": "T1021.002"
+    },
+    "pair_node": {
+        "_key": "T1021.002",
+        "_id": "TTPArtifact/T1021.002",
+        "tid": "T1021.002",
+        "name": "Remote Services: SMB/Windows Admin Shares",
+        "description": "Adversaries may use [Valid Accounts](https://attack.mitre.org/techniques/T1078) to interact with a remote network share using Server Message Block (SMB). The adversary may then perform actions as the logged-on user.\n\nSMB is a file, printer, and serial port sharing protocol for Windows machines on the same network or domain. Adversaries may use SMB to interact with file shares, allowing them to move laterally throughout a network. Linux and macOS implementations of SMB typically use Samba.\n\nWindows systems have hidden network shares that are accessible only to administrators and provide the ability for remote file copy and other administrative functions. Example network shares include `C$`, `ADMIN$`, and `IPC$`. Adversaries may use this technique in conjunction with administrator-level [Valid Accounts](https://attack.mitre.org/techniques/T1078) to remotely access a networked system over SMB,(Citation: Wikipedia Server Message Block) to interact with systems using remote procedure calls (RPCs),(Citation: TechNet RPC) transfer files, and run transferred binaries through remote Execution. Example execution techniques that rely on authenticated sessions over SMB/RPC are [Scheduled Task/Job](https://attack.mitre.org/techniques/T1053), [Service Execution](https://attack.mitre.org/techniques/T1569/002), and [Windows Management Instrumentation](https://attack.mitre.org/techniques/T1047). Adversaries can also use NTLM hashes to access administrator shares on systems with [Pass the Hash](https://attack.mitre.org/techniques/T1550/002) and certain configuration and patch levels.(Citation: Microsoft Admin Shares)",
+        "url": "https://attack.mitre.org/techniques/T1021/002",
+        "domain": "enterprise-attack",
+        "tactics": "Lateral Movement",
+        "platforms": "Windows",
+        "data_sources": "Command: Command Execution, Logon Session: Logon Session Creation, Network Share: Network Share Access, Network Traffic: Network Connection Creation, Network Traffic: Network Traffic Flow, Process: Process Creation"
+    },
+    "suggested_edges": [
+        {
+            "src_attr": "action",
+            "dest_attr": "name",
+            "type": "LEADS_TO",
+            "_from": "ProcessLogArtifact/4389",
+            "_to": "TTPArtifact/T1021.002"
+        }
+    ],
+    "truth_edge": {
+        "_from": "ProcessLogArtifact/4389",
+        "_to": "TTPArtifact/T1021.002",
+        "dest_attr": "tid",
+        "src_attr": "tids",
+        "type": "REFERENCES"
+    }
+},
+{
+    "src_node": {
+        "_key": "2127",
+        "_id": "RobotLogArtifact/2127",
+        "log_set": "BAQT1_RL",
+        "id": "BAQT1_RL_12",
+        "sprint": "1",
+        "timestamp": "2025-07-18T01:51:10.192Z",
+        "scenario_id": "OBAP",
+        "technique_id": "T1059",
+        "command": "RF: Setup C2 Environment(ip=${CS_IP}, user=${CS_USER}, ...)",
+        "result_status": "FAIL",
+        "error_message": "No keyword with name 'Setup C2 Environment' found."
+    },
+    "pair_node": {
+        "_key": "T1059",
+        "_id": "TTPArtifact/T1059",
+        "tid": "T1059",
+        "name": "Command and Scripting Interpreter",
+        "description": "Adversaries may abuse command and script interpreters to execute commands, scripts, or binaries. These interfaces and languages provide ways of interacting with computer systems and are a common feature across many different platforms. Most systems come with some built-in command-line interface and scripting capabilities, for example, macOS and Linux distributions include some flavor of [Unix Shell](https://attack.mitre.org/techniques/T1059/004) while Windows installations include the [Windows Command Shell](https://attack.mitre.org/techniques/T1059/003) and [PowerShell](https://attack.mitre.org/techniques/T1059/001).\n\nThere are also cross-platform interpreters such as [Python](https://attack.mitre.org/techniques/T1059/006), as well as those commonly associated with client applications such as [JavaScript](https://attack.mitre.org/techniques/T1059/007) and [Visual Basic](https://attack.mitre.org/techniques/T1059/005).\n\nAdversaries may abuse these technologies in various ways as a means of executing arbitrary commands. Commands and scripts can be embedded in [Initial Access](https://attack.mitre.org/tactics/TA0001) payloads delivered to victims as lure documents or as secondary payloads downloaded from an existing C2. Adversaries may also execute commands through interactive terminals/shells, as well as utilize various [Remote Services](https://attack.mitre.org/techniques/T1021) in order to achieve remote Execution.(Citation: Powershell Remote Commands)(Citation: Cisco IOS Software Integrity Assurance - Command History)(Citation: Remote Shell Execution in Python)",
+        "url": "https://attack.mitre.org/techniques/T1059",
+        "domain": "enterprise-attack",
+        "tactics": "Execution",
+        "platforms": "ESXi, IaaS, Identity Provider, Linux, Network Devices, Office Suite, Windows, macOS",
+        "data_sources": "Command: Command Execution, Module: Module Load, Process: Process Creation, Process: Process Metadata, Script: Script Execution"
+    },
+    "suggested_edges": [
+        {
+            "src_attr": "command",
+            "dest_attr": "name",
+            "type": "REFERENCES",
+            "_from": "RobotLogArtifact/2127",
+            "_to": "TTPArtifact/T1059"
+        }
+    ],
+    "truth_edge": {
+        "_from": "RobotLogArtifact/2127",
+        "_to": "TTPArtifact/T1059",
+        "dest_attr": "tid",
+        "src_attr": "tids",
+        "type": "REFERENCES"
+    }
+},
+{
+    "src_node": {
+        "_key": "2129",
+        "_id": "RobotLogArtifact/2129",
+        "log_set": "BAQT1_RL",
+        "id": "BAQT1_RL_14",
+        "sprint": "1",
+        "timestamp": "2025-07-18T01:51:10.176Z",
+        "scenario_id": "OBAP",
+        "technique_id": "T1059",
+        "command": "Import library '/home/bah/PycharmProjects/obap/obap/cobaltstrike/cobaltstrike.py'",
+        "result_status": "FAIL",
+        "error_message": "Imported library contains no keywords."
+    },
+    "pair_node": {
+        "_key": "T1059",
+        "_id": "TTPArtifact/T1059",
+        "tid": "T1059",
+        "name": "Command and Scripting Interpreter",
+        "description": "Adversaries may abuse command and script interpreters to execute commands, scripts, or binaries. These interfaces and languages provide ways of interacting with computer systems and are a common feature across many different platforms. Most systems come with some built-in command-line interface and scripting capabilities, for example, macOS and Linux distributions include some flavor of [Unix Shell](https://attack.mitre.org/techniques/T1059/004) while Windows installations include the [Windows Command Shell](https://attack.mitre.org/techniques/T1059/003) and [PowerShell](https://attack.mitre.org/techniques/T1059/001).\n\nThere are also cross-platform interpreters such as [Python](https://attack.mitre.org/techniques/T1059/006), as well as those commonly associated with client applications such as [JavaScript](https://attack.mitre.org/techniques/T1059/007) and [Visual Basic](https://attack.mitre.org/techniques/T1059/005).\n\nAdversaries may abuse these technologies in various ways as a means of executing arbitrary commands. Commands and scripts can be embedded in [Initial Access](https://attack.mitre.org/tactics/TA0001) payloads delivered to victims as lure documents or as secondary payloads downloaded from an existing C2. Adversaries may also execute commands through interactive terminals/shells, as well as utilize various [Remote Services](https://attack.mitre.org/techniques/T1021) in order to achieve remote Execution.(Citation: Powershell Remote Commands)(Citation: Cisco IOS Software Integrity Assurance - Command History)(Citation: Remote Shell Execution in Python)",
+        "url": "https://attack.mitre.org/techniques/T1059",
+        "domain": "enterprise-attack",
+        "tactics": "Execution",
+        "platforms": "ESXi, IaaS, Identity Provider, Linux, Network Devices, Office Suite, Windows, macOS",
+        "data_sources": "Command: Command Execution, Module: Module Load, Process: Process Creation, Process: Process Metadata, Script: Script Execution"
+    },
+    "suggested_edges": [
+        {
+            "src_attr": "command",
+            "dest_attr": "name",
+            "type": "CONTAINS",
+            "_from": "RobotLogArtifact/2129",
+            "_to": "TTPArtifact/T1059"
+        }
+    ],
+    "truth_edge": {
+        "_from": "RobotLogArtifact/2129",
+        "_to": "TTPArtifact/T1059",
+        "dest_attr": "tid",
+        "src_attr": "tids",
+        "type": "REFERENCES"
+    }
+},
+{
+    "src_node": {
+        "_key": "2991",
+        "_id": "ExecutionPlanArtifact/2991",
+        "name": "Test_ExecPlan_01",
+        "description": "Document containing execution plan for the event.",
+        "TTPs": [
+            "Initial Access",
+            "Privilege Escalation",
+            "Phishing",
+            "Process Injection"
+        ],
+        "tids": [
+            "TA0001",
+            "TA0004",
+            "T1566",
+            "T1055",
+            "T1059"
+        ]
+    },
+    "pair_node": {
+        "_key": "T1059",
+        "_id": "TTPArtifact/T1059",
+        "tid": "T1059",
+        "name": "Command and Scripting Interpreter",
+        "description": "Adversaries may abuse command and script interpreters to execute commands, scripts, or binaries. These interfaces and languages provide ways of interacting with computer systems and are a common feature across many different platforms. Most systems come with some built-in command-line interface and scripting capabilities, for example, macOS and Linux distributions include some flavor of [Unix Shell](https://attack.mitre.org/techniques/T1059/004) while Windows installations include the [Windows Command Shell](https://attack.mitre.org/techniques/T1059/003) and [PowerShell](https://attack.mitre.org/techniques/T1059/001).\n\nThere are also cross-platform interpreters such as [Python](https://attack.mitre.org/techniques/T1059/006), as well as those commonly associated with client applications such as [JavaScript](https://attack.mitre.org/techniques/T1059/007) and [Visual Basic](https://attack.mitre.org/techniques/T1059/005).\n\nAdversaries may abuse these technologies in various ways as a means of executing arbitrary commands. Commands and scripts can be embedded in [Initial Access](https://attack.mitre.org/tactics/TA0001) payloads delivered to victims as lure documents or as secondary payloads downloaded from an existing C2. Adversaries may also execute commands through interactive terminals/shells, as well as utilize various [Remote Services](https://attack.mitre.org/techniques/T1021) in order to achieve remote Execution.(Citation: Powershell Remote Commands)(Citation: Cisco IOS Software Integrity Assurance - Command History)(Citation: Remote Shell Execution in Python)",
+        "url": "https://attack.mitre.org/techniques/T1059",
+        "domain": "enterprise-attack",
+        "tactics": "Execution",
+        "platforms": "ESXi, IaaS, Identity Provider, Linux, Network Devices, Office Suite, Windows, macOS",
+        "data_sources": "Command: Command Execution, Module: Module Load, Process: Process Creation, Process: Process Metadata, Script: Script Execution"
+    },
+    "suggested_edges": [
+        {
+            "src_attr": "TTPs",
+            "dest_attr": "name",
+            "type": "CONTAINS",
+            "_from": "ExecutionPlanArtifact/2991",
+            "_to": "TTPArtifact/T1059"
+        }
+    ],
+    "truth_edge": {
+        "_from": "ExecutionPlanArtifact/2991",
+        "_to": "TTPArtifact/T1059",
+        "dest_attr": "tid",
+        "src_attr": "tids",
+        "type": "REFERENCES"
+    }
+},
+{
+    "src_node": {
+        "_key": "3453",
+        "_id": "Process/3453",
+        "event": "Test1",
+        "steps": [
+            "Test1_Capabilities",
+            "Test1_Requirements",
+            "Test1_Build Executions",
+            "Test1_Build Automations",
+            "Test1_Run Event"
+        ],
+        "team": "Automation"
+    },
+    "pair_node": {
+        "_key": "3643",
+        "_id": "DevelopmentStep/3643",
+        "name": "Test1_Capabilities",
+        "description": "Assess capabilities relevant to Test1 event",
+        "is_initial_step": true,
+        "next_steps": [
+            "Test1_Build Executions",
+            "Test1_Requirements",
+            "Test1_Test Automation"
+        ],
+        "artifacts": [
+            "Sliver_Download_Refactor_DS",
+            "Payload_Generator_Params_DS"
+        ]
+    },
+    "suggested_edges": [
+        {
+            "src_attr": "steps",
+            "dest_attr": "name",
+            "type": "LEADS_TO",
+            "_from": "Process/3453",
+            "_to": "DevelopmentStep/3643"
+        }
+    ],
+    "truth_edge": {
+        "_from": "Process/3453",
+        "_to": "DevelopmentStep/3643",
+        "dest_attr": "is_initial_step",
+        "src_attr": "steps",
+        "type": "STARTS_WITH"
+    }
+},
+{
+    "src_node": {
+        "_key": "OPFOR",
+        "_id": "Process/OPFOR",
+        "name": "OPFOR",
+        "team": "OPFOR",
+        "steps": [
+            "PlanningStep/Planning_with_Content_Dev_Team",
+            "DevelopmentStep/Draft_campaign_plan_with_Content_Dev_Team",
+            "DevelopmentStep/Testing_and_Development_with_Automation_and_Range_Team",
+            "DevelopmentStep/Orchestration_with_Automation_and_Range_Team",
+            "ExecutionStep/Execution_with_Automation_and_Range_Team",
+            "DevelopmentStep/Finalize_documentation_with_Automation_Range_and_Content_Dev_Team"
+        ]
+    },
+    "pair_node": {
+        "_key": "Planning_with_Content_Dev_Team",
+        "_id": "PlanningStep/Planning_with_Content_Dev_Team",
+        "name": "Planning with Content Dev Team",
+        "description": "Planning with Content Dev Team.",
+        "is_initial_step": true,
+        "next_steps": [
+            "DevelopmentStep/Draft_campaign_plan_with_Content_Dev_Team"
+        ],
+        "artifacts": [
+            "CustomerRequirementArtifact/obap_cust_req_001",
+            "CapabilityRequestArtifact/obap_cap_req_001",
+            "StorylineArtifact/obap_storyline_001"
+        ]
+    },
+    "suggested_edges": [
+        {
+            "src_attr": "steps",
+            "dest_attr": "_key",
+            "type": "LEADS_TO",
+            "_from": "Process/OPFOR",
+            "_to": "PlanningStep/Planning_with_Content_Dev_Team"
+        }
+    ],
+    "truth_edge": {
+        "_from": "Process/OPFOR",
+        "_to": "PlanningStep/Planning_with_Content_Dev_Team",
+        "src_attr": "steps",
+        "dest_attr": "_key",
+        "type": "STARTS_WITH"
+    }
+}
+
+]

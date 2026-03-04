@@ -1,0 +1,31 @@
+{
+  "technical_proposal": [
+    {
+      "name": "title",
+      "label": "Title",
+      "fieldType": "string",
+      "description": "Human-readable title or name of the artifact",
+      "required": true,
+      "recommended": true,
+      "example": "Shummit Proposal: Semantic AI Platform "
+    },
+    {
+      "name": "canonical_theme",
+      "label": "Canonical Theme",
+      "fieldType": "string",
+      "description": "Normalized theme/category describing what this artifact is about",
+      "required": false,
+      "recommended": false,
+      "example": "semantic AI platform"
+    },
+    {
+      "name": "technical_proposal_id",
+      "label": "technical_proposal ID",
+      "fieldType": "string",
+      "description": "Stable identifier for this technical_proposal (e.g., JIRA ID, request ID, handbook code)",
+      "required": false,
+      "recommended": true,
+      "example": null
+    }
+  ]
+}

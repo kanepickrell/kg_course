@@ -1,0 +1,52 @@
+{
+  "_payload_version": "2.0",
+  "_saved_at": "2026-01-23T21:31:44.502726",
+  "_artifact_key": "cs_stop_c2",
+  "id": "cs_stop_c2",
+  "name": "Stop C2",
+  "description": "Stop the Cobalt Strike team server and clean up listeners",
+  "type": "LibraryModule",
+  "icon": "\ud83d\uded1",
+  "tactic": "Initial Access",
+  "category": "Cobalt Strike",
+  "subcategory": "Infrastructure",
+  "riskLevel": "low",
+  "estimatedDuration": 5,
+  "inputs": [],
+  "outputs": [],
+  "parameters": [
+    {
+      "id": "listenerName",
+      "label": "Listener to Remove",
+      "type": "select",
+      "required": false,
+      "description": "Select a listener to remove before stopping C2",
+      "dynamicOptions": {
+        "sourceType": "canvasVariable",
+        "variablePattern": "LISTENER_NAME",
+        "fallback": "none",
+        "emptyMessage": "No listeners configured \u2014 add Create Listener node",
+        "allowManualEntry": true
+      }
+    }
+  ],
+  "requirements": {
+    "c2Server": true
+  },
+  "robotFramework": {
+    "libraries": [
+      "cobaltstrikec2/cobaltstrike.py"
+    ],
+    "resources": [],
+    "keyword": "Stop C2",
+    "keywordArgs": [],
+    "variables": [],
+    "documentation": "Remove listeners and stop C2 team server",
+    "tags": [
+      "c2",
+      "infrastructure",
+      "cleanup"
+    ],
+    "isTeardown": true
+  }
+}

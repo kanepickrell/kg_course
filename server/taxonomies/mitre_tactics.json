@@ -1,0 +1,150 @@
+{
+  "taxonomy_id": "proto:MITRETactics",
+  "taxonomy_label": "MITRE ATT&CK Tactics",
+  "description": "Enterprise ATT&CK tactics used for adversary emulation classification",
+  "version": "14.1",
+  "source": "https://attack.mitre.org/tactics/enterprise/",
+  "last_updated": "2026-01-16",
+  "terms": [
+    {
+      "uri": "proto:tactic/TA0043",
+      "mitre_id": "TA0043",
+      "label": "Reconnaissance",
+      "aliases": ["Recon"],
+      "definition": "The adversary is trying to gather information they can use to plan future operations.",
+      "broader": null,
+      "phase": "pre-attack",
+      "kill_chain_position": 1
+    },
+    {
+      "uri": "proto:tactic/TA0042",
+      "mitre_id": "TA0042",
+      "label": "Resource Development",
+      "aliases": ["Resource Dev", "Weaponization"],
+      "definition": "The adversary is trying to establish resources they can use to support operations.",
+      "broader": null,
+      "phase": "pre-attack",
+      "kill_chain_position": 2
+    },
+    {
+      "uri": "proto:tactic/TA0001",
+      "mitre_id": "TA0001",
+      "label": "Initial Access",
+      "aliases": ["IA", "Delivery"],
+      "definition": "The adversary is trying to get into your network.",
+      "broader": null,
+      "phase": "attack",
+      "kill_chain_position": 3
+    },
+    {
+      "uri": "proto:tactic/TA0002",
+      "mitre_id": "TA0002",
+      "label": "Execution",
+      "aliases": ["Exec", "Exploitation"],
+      "definition": "The adversary is trying to run malicious code.",
+      "broader": null,
+      "phase": "attack",
+      "kill_chain_position": 4
+    },
+    {
+      "uri": "proto:tactic/TA0003",
+      "mitre_id": "TA0003",
+      "label": "Persistence",
+      "aliases": ["Persist", "Installation"],
+      "definition": "The adversary is trying to maintain their foothold.",
+      "broader": null,
+      "phase": "attack",
+      "kill_chain_position": 5
+    },
+    {
+      "uri": "proto:tactic/TA0004",
+      "mitre_id": "TA0004",
+      "label": "Privilege Escalation",
+      "aliases": ["Priv Esc", "PrivEsc", "PE"],
+      "definition": "The adversary is trying to gain higher-level permissions.",
+      "broader": null,
+      "phase": "attack",
+      "kill_chain_position": 6
+    },
+    {
+      "uri": "proto:tactic/TA0005",
+      "mitre_id": "TA0005",
+      "label": "Defense Evasion",
+      "aliases": ["Evasion", "DefEvasion"],
+      "definition": "The adversary is trying to avoid being detected.",
+      "broader": null,
+      "phase": "attack",
+      "kill_chain_position": 7
+    },
+    {
+      "uri": "proto:tactic/TA0006",
+      "mitre_id": "TA0006",
+      "label": "Credential Access",
+      "aliases": ["Cred Access", "CredAccess", "Credentials"],
+      "definition": "The adversary is trying to steal account names and passwords.",
+      "broader": null,
+      "phase": "attack",
+      "kill_chain_position": 8
+    },
+    {
+      "uri": "proto:tactic/TA0007",
+      "mitre_id": "TA0007",
+      "label": "Discovery",
+      "aliases": ["Disco", "Enumeration"],
+      "definition": "The adversary is trying to figure out your environment.",
+      "broader": null,
+      "phase": "attack",
+      "kill_chain_position": 9
+    },
+    {
+      "uri": "proto:tactic/TA0008",
+      "mitre_id": "TA0008",
+      "label": "Lateral Movement",
+      "aliases": ["Lat Mov", "LatMov", "LM"],
+      "definition": "The adversary is trying to move through your environment.",
+      "broader": null,
+      "phase": "attack",
+      "kill_chain_position": 10
+    },
+    {
+      "uri": "proto:tactic/TA0009",
+      "mitre_id": "TA0009",
+      "label": "Collection",
+      "aliases": ["Collect"],
+      "definition": "The adversary is trying to gather data of interest to their goal.",
+      "broader": null,
+      "phase": "attack",
+      "kill_chain_position": 11
+    },
+    {
+      "uri": "proto:tactic/TA0011",
+      "mitre_id": "TA0011",
+      "label": "Command and Control",
+      "aliases": ["C2", "C&C", "CnC", "Command & Control"],
+      "definition": "The adversary is trying to communicate with compromised systems to control them.",
+      "broader": null,
+      "phase": "attack",
+      "kill_chain_position": 12
+    },
+    {
+      "uri": "proto:tactic/TA0010",
+      "mitre_id": "TA0010",
+      "label": "Exfiltration",
+      "aliases": ["Exfil", "Data Exfil"],
+      "definition": "The adversary is trying to steal data.",
+      "broader": null,
+      "phase": "post-attack",
+      "kill_chain_position": 13
+    },
+    {
+      "uri": "proto:tactic/TA0040",
+      "mitre_id": "TA0040",
+      "label": "Impact",
+      "aliases": ["Actions on Objectives", "AOO"],
+      "definition": "The adversary is trying to manipulate, interrupt, or destroy your systems and data.",
+      "broader": null,
+      "phase": "post-attack",
+      "kill_chain_position": 14
+    }
+  ]
+}

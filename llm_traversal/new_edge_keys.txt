@@ -1,0 +1,3 @@
+CapabilityRequestArtifact:obap_cap_req_001_to_RangeCapabilityArtifact:obap_range_cap_001
+OrchestrationPlanArtifact:obap_orchestration_seq_001_to_TTPArtifact:T1003.006
+LiveExecutionArtifact:obap_live_exec_001_to_TTPArtifact:T1003

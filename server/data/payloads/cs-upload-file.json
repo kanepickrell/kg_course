@@ -1,0 +1,124 @@
+{
+  "_payload_version": "2.0",
+  "_saved_at": "2026-01-21T21:38:12.340589",
+  "_artifact_key": "cs-upload-file",
+  "id": "cs-upload-file",
+  "name": "Upload File",
+  "icon": "\u2b06\ufe0f",
+  "category": "Cobalt Strike",
+  "subcategory": "File Transfer",
+  "tactic": "Command and Control",
+  "tacticName": "Command and Control",
+  "techniqueId": "T1105",
+  "description": "Upload a file from the C2 server to the target system",
+  "riskLevel": "medium",
+  "estimatedDuration": 30,
+  "executionType": "cobalt_strike",
+  "cobaltStrikeCommand": "upload",
+  "inputs": [
+    {
+      "id": "beacon",
+      "label": "Beacon Session",
+      "type": "Beacon",
+      "description": "Active beacon for file transfer"
+    }
+  ],
+  "outputs": [
+    {
+      "id": "uploaded_file",
+      "label": "Uploaded File Path",
+      "type": "FilePath",
+      "description": "Path to uploaded file on target"
+    }
+  ],
+  "parameters": [
+    {
+      "id": "source",
+      "label": "Source File",
+      "type": "string",
+      "required": true,
+      "default": "",
+      "placeholder": "/opt/payloads/beacon.exe",
+      "description": "Local file path on C2 server"
+    },
+    {
+      "id": "destination",
+      "label": "Destination Path",
+      "type": "string",
+      "required": true,
+      "default": "",
+      "placeholder": "C:\\Windows\\Temp\\update.exe",
+      "description": "Remote path on target system"
+    }
+  ],
+  "requirements": {
+    "c2Server": true,
+    "listeners": [],
+    "payloads": [],
+    "sshConnections": [],
+    "externalTools": [],
+    "libraries": [
+      "cobaltstrike.C2Keywords"
+    ]
+  },
+  "metadata": {
+    "version": "1.0.0",
+    "lastUpdated": "2026-01-21T00:00:00Z",
+    "updatedBy": "automation-team",
+    "validationStatus": "production",
+    "changeLog": "Initial production version matching robot file",
+    "owner": "OPFOR Team",
+    "status": "production",
+    "tags": [
+      "upload",
+      "file-transfer",
+      "c2",
+      "cobalt-strike"
+    ]
+  },
+  "robotFramework": {
+    "libraries": [
+      "cobaltstrike.C2Keywords",
+      "cobaltstrike/cobaltstrike.py"
+    ],
+    "resources": [
+      "cobaltstrike/cobaltstrike.resource"
+    ],
+    "keyword": "Upload File",
+    "keywordArgs": [
+      {
+        "param": "source",
+        "arg": "source"
+      },
+      {
+        "param": "destination",
+        "arg": "destination"
+      }
+    ],
+    "variables": [
+      {
+        "name": "UPLOADED_FILE_PATH",
+        "fromParam": "destination",
+        "scope": "test"
+      }
+    ],
+    "suiteSetup": {
+      "required": true,
+      "keyword": "Setup C2 Environment",
+      "dependsOn": [
+        "CS_IP",
+        "CS_USER",
+        "CS_PASS",
+        "CS_DIR",
+        "CS_PORT"
+      ]
+    },
+    "documentation": "Upload a file from the C2 server to the target system",
+    "tags": [
+      "upload",
+      "file",
+      "transfer"
+    ],
+    "timeout": "5m"
+  }
+}

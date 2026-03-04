@@ -1,0 +1,221 @@
+[
+    {
+        "_from": "Process", 
+        "edge_type": "STARTS_WITH", 
+        "_to": "PlanningStep", 
+        "src_attr": "steps", 
+        "dest_attr": "_key"
+    },
+    {
+        "_from": "Process", 
+        "edge_type": "STARTS_WITH", 
+        "_to": "DevelopmentStep", 
+        "src_attr": "steps", 
+        "dest_attr": "_key"
+    },
+    {
+        "_from": "Process", 
+        "edge_type": "STARTS_WITH", 
+        "_to": "ExecutionStep", 
+        "src_attr": "steps", 
+        "dest_attr": "_key"
+    },
+    {
+        "_from": "Process", 
+        "edge_type": "CONTAINS", 
+        "_to": "PlanningStep", 
+        "src_attr": "steps", 
+        "dest_attr": "_key"
+    },
+    {
+        "_from": "Process", 
+        "edge_type": "CONTAINS", 
+        "_to": "DevelopmentStep", 
+        "src_attr": "steps", 
+        "dest_attr": "_key"
+    },
+    {
+        "_from": "Process", 
+        "edge_type": "CONTAINS", 
+        "_to": "ExecutionStep", 
+        "src_attr": "steps", 
+        "dest_attr": "_key"
+    },
+    {
+        "_from": "PlanningStep", 
+        "edge_type": "LEADS_TO", 
+        "_to": "PlanningStep", 
+        "src_attr": "next_steps", 
+        "dest_attr": "_key"
+    },
+    {
+        "_from": "PlanningStep", 
+        "edge_type": "LEADS_TO", 
+        "_to": "DevelopmentStep", 
+        "src_attr": "next_steps", 
+        "dest_attr": "_key"
+    },
+    {
+        "_from": "PlanningStep", 
+        "edge_type": "LEADS_TO", 
+        "_to": "ExecutionStep", 
+        "src_attr": "next_steps", 
+        "dest_attr": "_key"
+    },
+    {
+        "_from": "DevelopmentStep", 
+        "edge_type": "LEADS_TO", 
+        "_to": "PlanningStep", 
+        "src_attr": "next_steps", 
+        "dest_attr": "_key"
+    },
+    {
+        "_from": "DevelopmentStep", 
+        "edge_type": "LEADS_TO", 
+        "_to": "DevelopmentStep", 
+        "src_attr": "next_steps", 
+        "dest_attr": "_key"
+    },
+    {
+        "_from": "DevelopmentStep", 
+        "edge_type": "LEADS_TO", 
+        "_to": "ExecutionStep", 
+        "src_attr": "next_steps", 
+        "dest_attr": "_key"
+    },
+    {
+        "_from": "ExecutionStep", 
+        "edge_type": "LEADS_TO", 
+        "_to": "PlanningStep", 
+        "src_attr": "next_steps", 
+        "dest_attr": "_key"
+    },
+    {
+        "_from": "ExecutionStep", 
+        "edge_type": "LEADS_TO", 
+        "_to": "DevelopmentStep", 
+        "src_attr": "next_steps", 
+        "dest_attr": "_key"
+    },
+    {
+        "_from": "ExecutionStep", 
+        "edge_type": "LEADS_TO", 
+        "_to": "ExecutionStep", 
+        "src_attr": "next_steps", 
+        "dest_attr": "_key"
+    },
+    {
+        "_from": "PlanningStep", 
+        "edge_type": "PRODUCES", 
+        "_to": "SprintLogArtifact", 
+        "src_attr": "artifacts", 
+        "dest_attr": "_key"
+    },
+    {
+        "_from": "PlanningStep", 
+        "edge_type": "PRODUCES", 
+        "_to": "ExecutionPlanArtifact", 
+        "src_attr": "artifacts", 
+        "dest_attr": "_key"
+    },
+    {
+        "_from": "PlanningStep", 
+        "edge_type": "PRODUCES", 
+        "_to": "RobotLogArtifact", 
+        "src_attr": "artifacts", 
+        "dest_attr": "_key"
+    },
+    {
+        "_from": "PlanningStep", 
+        "edge_type": "PRODUCES", 
+        "_to": "ProcessLogArtifact", 
+        "src_attr": "artifacts", 
+        "dest_attr": "_key"
+    },
+    {
+        "_from": "DevelopmentStep", 
+        "edge_type": "PRODUCES", 
+        "_to": "SprintLogArtifact", 
+        "src_attr": "artifacts", 
+        "dest_attr": "_key"
+    },
+    {
+        "_from": "DevelopmentStep", 
+        "edge_type": "PRODUCES", 
+        "_to": "ExecutionPlanArtifact", 
+        "src_attr": "artifacts", 
+        "dest_attr": "_key"
+    },
+    {
+        "_from": "DevelopmentStep", 
+        "edge_type": "PRODUCES", 
+        "_to": "RobotLogArtifact", 
+        "src_attr": "artifacts", 
+        "dest_attr": "_key"
+    },
+    {
+        "_from": "DevelopmentStep", 
+        "edge_type": "PRODUCES", 
+        "_to": "ProcessLogArtifact", 
+        "src_attr": "artifacts", 
+        "dest_attr": "_key"
+    },
+    {
+        "_from": "ExecutionStep", 
+        "edge_type": "PRODUCES", 
+        "_to": "SprintLogArtifact", 
+        "src_attr": "artifacts", 
+        "dest_attr": "_key"
+    },
+    {
+        "_from": "ExecutionStep", 
+        "edge_type": "PRODUCES", 
+        "_to": "ExecutionPlanArtifact", 
+        "src_attr": "artifacts", 
+        "dest_attr": "_key"
+    },
+    {
+        "_from": "ExecutionStep", 
+        "edge_type": "PRODUCES", 
+        "_to": "RobotLogArtifact", 
+        "src_attr": "artifacts", 
+        "dest_attr": "_key"
+    },
+    {
+        "_from": "ExecutionStep", 
+        "edge_type": "PRODUCES", 
+        "_to": "ProcessLogArtifact", 
+        "src_attr": "artifacts", 
+        "dest_attr": "_key"
+    },
+    {
+        "_from": "SprintLogArtifact", 
+        "edge_type": "REFERENCES", 
+        "_to": "TTPArtifact", 
+        "src_attr": "ttp_ids", 
+        "dest_attr": "_key"
+    },
+    {
+        "_from": "ExecutionPlanArtifact", 
+        "edge_type": "REFERENCES", 
+        "_to": "TTPArtifact", 
+        "src_attr": "ttp_ids", 
+        "dest_attr": "_key"
+    },
+    {
+        "_from": "RobotLogArtifact", 
+        "edge_type": "REFERENCES", 
+        "_to": "TTPArtifact", 
+        "src_attr": "ttp_id", 
+        "dest_attr": "_key"
+    },
+    {
+        "_from": "ProcessLogArtifact", 
+        "edge_type": "REFERENCES", 
+        "_to": "TTPArtifact", 
+        "src_attr": "ttp_id", 
+        "dest_attr": "_key"
+    }
+]
+
+

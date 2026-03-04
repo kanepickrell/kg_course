@@ -1,0 +1,18 @@
+{
+  "parameters": [
+    {
+      "id": "name",
+      "type": "string"
+    },
+    {
+      "id": "port",
+      "type": "number"
+    }
+  ],
+  "metadata": {
+    "tags": [
+      "c2",
+      "infrastructure"
+    ]
+  }
+}

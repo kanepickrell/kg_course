@@ -1,0 +1,72 @@
+{
+  "taxonomy_id": "proto:TeamMembers",
+  "taxonomy_label": "Team Members",
+  "description": "Personnel within the 318th RANS Automation team",
+  "version": "1.0.0",
+  "last_updated": "2026-01-16",
+  "terms": [
+    {
+      "uri": "proto:person/kane_pickrel",
+      "label": "Kane Pickrel",
+      "aliases": ["Kane", "KP"],
+      "definition": "Ontology Architect on the Automation team",
+      "broader": null,
+      "team": "proto:team/Automation",
+      "role": "Ontology Architect"
+    },
+    {
+      "uri": "proto:person/hazel_cook",
+      "label": "Hazel Cook",
+      "aliases": ["Hazel", "HC"],
+      "definition": "Software Engineer on the Automation team",
+      "broader": null,
+      "team": "proto:team/Automation",
+      "role": "Software Engineer"
+    },
+    {
+      "uri": "proto:person/ben_leedy",
+      "label": "Ben Leedy",
+      "aliases": ["Ben", "BL"],
+      "definition": "DevOps Engineer on the Automation team",
+      "broader": null,
+      "team": "proto:team/Automation",
+      "role": "DevOps Engineer"
+    },
+    {
+      "uri": "proto:person/chris_kane",
+      "label": "Chris Kane",
+      "aliases": ["Chris K", "CK"],
+      "definition": "Data Scientist on the Automation team",
+      "broader": null,
+      "team": "proto:team/Automation",
+      "role": "Data Scientist"
+    },
+    {
+      "uri": "proto:person/hank_schenk",
+      "label": "Hank Schenk",
+      "aliases": ["Hank", "HS"],
+      "definition": "Software Engineer on the Automation team",
+      "broader": null,
+      "team": "proto:team/Automation",
+      "role": "Software Engineer"
+    },
+    {
+      "uri": "proto:person/qui_nguyen",
+      "label": "Qui Nguyen",
+      "aliases": ["Qui", "QN"],
+      "definition": "Software Engineer on the Automation team",
+      "broader": null,
+      "team": "proto:team/Automation",
+      "role": "Software Engineer"
+    },
+    {
+      "uri": "proto:person/eduardo_calderon",
+      "label": "Eduardo Calderon",
+      "aliases": ["Eduardo", "EC"],
+      "definition": "OPFOR Engineer on the Automation team",
+      "broader": null,
+      "team": "proto:team/Automation",
+      "role": "OPFOR Engineer"
+    }
+  ]
+}

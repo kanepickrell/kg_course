@@ -1,0 +1,25 @@
+{
+  "taxonomy_id": "proto:TestStatuses",
+  "taxonomy_label": "Test Statuses",
+  "description": "Result statuses for Robot Framework test execution",
+  "version": "1.0.0",
+  "last_updated": "2026-01-16",
+  "terms": [
+    {
+      "uri": "proto:status/pass",
+      "label": "PASS",
+      "aliases": ["pass", "passed", "success", "SUCCESS"],
+      "definition": "Test executed successfully and all assertions passed",
+      "broader": null,
+      "color": "#16A34A"
+    },
+    {
+      "uri": "proto:status/fail",
+      "label": "FAIL",
+      "aliases": ["fail", "failed", "failure", "FAILURE"],
+      "definition": "Test executed but one or more assertions failed",
+      "broader": null,
+      "color": "#DC2626"
+    }
+  ]
+}

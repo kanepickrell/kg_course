@@ -1,0 +1,131 @@
+{
+  "_payload_version": "2.0",
+  "_saved_at": "2026-01-21T18:51:35.491818",
+  "_artifact_key": "lib_cs_create_listener",
+  "id": "lib_cs_create_listener",
+  "name": "Create C2 Listener",
+  "icon": "\ud83d\udce1",
+  "category": "Cobalt Strike",
+  "subcategory": "Infrastructure Setup",
+  "tactic": "Command and Control",
+  "mitre": {
+    "tacticId": "TA0011",
+    "techniqueId": null
+  },
+  "description": "Configure and start a C2 listener for beacon callbacks",
+  "riskLevel": "low",
+  "estimatedDuration": 30,
+  "executionType": "cobalt_strike",
+  "cobaltStrikeCommand": "listener_create ${name} ${protocol} ${port}",
+  "parameters": [
+    {
+      "id": "name",
+      "label": "Listener Name",
+      "type": "string",
+      "required": true,
+      "placeholder": "http-listener-01"
+    },
+    {
+      "id": "protocol",
+      "label": "Protocol",
+      "type": "select",
+      "required": true,
+      "default": "http",
+      "options": [
+        "http",
+        "https",
+        "dns",
+        "smb"
+      ]
+    },
+    {
+      "id": "port",
+      "label": "Port",
+      "type": "number",
+      "required": true,
+      "default": 80
+    },
+    {
+      "id": "bind_address",
+      "label": "Bind Address",
+      "type": "string",
+      "required": true,
+      "default": "0.0.0.0"
+    }
+  ],
+  "outputs": [
+    {
+      "id": "listener",
+      "label": "C2 Listener",
+      "type": "C2_Listener",
+      "description": "Active listener configuration"
+    }
+  ],
+  "requirements": {
+    "c2Server": true,
+    "listeners": [],
+    "payloads": []
+  },
+  "metadata": {
+    "owner": "OPFOR Team",
+    "status": "production",
+    "tags": [
+      "c2",
+      "infrastructure",
+      "listener"
+    ]
+  },
+  "robotFramework": {
+    "libraries": [
+      "cobaltstrike.C2Keywords",
+      "cobaltstrike/cobaltstrike.py"
+    ],
+    "resources": [
+      "cobaltstrike/cobaltstrike.resource"
+    ],
+    "keyword": "Create CS Listener",
+    "keywordArgs": [
+      {
+        "param": "name",
+        "arg": "name",
+        "format": "${%s}"
+      },
+      {
+        "param": "protocol",
+        "arg": "type_name",
+        "format": "Beacon_%s",
+        "transform": "capitalize"
+      },
+      {
+        "param": "port",
+        "arg": "options_str",
+        "format": "host=${CS_IP};port=%s;beacons=${CS_IP}"
+      }
+    ],
+    "variables": [
+      {
+        "name": "LISTENER_NAME",
+        "fromParam": "name",
+        "scope": "global"
+      }
+    ],
+    "suiteSetup": {
+      "required": true,
+      "keyword": "Setup C2 Environment",
+      "dependsOn": [
+        "CS_IP",
+        "CS_USER",
+        "CS_PASS",
+        "CS_DIR",
+        "CS_PORT"
+      ]
+    },
+    "documentation": "Configure and start a C2 listener for beacon callbacks",
+    "tags": [
+      "c2",
+      "infrastructure",
+      "setup"
+    ],
+    "timeout": "2m"
+  }
+}

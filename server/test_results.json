@@ -1,0 +1,57 @@
+{
+  "start_time": "2025-11-25 15:52:08.200069",
+  "steps": [
+    {
+      "step": 1,
+      "name": "Pre-flight checks",
+      "success": true
+    },
+    {
+      "step": 2,
+      "name": "Data loading",
+      "success": true,
+      "node_counts": {
+        "Process": 5,
+        "PlanningStep": 9,
+        "DevelopmentStep": 25,
+        "ExecutionStep": 5,
+        "CapabilityRequestArtifact": 3,
+        "SprintLogArtifact": 0,
+        "OrchestrationPlanArtifact": 4,
+        "RobotLogArtifact": 0,
+        "LiveExecutionArtifact": 3,
+        "ExecutionPlanArtifact": 0
+      },
+      "edge_counts_before": {
+        "CONTAINS": 32,
+        "STARTS_WITH": 5,
+        "LEADS_TO": 61,
+        "PRODUCES": 50,
+        "REFERENCES": 74
+      }
+    },
+    {
+      "step": 3,
+      "name": "LLM discovery",
+      "success": true,
+      "edge_counts_after": {
+        "CONTAINS": 32,
+        "STARTS_WITH": 5,
+        "LEADS_TO": 61,
+        "PRODUCES": 50,
+        "REFERENCES": 74,
+        "COLLABORATION_WITH": 4
+      },
+      "new_edges_discovered": 0
+    },
+    {
+      "step": 4,
+      "name": "Manual verification",
+      "success": true,
+      "note": "Manual verification completed by user"
+    }
+  ],
+  "success": true,
+  "end_time": "2025-11-25 15:52:23.810665",
+  "duration": 15.610596
+}

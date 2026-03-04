@@ -1,0 +1,109 @@
+{
+  "_payload_version": "2.0",
+  "_saved_at": "2026-01-23T20:18:47.069899",
+  "_artifact_key": "cs_create_listener",
+  "id": "cs_create_listener",
+  "name": "Create Listener",
+  "description": "Create a C2 listener for beacon callbacks",
+  "icon": "\ud83d\udce1",
+  "tactic": "Command and Control",
+  "category": "Cobalt Strike",
+  "subcategory": "Infrastructure",
+  "riskLevel": "medium",
+  "estimatedDuration": 5,
+  "inputs": [
+    {
+      "id": "c2_ready",
+      "label": "C2 Ready",
+      "type": "boolean",
+      "required": true
+    }
+  ],
+  "outputs": [
+    {
+      "id": "listener_active",
+      "label": "Listener Active",
+      "type": "boolean"
+    }
+  ],
+  "parameters": [
+    {
+      "id": "listenerName",
+      "label": "Listener Name",
+      "type": "string",
+      "required": true,
+      "default": "HTTP"
+    },
+    {
+      "id": "listenerPort",
+      "label": "Port",
+      "type": "number",
+      "required": true,
+      "default": 80
+    },
+    {
+      "id": "listenerType",
+      "label": "Listener Type",
+      "type": "select",
+      "required": true,
+      "options": [
+        "Beacon_HTTP",
+        "Beacon_HTTPS"
+      ],
+      "default": "Beacon_HTTP"
+    }
+  ],
+  "requirements": {
+    "c2Server": true
+  },
+  "robotFramework": {
+    "libraries": [
+      "cobaltstrikec2/cobaltstrike.py"
+    ],
+    "resources": [],
+    "keyword": "Create Listener",
+    "keywordArgs": [
+      {
+        "param": "listenerName",
+        "position": 1,
+        "variableRef": true,
+        "variableName": "LISTENER_NAME"
+      },
+      {
+        "param": "listenerPort",
+        "position": 2,
+        "variableRef": true,
+        "variableName": "LISTENER_PORT"
+      },
+      {
+        "param": "listenerType",
+        "position": 3,
+        "variableRef": true,
+        "variableName": "LISTENER_TYPE"
+      },
+      {
+        "globalSetting": "CS_IP",
+        "position": 4,
+        "variableRef": true
+      }
+    ],
+    "variables": [
+      {
+        "name": "LISTENER_NAME",
+        "fromParam": "listenerName",
+        "scope": "suite"
+      },
+      {
+        "name": "LISTENER_PORT",
+        "fromParam": "listenerPort",
+        "scope": "suite"
+      },
+      {
+        "name": "LISTENER_TYPE",
+        "fromParam": "listenerType",
+        "scope": "suite"
+      }
+    ],
+    "preKeywordLog": "=== Creating Listener: ${LISTENER_NAME} ==="
+  }
+}

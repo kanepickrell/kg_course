@@ -1,0 +1,89 @@
+{
+  "_payload_version": "2.0",
+  "_saved_at": "2026-01-27T23:16:18.601772",
+  "_artifact_key": "cs-get-session-by-ip",
+  "id": "cs-get-session-by-ip",
+  "name": "Get Session By IP",
+  "description": "Retrieve an active beacon session by target IP address",
+  "tactic": "Execution",
+  "category": "Cobalt Strike",
+  "subcategory": "Session Management",
+  "riskLevel": "low",
+  "estimatedDuration": 15,
+  "inputs": [
+    {
+      "id": "trigger",
+      "label": "Previous Step",
+      "type": "any",
+      "required": true,
+      "description": "Connect from previous node to ensure execution order"
+    }
+  ],
+  "outputs": [
+    {
+      "id": "session",
+      "label": "Session",
+      "type": "session",
+      "description": "Retrieved beacon session"
+    }
+  ],
+  "parameters": [
+    {
+      "id": "targetIp",
+      "label": "Target IP",
+      "type": "string",
+      "required": true,
+      "default": "",
+      "description": "IP address of target with active beacon"
+    },
+    {
+      "id": "sleepBefore",
+      "label": "Wait Before (seconds)",
+      "type": "number",
+      "required": false,
+      "default": 10,
+      "description": "Seconds to wait before checking for session"
+    }
+  ],
+  "requirements": {
+    "c2Server": true,
+    "activeSession": false
+  },
+  "robotFramework": {
+    "libraries": [
+      "cobaltstrike.py"
+    ],
+    "keyword": "Get Sessions By Ip",
+    "keywordArgs": [
+      {
+        "param": "targetIp",
+        "position": 1,
+        "variableRef": true,
+        "variableName": "TARGET_IP"
+      }
+    ],
+    "variables": [
+      {
+        "name": "TARGET_IP",
+        "fromParam": "targetIp",
+        "scope": "suite"
+      },
+      {
+        "name": "SLEEP_BEFORE",
+        "fromParam": "sleepBefore",
+        "scope": "suite"
+      }
+    ],
+    "preKeywordStatements": [
+      "Sleep    ${SLEEP_BEFORE}s"
+    ],
+    "captureOutput": "sessions",
+    "captureOutputAsList": true,
+    "postKeywordStatements": [
+      "${CURRENT_SESSION}=    Set Variable    ${sessions}[0]"
+    ],
+    "sessionVariable": "CURRENT_SESSION",
+    "preKeywordLog": "=== Getting Session for ${TARGET_IP} ===",
+    "postKeywordLog": "Retrieved session: ${CURRENT_SESSION}"
+  }
+}

@@ -1,0 +1,93 @@
+{
+  "taxonomy_id": "proto:RiskLevels",
+  "taxonomy_label": "Risk Levels",
+  "description": "Risk classification for offensive operations",
+  "version": "1.0.0",
+  "last_updated": "2026-01-16",
+  "terms": [
+    {
+      "uri": "proto:risk/critical",
+      "label": "Critical",
+      "aliases": ["crit", "critical-risk"],
+      "definition": "High-impact actions that could cause significant damage or trigger alerts. Requires explicit approval before execution.",
+      "broader": null,
+      "color": "#DC2626",
+      "approval_required": true,
+      "reversible": false,
+      "examples": [
+        "Credential dumping (mimikatz)",
+        "Domain admin escalation",
+        "Data exfiltration",
+        "Ransomware simulation",
+        "Active Directory modification"
+      ]
+    },
+    {
+      "uri": "proto:risk/high",
+      "label": "High",
+      "aliases": ["high-risk"],
+      "definition": "Actions likely to trigger security monitoring or leave forensic artifacts. Requires team lead awareness.",
+      "broader": null,
+      "color": "#EA580C",
+      "approval_required": true,
+      "reversible": true,
+      "examples": [
+        "Lateral movement via PSExec",
+        "Service installation",
+        "Registry modification",
+        "Scheduled task creation",
+        "WMI execution"
+      ]
+    },
+    {
+      "uri": "proto:risk/medium",
+      "label": "Medium",
+      "aliases": ["med", "medium-risk"],
+      "definition": "Actions that may be detected but have limited blast radius and are typically reversible.",
+      "broader": null,
+      "color": "#CA8A04",
+      "approval_required": false,
+      "reversible": true,
+      "examples": [
+        "Network scanning",
+        "File enumeration",
+        "Process listing",
+        "Share enumeration",
+        "DNS queries"
+      ]
+    },
+    {
+      "uri": "proto:risk/low",
+      "label": "Low",
+      "aliases": ["low-risk"],
+      "definition": "Routine actions unlikely to trigger detection systems.",
+      "broader": null,
+      "color": "#16A34A",
+      "approval_required": false,
+      "reversible": true,
+      "examples": [
+        "Beacon check-in",
+        "Sleep adjustment",
+        "Screenshot capture",
+        "Clipboard monitoring",
+        "Current user enumeration"
+      ]
+    },
+    {
+      "uri": "proto:risk/info",
+      "label": "Informational",
+      "aliases": ["informational", "none", "info-only"],
+      "definition": "Passive information gathering or documentation with no operational impact on target systems.",
+      "broader": null,
+      "color": "#2563EB",
+      "approval_required": false,
+      "reversible": true,
+      "examples": [
+        "Documentation review",
+        "Planning artifacts",
+        "Configuration files",
+        "Reference materials"
+      ]
+    }
+  ]
+}

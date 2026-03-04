@@ -1,0 +1,102 @@
+/* =============================================================================
+   NEURAL SEARCH HIGHLIGHTING STYLES
+   Add these to your global CSS or component styles
+   ============================================================================= */
+
+/* Search-highlighted nodes */
+.node.search-highlighted {
+    z-index: 100;
+}
+
+.node.search-highlighted circle {
+    stroke: #9AE66A !important;
+    stroke-width: 4px !important;
+    filter: url(#search-glow);
+}
+
+.node.search-highlighted text {
+    fill: #9AE66A !important;
+    font-weight: 600;
+}
+
+/* Dim non-highlighted nodes when search is active */
+.graph-container.search-active .node:not(.search-highlighted) {
+    opacity: 0.4;
+}
+
+.graph-container.search-active .edge:not(.search-highlighted) {
+    opacity: 0.2;
+}
+
+/* Neural search bar custom styles */
+.neural-search-input:focus {
+    box-shadow: 0 0 0 2px rgba(154, 230, 106, 0.3);
+}
+
+.neural-search-results {
+    backdrop-filter: blur(8px);
+}
+
+/* Agent context cards */
+.agent-context-card {
+    transition: all 0.2s ease;
+}
+
+.agent-context-card:hover {
+    transform: translateX(2px);
+}
+
+.agent-context-card.relevant {
+    border-left: 3px solid #9AE66A;
+}
+
+.agent-context-card.not-relevant {
+    border-left: 3px solid #666;
+}
+
+/* Matched node pills */
+.matched-node-pill {
+    transition: all 0.15s ease;
+}
+
+.matched-node-pill:hover {
+    transform: scale(1.05);
+    background-color: rgba(154, 230, 106, 0.2);
+}
+
+/* Pulse animation keyframes (CSS fallback) */
+@keyframes search-pulse {
+    0%, 100% {
+        transform: scale(1);
+        filter: url(#search-glow);
+    }
+    50% {
+        transform: scale(1.2);
+        filter: url(#search-glow) brightness(1.2);
+    }
+}
+
+.node.search-highlighted.pulse circle {
+    animation: search-pulse 1s ease-in-out infinite;
+}
+
+/* Loading shimmer for search */
+@keyframes shimmer {
+    0% {
+        background-position: -200% 0;
+    }
+    100% {
+        background-position: 200% 0;
+    }
+}
+
+.search-loading {
+    background: linear-gradient(
+        90deg,
+        rgba(154, 230, 106, 0.1) 25%,
+        rgba(154, 230, 106, 0.3) 50%,
+        rgba(154, 230, 106, 0.1) 75%
+    );
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+}

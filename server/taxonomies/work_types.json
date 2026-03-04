@@ -1,0 +1,49 @@
+{
+  "taxonomy_id": "proto:WorkTypes",
+  "taxonomy_label": "Work Types",
+  "description": "Types of development work for stories and tasks",
+  "version": "1.0.0",
+  "last_updated": "2026-01-16",
+  "terms": [
+    {
+      "uri": "proto:work_type/bug_fix",
+      "label": "Bug Fix",
+      "aliases": ["bug", "Bug", "bugfix", "fix", "Fix", "defect", "Defect"],
+      "definition": "Correcting an error or unexpected behavior in existing functionality",
+      "broader": null,
+      "icon": "🐛"
+    },
+    {
+      "uri": "proto:work_type/new_feature",
+      "label": "New Feature",
+      "aliases": ["feature", "Feature", "new_feature", "enhancement", "Enhancement", "story", "Story"],
+      "definition": "Developing new functionality or capability",
+      "broader": null,
+      "icon": "✨"
+    },
+    {
+      "uri": "proto:work_type/refactor",
+      "label": "Refactor",
+      "aliases": ["refactor", "refactoring", "Refactoring", "tech_debt", "Tech Debt", "cleanup"],
+      "definition": "Improving code structure or performance without changing functionality",
+      "broader": null,
+      "icon": "🔧"
+    },
+    {
+      "uri": "proto:work_type/documentation",
+      "label": "Documentation",
+      "aliases": ["docs", "Docs", "doc", "documentation", "readme", "wiki"],
+      "definition": "Creating or updating documentation, guides, or knowledge base articles",
+      "broader": null,
+      "icon": "📝"
+    },
+    {
+      "uri": "proto:work_type/research",
+      "label": "Research",
+      "aliases": ["research", "spike", "Spike", "investigation", "Investigation", "POC", "poc", "proof_of_concept"],
+      "definition": "Investigating technical approaches, feasibility studies, or proof of concepts",
+      "broader": null,
+      "icon": "🔬"
+    }
+  ]
+}

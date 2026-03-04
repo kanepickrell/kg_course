@@ -1,0 +1,421 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Custom Graphin overrides */
+.graphin-container {
+  width: 100%;
+  height: 100%;
+}
+
+.graphin-components {
+  font-family: 'Inter', sans-serif;
+}
+
+@layer base {
+  :root {
+    /* REFINED Tactical Palette - No Pink, Better Greens */
+    --cactus-tan: 160 150 120;   /* #A09678 - Desaturated military tan */
+    --cactus-green: 110 190 70;  /* #6EBE46 - "Digital Phosphor" Green (Vibrant but technical) */
+    --cactus-olive: 75 90 45;    /* #4B5A2D - Deep tactical base */
+    --cactus-amber: 230 170 50;  /* #E6AA32 - Radar Amber (Replaces pink for highlights) */
+    --cactus-red: 180 60 60;     /* #B43C3C - Tactical Warning Red */
+
+    /* Base Colors - Deep Operator Black */
+    --background: 0 0 0; 
+    --foreground: 235 235 235;
+    --card: 12 12 12;            /* Slightly lifted from pure black */
+    --border: 45 45 45;          /* Subdued borders */
+    --primary: 110 190 70;       /* Digital Green */
+    --accent: 230 170 50;        /* Amber highlight */
+  }
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  
+  body {
+    @apply bg-background text-foreground;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  h1 {
+    @apply text-6xl font-extrabold leading-tight tracking-tight;
+  }
+
+  h2 {
+    @apply text-3xl font-extrabold leading-snug;
+  }
+
+  h3 {
+    @apply text-2xl font-extrabold leading-normal;
+  }
+
+  h4 {
+    @apply text-xl font-semibold;
+  }
+
+  .subtitle {
+    @apply text-lg font-normal text-muted-foreground leading-relaxed;
+  }
+
+  /* Scrollbar Styles - Operator-inspired */
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: rgb(15 15 15);
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: rgb(60 60 60);
+    border-radius: 4px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: rgb(100 120 60);
+  }
+
+  /* Firefox scrollbar */
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: rgb(60 60 60) rgb(15 15 15);
+  }
+}
+
+@layer components {
+  /* Neobrutalist Components */
+  .neo-card {
+    @apply bg-card border-[3px] border-border rounded-lg transition-all;
+    box-shadow: 3px 3px 0px 0px rgba(0, 0, 0, 0.8);
+  }
+
+  .neo-card:hover {
+    box-shadow: 4px 4px 0px 0px rgba(0, 0, 0, 0.9);
+    transform: translate(-1px, -1px);
+  }
+
+  .neo-button {
+    @apply px-4 py-2 bg-card border-2 border-border rounded-lg font-bold text-sm transition-all duration-150;
+    box-shadow: 2px 2px 0px 0px rgba(0, 0, 0, 1);
+  }
+
+  .neo-button:hover {
+    box-shadow: 3px 3px 0px 0px rgba(0, 0, 0, 1);
+    transform: translate(-1px, -1px);
+  }
+
+  .neo-button:active {
+    box-shadow: 1px 1px 0px 0px rgba(0, 0, 0, 1);
+    transform: translate(1px, 1px);
+  }
+
+  .neo-button-secondary {
+    @apply px-4 py-2 bg-secondary border-2 border-border rounded-lg font-bold text-sm transition-all duration-150;
+    box-shadow: 2px 2px 0px 0px rgba(0, 0, 0, 0.6);
+  }
+
+  .neo-button-secondary:hover {
+    box-shadow: 3px 3px 0px 0px rgba(0, 0, 0, 0.8);
+    transform: translate(-1px, -1px);
+  }
+
+  .neo-button-secondary:active {
+    box-shadow: 1px 1px 0px 0px rgba(0, 0, 0, 0.4);
+    transform: translate(1px, 1px);
+  }
+
+  .neo-input {
+    @apply px-4 py-2 bg-background border-2 border-border rounded-lg text-sm;
+    @apply focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent;
+    @apply transition-all duration-150;
+  }
+
+  /* Cactus Theme Utilities - Tactical Palette */
+  .text-cactus-tan {
+    color: rgb(180 160 130);
+  }
+
+  .text-cactus-green {
+    color: rgb(130 150 70);
+  }
+
+  .text-cactus-accent {
+    color: rgb(200 180 100);
+  }
+
+  .bg-cactus-tan {
+    background-color: rgb(180 160 130);
+  }
+
+  .bg-cactus-green {
+    background-color: rgb(130 150 70);
+  }
+
+  .bg-cactus-olive {
+    background-color: rgb(100 120 60);
+  }
+
+  .bg-cactus-accent {
+    background-color: rgb(200 180 100);
+  }
+
+  .border-cactus-tan {
+    border-color: rgb(180 160 130);
+  }
+
+  .border-cactus-green {
+    border-color: rgb(130 150 70);
+  }
+
+  .border-cactus-olive {
+    border-color: rgb(100 120 60);
+  }
+
+  .border-cactus-accent {
+    border-color: rgb(200 180 100);
+  }
+  
+  .crisp-logo {
+  image-rendering: -webkit-optimize-contrast;
+  image-rendering: crisp-edges;
+}
+
+
+  /* Focus States with Cactus Colors - Tactical */
+  .focus-cactus {
+    outline: none;
+  }
+  
+  .focus-cactus:focus {
+    outline: none;
+    box-shadow: 0 0 0 1px rgb(130 150 70);
+    border-color: rgb(130 150 70);
+  }
+
+  /* Animation Classes */
+  @keyframes pulse-cactus {
+    0%, 100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.6;
+    }
+  }
+
+  .animate-pulse-cactus {
+    animation: pulse-cactus 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+
+  @keyframes twinkle {
+    0%, 100% {
+      opacity: 1;
+      transform: scale(1);
+    }
+    50% {
+      opacity: 0.6;
+      transform: scale(0.9);
+    }
+  }
+
+  .animate-twinkle {
+    animation: twinkle 2s ease-in-out infinite;
+  }
+
+  @keyframes pulse-border {
+    0%, 100% {
+      border-color: hsl(var(--border));
+      box-shadow: 0 0 0 0 hsla(var(--accent-pink), 0.4);
+    }
+    50% {
+      border-color: hsl(var(--accent-pink));
+      box-shadow: 0 0 0 4px hsla(var(--accent-pink), 0.1);
+    }
+  }
+
+  .animate-pulse-border {
+    animation: pulse-border 1.5s ease-in-out infinite;
+  }
+
+  @keyframes highlight-glow {
+    0%, 100% {
+      filter: drop-shadow(0 0 4px hsl(var(--accent-pink)));
+    }
+    50% {
+      filter: drop-shadow(0 0 12px hsl(var(--accent-pink)));
+    }
+  }
+
+  .ai-highlighted {
+    animation: highlight-glow 1.5s ease-in-out infinite;
+  }
+
+  /* Western/Cyber Theme Elements - Tactical */
+  .western-badge {
+    position: relative;
+  }
+
+  .western-badge::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-color: rgba(200, 180, 100, 0.05);
+    filter: blur(15px);
+    border-radius: 9999px;
+  }
+
+  /* Prospector List Styles - Tactical */
+  .prospector-item {
+    @apply neo-card p-3 cursor-pointer transition-all;
+  }
+
+  .prospector-item:hover {
+    border-color: rgba(130, 150, 70, 0.4);
+    background-color: rgba(25, 25, 25, 1);
+  }
+
+  .prospector-item.selected {
+    border-color: rgb(130 150 70);
+    background-color: rgba(130, 150, 70, 0.1);
+    box-shadow: 0 0 0 1px rgb(130 150 70), 3px 3px 0px 0px rgba(0, 0, 0, 0.9);
+  }
+
+  /* Graph Explorer Styles - Tactical Palette */
+  .graph-node-cluster-content_dev {
+    stroke: rgb(130 150 70);
+    fill: rgba(130, 150, 70, 0.15);
+  }
+
+  .graph-node-cluster-opfor {
+    stroke: rgb(100 120 60);
+    fill: rgba(100, 120, 60, 0.15);
+  }
+
+  .graph-node-cluster-automation {
+    stroke: rgb(180 160 130);
+    fill: rgba(180, 160, 130, 0.15);
+  }
+
+  .graph-node-cluster-range {
+    stroke: rgb(140 130 100);
+    fill: rgba(140, 130, 100, 0.15);
+  }
+
+  .sparkle {
+    @apply absolute animate-twinkle;
+  }
+
+  .node-selected {
+    stroke-width: 4px;
+    stroke: hsl(var(--border));
+    filter: drop-shadow(0 0 8px hsl(var(--accent-pink)));
+  }
+}
+
+@layer utilities {
+  .border-3 {
+    border-width: 3px;
+  }
+
+  .shadow-neo-sm {
+    box-shadow: 2px 2px 0px 0px rgba(0, 0, 0, 0.8);
+  }
+
+  .shadow-neo {
+    box-shadow: 3px 3px 0px 0px rgba(0, 0, 0, 0.8);
+  }
+
+  .shadow-neo-lg {
+    box-shadow: 4px 4px 0px 0px rgba(0, 0, 0, 0.9);
+  }
+
+  /* Text Utilities */
+  .text-shadow-sm {
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+  }
+
+  .text-shadow {
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.6);
+  }
+
+  /* Glow Effects with Cactus Colors - Subtle */
+  .glow-cactus-green {
+    box-shadow: 0 0 10px rgba(130, 150, 70, 0.3);
+  }
+
+  .glow-cactus-tan {
+    box-shadow: 0 0 10px rgba(180, 160, 130, 0.3);
+  }
+
+  .glow-cactus-accent {
+    box-shadow: 0 0 10px rgba(200, 180, 100, 0.3);
+  }
+}
+
+/* Custom Animations */
+@keyframes shimmer {
+  0% {
+    background-position: -1000px 0;
+  }
+  100% {
+    background-position: 1000px 0;
+  }
+}
+
+.shimmer {
+  animation: shimmer 2s infinite;
+  background: linear-gradient(
+    to right,
+    transparent 0%,
+    rgba(196, 181, 160, 0.3) 50%,
+    transparent 100%
+  );
+  background-size: 1000px 100%;
+}
+
+/* Badge Styles - Tactical */
+.badge-cactus {
+  padding: 0.125rem 0.5rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  border-radius: 0.25rem;
+  border-width: 1px;
+  background-color: rgba(130, 150, 70, 0.15);
+  border-color: rgb(130 150 70);
+  color: rgb(180 200 120);
+}
+
+.badge-priority {
+  padding: 0.125rem 0.5rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  border-radius: 0.25rem;
+  border-width: 1px;
+  background-color: rgba(200, 180, 100, 0.15);
+  border-color: rgb(200 180 100);
+  color: rgb(220 200 120);
+}
+
+.badge-status {
+  padding: 0.125rem 0.5rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  border-radius: 0.25rem;
+  border-width: 1px;
+  background-color: rgba(100, 120, 140, 0.15);
+  border-color: rgb(100 120 140);
+  color: rgb(140 160 180);
+}
+
+/* Focus Rings with Theme Colors - Tactical */
+.focus-visible-cactus:focus-visible {
+  outline: 1px solid rgb(130 150 70);
+  outline-offset: 2px;
+}

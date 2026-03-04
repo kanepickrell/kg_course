@@ -1,0 +1,45 @@
+{
+  "taxonomy_id": "proto:WorkStatuses",
+  "taxonomy_label": "Work Statuses",
+  "description": "Workflow states for development stories and tasks",
+  "version": "1.0.0",
+  "last_updated": "2026-01-16",
+  "terms": [
+    {
+      "uri": "proto:work_status/backlog",
+      "label": "backlog",
+      "aliases": ["Backlog", "TODO", "to_do", "To Do", "queued"],
+      "definition": "Work item is identified but not yet started",
+      "broader": null,
+      "sequence": 1,
+      "color": "#6B7280"
+    },
+    {
+      "uri": "proto:work_status/in_progress",
+      "label": "in_progress",
+      "aliases": ["In Progress", "in progress", "active", "working", "WIP"],
+      "definition": "Work item is actively being worked on",
+      "broader": null,
+      "sequence": 2,
+      "color": "#2563EB"
+    },
+    {
+      "uri": "proto:work_status/review",
+      "label": "review",
+      "aliases": ["Review", "in_review", "In Review", "pending_review", "PR"],
+      "definition": "Work is complete and awaiting review or approval",
+      "broader": null,
+      "sequence": 3,
+      "color": "#CA8A04"
+    },
+    {
+      "uri": "proto:work_status/complete",
+      "label": "complete",
+      "aliases": ["Complete", "done", "Done", "finished", "closed", "Closed"],
+      "definition": "Work item has been completed and approved",
+      "broader": null,
+      "sequence": 4,
+      "color": "#16A34A"
+    }
+  ]
+}

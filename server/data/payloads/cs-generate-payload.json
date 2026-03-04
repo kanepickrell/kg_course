@@ -1,0 +1,140 @@
+{
+  "_payload_version": "2.0",
+  "_saved_at": "2026-01-21T19:26:55.639571",
+  "_artifact_key": "cs-generate-payload",
+  "id": "cs-generate-payload",
+  "key": "lib_cs_generate_payload",
+  "name": "Generate Payload",
+  "icon": "\ud83d\udca3",
+  "category": "Cobalt Strike",
+  "subcategory": "Payload Generation",
+  "tactic": "Execution",
+  "mitre": {
+    "tacticId": "TA0002",
+    "tacticName": "Execution",
+    "techniqueId": "T1059"
+  },
+  "description": "Generate a stageless beacon payload for delivery",
+  "riskLevel": "medium",
+  "estimatedDuration": 15,
+  "executionType": "cobalt_strike",
+  "cobaltStrikeCommand": "generate_payload ${listener_name} ${output_type} ${output_path}",
+  "inputs": [
+    {
+      "id": "listener",
+      "label": "C2 Listener",
+      "type": "C2_Listener",
+      "required": true,
+      "description": "Active listener to bind payload"
+    }
+  ],
+  "outputs": [
+    {
+      "id": "payload",
+      "label": "Beacon Payload",
+      "type": "Payload",
+      "description": "Generated beacon executable"
+    }
+  ],
+  "parameters": [
+    {
+      "id": "listener_name",
+      "label": "Listener Name",
+      "type": "string",
+      "required": true,
+      "default": "${LISTENER_NAME}",
+      "placeholder": "http-listener-01",
+      "description": "Name of the listener to use"
+    },
+    {
+      "id": "output_type",
+      "label": "Output Type",
+      "type": "select",
+      "required": true,
+      "default": "Windows Stageless Exe",
+      "options": [
+        "Windows Stageless Exe",
+        "Windows Stageless Dll",
+        "Raw Shellcode",
+        "PowerShell"
+      ],
+      "description": "Payload output format"
+    },
+    {
+      "id": "output_path",
+      "label": "Output Path",
+      "type": "string",
+      "required": true,
+      "default": "/tmp/beacon.exe",
+      "placeholder": "/tmp/beacon.exe",
+      "description": "Where to save the payload"
+    }
+  ],
+  "requirements": {
+    "c2Server": true,
+    "listeners": [
+      "listener"
+    ],
+    "payloads": [],
+    "sshConnections": [],
+    "externalTools": [],
+    "libraries": [
+      "cobaltstrike.C2Keywords"
+    ]
+  },
+  "metadata": {
+    "version": "1.0.0",
+    "lastUpdated": "2026-01-21T00:00:00Z",
+    "updatedBy": "automation-team",
+    "validationStatus": "production",
+    "changeLog": "Initial release with robotFramework config",
+    "owner": "OPFOR Team",
+    "status": "production",
+    "tags": [
+      "payload",
+      "beacon",
+      "cobalt-strike",
+      "generation"
+    ]
+  },
+  "robotFramework": {
+    "libraries": [
+      "cobaltstrike.C2Keywords"
+    ],
+    "resources": [
+      "cobaltstrike/cobaltstrike.resource"
+    ],
+    "keyword": "Generate CS Payload",
+    "keywordArgs": [
+      {
+        "param": "listener_name",
+        "arg": "listener",
+        "format": "%s"
+      },
+      {
+        "param": "output_type",
+        "arg": "output_type",
+        "format": "%s"
+      },
+      {
+        "param": "output_path",
+        "arg": "output",
+        "format": "%s"
+      }
+    ],
+    "variables": [
+      {
+        "name": "PAYLOAD_FILE",
+        "fromParam": "output_path",
+        "scope": "global"
+      }
+    ],
+    "documentation": "Generate a stageless beacon payload for delivery",
+    "tags": [
+      "payload",
+      "beacon",
+      "generation"
+    ],
+    "timeout": "1m"
+  }
+}
