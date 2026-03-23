@@ -16,7 +16,6 @@ from datetime import datetime
 from typing import Optional, List, Dict, Any
 from fastapi import FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
-from arango import ArangoClient
 from dotenv import load_dotenv
 from pydantic import BaseModel, Field
 from enum import Enum
@@ -29,17 +28,17 @@ from schema_registry import router as schema_router
 from plugins.endpoints import router as plugin_router
 from plugins.operator_plugin import operator_plugin 
 from plugins.plugin_router import create_plugin_data_router
-from neural_arango_integration import NeuralGraphRouter, create_neural_router_endpoints
+# from neural_arango_integration import NeuralGraphRouter, create_neural_router_endpoints
 from unified_search import create_unified_search_router
 from neural_experiment_api import create_neural_experiment_router
-from hybrid_cluster_router import HybridClusterRouter, create_hybrid_router_endpoints
+# from hybrid_cluster_router import HybridClusterRouter, create_hybrid_router_endpoints
 
 
-from discovery_engine import (
-    DiscoveryOrchestrator, 
-    GraphHealthReport,
-    DiscoveryTriggerResult
-)
+# from discovery_engine import (
+#     DiscoveryOrchestrator, 
+#     GraphHealthReport,
+#     DiscoveryTriggerResult
+# )
 
 from pipeline_engine import PipelineEngine
 from pipeline_router import create_pipeline_router
@@ -104,10 +103,6 @@ pipeline_engine = None
 if not GRAPHDB_ENABLED:
     # Only connect to ArangoDB if GraphDB is disabled
     try:
-        client = ArangoClient(hosts=ARANGO_HOST)
-        db = client.db(ARANGO_DB, username=ARANGO_USER, password=ARANGO_PASSWORD)
-        db.collections()
-        print(f"✓ Connected to ArangoDB: {ARANGO_DB}")
         
         import ingestion_endpoint
         import schema_registry
@@ -3108,27 +3103,27 @@ if gdb:
     except Exception as e:
         print(f"⚠️ NL query engine failed to load: {e}")
 
-neural_router = NeuralGraphRouter()
-create_neural_router_endpoints(app, neural_router)
+# neural_router = NeuralGraphRouter()
+# create_neural_router_endpoints(app, neural_router)
 
-try:
-    hybrid_router = HybridClusterRouter()
-    create_hybrid_router_endpoints(app, hybrid_router)
-    print(f"✓ Hybrid cluster router v3 mounted at /api/neural-v3/*")
-except Exception as e:
-    print(f"⚠️ Hybrid cluster router failed to initialize: {e}")
+# try:
+#     hybrid_router = HybridClusterRouter()
+#     create_hybrid_router_endpoints(app, hybrid_router)
+#     print(f"✓ Hybrid cluster router v3 mounted at /api/neural-v3/*")
+# except Exception as e:
+#     print(f"⚠️ Hybrid cluster router failed to initialize: {e}")
 
-unified_search_router = create_unified_search_router(
-    db=db,
-    neural_router=neural_router,
-    ollama_client=ollama_client,
-    ollama_model=OLLAMA_MODEL
-)
-app.include_router(unified_search_router)
-print(f"✓ Unified search router mounted at /api/search/unified")
+# unified_search_router = create_unified_search_router(
+#     db=db,
+#     neural_router=neural_router,
+#     ollama_client=ollama_client,
+#     ollama_model=OLLAMA_MODEL
+# )
+# app.include_router(unified_search_router)
+# print(f"✓ Unified search router mounted at /api/search/unified")
 
-experiment_router = create_neural_experiment_router(neural_router)
-app.include_router(experiment_router)
+# experiment_router = create_neural_experiment_router(neural_router)
+# app.include_router(experiment_router)
 
 # Include pipeline router
 if pipeline_engine:

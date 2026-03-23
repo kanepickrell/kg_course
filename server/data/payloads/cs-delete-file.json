@@ -1,16 +1,17 @@
 {
-  "_key": "cs-getuid",
-  "name": "Get UID",
-  "description": "Get the current user identity from an active beacon session",
-  "icon": "\ud83d\udc64",
-  "tactic": "TA0007",
+  "_key": "cs-delete-file",
+  "name": "Delete File",
+  "description": "Delete a file on target via beacon to remove artifacts and cover tracks",
+  "icon": "\ud83d\uddd1\ufe0f",
+  "tactic": "TA0005",
   "category": "Cobalt Strike",
-  "subcategory": "Discovery",
-  "riskLevel": "Low",
+  "subcategory": "Defense Evasion",
+  "riskLevel": "Medium",
   "estimatedDuration": 5,
   "executionType": "cobalt_strike",
-  "robotKeyword": "GetUID",
-  "robotTemplate": "${uid}=    Run Getuid    ${session}",
+  "robotKeyword": "Delete File",
+  "robotTemplate": "${output}=    Issue Shell Cmd    ${session}    del /f ${filename}",
+  "shellCommand": "del /f ${filename}",
   "inputs": [
     {
       "id": "session",
@@ -33,6 +34,13 @@
       "type": "string",
       "required": true,
       "placeholder": "${session}"
+    },
+    {
+      "id": "filename",
+      "label": "File Path",
+      "type": "string",
+      "required": true,
+      "placeholder": "C:\\Windows\\Temp\\tmp.zip"
     }
   ],
   "requirements": {
@@ -42,16 +50,18 @@
     "libraries": [
       "cobaltstrikec2/cobaltstrike.py"
     ],
-    "keyword": "GetUID",
-    "captureOutput": "UID_RESULT",
+    "keyword": "Delete File",
     "keywordArgs": [
       {
         "position": 1,
         "sessionVariable": "CURRENT_SESSION"
+      },
+      {
+        "position": 2,
+        "param": "filename"
       }
     ],
     "variables": [],
-    "preKeywordLog": "Running GetUID",
-    "postKeywordLog": "UID: ${UID_RESULT}"
+    "preKeywordLog": "Deleting file"
   }
 }

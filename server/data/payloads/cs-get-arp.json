@@ -1,16 +1,17 @@
 {
-  "_key": "cs-getuid",
-  "name": "Get UID",
-  "description": "Get the current user identity from an active beacon session",
-  "icon": "\ud83d\udc64",
+  "_key": "cs-get-arp",
+  "name": "Get ARP Table",
+  "description": "Retrieve ARP table from target to identify adjacent hosts",
+  "icon": "\ud83d\uddfa\ufe0f",
   "tactic": "TA0007",
   "category": "Cobalt Strike",
   "subcategory": "Discovery",
   "riskLevel": "Low",
   "estimatedDuration": 5,
   "executionType": "cobalt_strike",
-  "robotKeyword": "GetUID",
-  "robotTemplate": "${uid}=    Run Getuid    ${session}",
+  "robotKeyword": "Get Arp Data",
+  "robotTemplate": "${output}=    Issue Shell Cmd    ${session}    arp -a",
+  "shellCommand": "arp -a",
   "inputs": [
     {
       "id": "session",
@@ -42,16 +43,19 @@
     "libraries": [
       "cobaltstrikec2/cobaltstrike.py"
     ],
-    "keyword": "GetUID",
-    "captureOutput": "UID_RESULT",
+    "keyword": "Issue Shell Cmd",
+    "captureOutput": "ARP_DATA",
     "keywordArgs": [
       {
         "position": 1,
         "sessionVariable": "CURRENT_SESSION"
+      },
+      {
+        "position": 2,
+        "staticValue": "arp -a"
       }
     ],
     "variables": [],
-    "preKeywordLog": "Running GetUID",
-    "postKeywordLog": "UID: ${UID_RESULT}"
+    "preKeywordLog": "Getting ARP table"
   }
 }

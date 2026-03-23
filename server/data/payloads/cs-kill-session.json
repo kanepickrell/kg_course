@@ -1,16 +1,16 @@
 {
-  "_key": "cs-getuid",
-  "name": "Get UID",
-  "description": "Get the current user identity from an active beacon session",
-  "icon": "\ud83d\udc64",
-  "tactic": "TA0007",
+  "_key": "cs-kill-session",
+  "name": "Kill Session",
+  "description": "Terminate an active beacon session on the teamserver",
+  "icon": "\ud83d\udc80",
+  "tactic": "TA0005",
   "category": "Cobalt Strike",
-  "subcategory": "Discovery",
+  "subcategory": "Defense Evasion",
   "riskLevel": "Low",
   "estimatedDuration": 5,
   "executionType": "cobalt_strike",
-  "robotKeyword": "GetUID",
-  "robotTemplate": "${uid}=    Run Getuid    ${session}",
+  "robotKeyword": "Kill Session",
+  "robotTemplate": "Kill Session    ${session}",
   "inputs": [
     {
       "id": "session",
@@ -22,7 +22,7 @@
   "outputs": [
     {
       "id": "session",
-      "label": "Session",
+      "label": "Session (continued)",
       "type": "Agent_Session"
     }
   ],
@@ -42,8 +42,7 @@
     "libraries": [
       "cobaltstrikec2/cobaltstrike.py"
     ],
-    "keyword": "GetUID",
-    "captureOutput": "UID_RESULT",
+    "keyword": "Kill Session",
     "keywordArgs": [
       {
         "position": 1,
@@ -51,7 +50,6 @@
       }
     ],
     "variables": [],
-    "preKeywordLog": "Running GetUID",
-    "postKeywordLog": "UID: ${UID_RESULT}"
+    "preKeywordLog": "Killing beacon session"
   }
 }

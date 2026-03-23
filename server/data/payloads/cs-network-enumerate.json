@@ -1,0 +1,93 @@
+{
+  "_key": "cs-network-enumerate",
+  "name": "Network Enumerate",
+  "description": "Run Cobalt Strike port scan against target IP range",
+  "icon": "\ud83d\udd0d",
+  "tactic": "TA0007",
+  "category": "Cobalt Strike",
+  "subcategory": "Discovery",
+  "riskLevel": "Medium",
+  "estimatedDuration": 60,
+  "executionType": "cobalt_strike",
+  "robotKeyword": "Network Enumerate",
+  "robotTemplate": "Network Enumerate    ${session}    ${target_range}    ${ports}    ${scan_method}",
+  "inputs": [
+    {
+      "id": "session",
+      "label": "Beacon Session",
+      "type": "Agent_Session",
+      "required": true
+    }
+  ],
+  "outputs": [
+    {
+      "id": "session",
+      "label": "Session",
+      "type": "Agent_Session"
+    }
+  ],
+  "parameters": [
+    {
+      "id": "session",
+      "label": "Session",
+      "type": "string",
+      "required": true,
+      "placeholder": "${session}"
+    },
+    {
+      "id": "target_range",
+      "label": "Target Range",
+      "type": "string",
+      "required": true,
+      "placeholder": "172.16.2.0/24"
+    },
+    {
+      "id": "ports",
+      "label": "Ports",
+      "type": "string",
+      "required": true,
+      "placeholder": "445,5985,135",
+      "default": "445,5985,135"
+    },
+    {
+      "id": "scan_method",
+      "label": "Method",
+      "type": "select",
+      "required": true,
+      "options": [
+        "icmp",
+        "arp"
+      ],
+      "default": "icmp"
+    }
+  ],
+  "requirements": {
+    "c2Server": true
+  },
+  "robotFramework": {
+    "libraries": [
+      "cobaltstrikec2/cobaltstrike.py"
+    ],
+    "keyword": "Network Enumerate",
+    "keywordArgs": [
+      {
+        "position": 1,
+        "sessionVariable": "CURRENT_SESSION"
+      },
+      {
+        "position": 2,
+        "param": "target_range"
+      },
+      {
+        "position": 3,
+        "param": "ports"
+      },
+      {
+        "position": 4,
+        "param": "scan_method"
+      }
+    ],
+    "variables": [],
+    "preKeywordLog": "Scanning ${target_range}"
+  }
+}

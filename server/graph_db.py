@@ -969,18 +969,9 @@ class GraphDBAdapter:
                 OPTIONAL {{ ?entity proto:tactic ?tactic }}
                 OPTIONAL {{ ?entity proto:subcategory ?subcategory }}
                 OPTIONAL {{ ?entity proto:estimatedDuration ?estimatedDuration }}
-                OPTIONAL {{
-                    ?entity proto:category ?cat .
-                    ?cat skos:prefLabel ?catLabel .
-                }}
-                OPTIONAL {{
-                    ?entity proto:riskLevel ?risk .
-                    ?risk skos:prefLabel ?riskLabel .
-                }}
-                OPTIONAL {{
-                    ?entity proto:owner ?ownerConcept .
-                    ?ownerConcept skos:prefLabel ?ownerLabel .
-                }}
+                OPTIONAL {{ ?entity proto:category ?catLabel . }}
+                OPTIONAL {{ ?entity proto:riskLevel ?riskLabel . }}
+                OPTIONAL {{ ?entity proto:owner ?ownerLabel . }}
                 {filter_clause}
             }}
             ORDER BY ?name
@@ -999,6 +990,31 @@ class GraphDBAdapter:
             seen.add(uri)
 
             key = self.uri_to_key(uri)
+
+            def strip_uri(val):
+                """Extract plain value from taxonomy URI or return as-is."""
+                if not val:
+                    return ""
+                if val.startswith("https://proto.atlas/taxonomy/"):
+                    slug = val.split("/")[-1]
+                    # mitre-TA0005 -> TA0005
+                    if slug.startswith("mitre-"):
+                        return slug[6:]
+                    # risk-medium -> Medium
+                    if slug.startswith("risk-"):
+                        return slug[5:].capitalize()
+                    # c2-cobalt-strike -> Cobalt Strike
+                    if slug.startswith("c2-"):
+                        return slug[3:].replace("-", " ").title()
+                    # status-active -> active
+                    if slug.startswith("status-"):
+                        return slug[7:]
+                    # team-automation -> Automation
+                    if slug.startswith("team-"):
+                        return slug[5:].title()
+                    return slug
+                return val
+
             modules.append({
                 "_id": f"LibraryModule/{key}",
                 "_key": key,
@@ -1006,12 +1022,12 @@ class GraphDBAdapter:
                 "name": row.get("name", key),
                 "description": row.get("description", ""),
                 "icon": row.get("icon", "⚡"),
-                "tactic": row.get("tactic", ""),
-                "category": row.get("catLabel", ""),
+                "tactic": strip_uri(row.get("tactic", "")),
+                "category": strip_uri(row.get("catLabel", "")),
                 "subcategory": row.get("subcategory", ""),
-                "riskLevel": row.get("riskLabel", ""),
+                "riskLevel": strip_uri(row.get("riskLabel", "")),
                 "estimatedDuration": row.get("estimatedDuration", ""),
-                "owner": row.get("ownerLabel", ""),
+                "owner": strip_uri(row.get("ownerLabel", "")),
             })
 
         # Total count (separate query for pagination)

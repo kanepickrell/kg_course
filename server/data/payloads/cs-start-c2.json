@@ -1,113 +1,58 @@
 {
-  "_payload_version": "2.0",
-  "_saved_at": "2026-01-23T22:24:54.292772",
-  "_artifact_key": "cs-start-c2",
-  "id": "cs-start-c2",
-  "key": "cs_start_c2",
-  "name": "Start C2",
-  "description": "Start the Cobalt Strike team server",
-  "type": "LibraryModule",
-  "icon": "\u26a1",
-  "tactic": "Initial Access",
+  "_key": "cs-start-c2",
+  "name": "Start C2 Server",
+  "description": "Connect to Cobalt Strike teamserver and initialize C2 infrastructure",
+  "icon": "\ud83d\udda5\ufe0f",
+  "tactic": "TA0042",
   "category": "Cobalt Strike",
   "subcategory": "Infrastructure",
-  "riskLevel": "low",
-  "estimatedDuration": 10,
+  "riskLevel": "Low",
+  "estimatedDuration": 30,
+  "executionType": "cobalt_strike",
+  "robotKeyword": "Start C2",
+  "robotTemplate": "Start C2",
   "inputs": [],
   "outputs": [
     {
       "id": "c2_ready",
       "label": "C2 Ready",
-      "type": "boolean",
-      "description": "Indicates C2 server is running"
+      "type": "C2_Server"
     }
   ],
-  "parameters": [
-    {
-      "id": "csIp",
-      "label": "C2 Server IP",
-      "type": "string",
-      "required": true,
-      "default": "202.84.73.4",
-      "description": "IP address of the Cobalt Strike team server"
-    },
-    {
-      "id": "csUser",
-      "label": "Username",
-      "type": "string",
-      "required": true,
-      "default": "bah",
-      "description": "Team server username"
-    },
-    {
-      "id": "csPass",
-      "label": "Password",
-      "type": "credential",
-      "required": true,
-      "default": "P@ssw0rd",
-      "description": "Team server password"
-    },
-    {
-      "id": "csDir",
-      "label": "CS Directory",
-      "type": "string",
-      "required": true,
-      "default": "/opt/cobaltstrike",
-      "description": "Cobalt Strike installation directory"
-    },
-    {
-      "id": "csPort",
-      "label": "CS Port",
-      "type": "number",
-      "required": true,
-      "default": 50050,
-      "description": "Team server port"
-    }
-  ],
+  "parameters": [],
   "requirements": {
-    "c2Server": true
+    "c2Server": false,
+    "listeners": []
   },
   "robotFramework": {
     "libraries": [
-      "cobaltstrikec2/cobaltstrike.py",
-      "OperatingSystem"
+      "cobaltstrikec2/cobaltstrike.py"
     ],
-    "resources": [],
     "keyword": "Start C2",
-    "keywordArgs": [],
-    "variables": [
+    "keywordArgs": [
       {
-        "name": "CS_IP",
-        "fromParam": "csIp",
-        "scope": "suite"
+        "position": 1,
+        "globalSetting": "CS_IP"
       },
       {
-        "name": "CS_USER",
-        "fromParam": "csUser",
-        "scope": "suite"
+        "position": 2,
+        "globalSetting": "CS_USER"
       },
       {
-        "name": "CS_PASS",
-        "fromParam": "csPass",
-        "scope": "suite"
+        "position": 3,
+        "globalSetting": "CS_PASS"
       },
       {
-        "name": "CS_DIR",
-        "fromParam": "csDir",
-        "scope": "suite"
+        "position": 4,
+        "globalSetting": "CS_DIR"
       },
       {
-        "name": "CS_PORT",
-        "fromParam": "csPort",
-        "scope": "suite"
+        "position": 5,
+        "globalSetting": "CS_PORT"
       }
     ],
-    "preKeywordLog": "=== Starting C2 Server ===",
-    "documentation": "Start the Cobalt Strike team server",
-    "tags": [
-      "c2",
-      "infrastructure",
-      "setup"
-    ]
+    "variables": [],
+    "preKeywordLog": "Starting C2 Server",
+    "postKeywordLog": "C2 Server started"
   }
 }

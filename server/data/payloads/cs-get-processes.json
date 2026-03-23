@@ -1,16 +1,17 @@
 {
-  "_key": "cs-getuid",
-  "name": "Get UID",
-  "description": "Get the current user identity from an active beacon session",
-  "icon": "\ud83d\udc64",
+  "_key": "cs-get-processes",
+  "name": "Get Processes",
+  "description": "List all running processes on target via beacon using tasklist",
+  "icon": "\ud83d\udccb",
   "tactic": "TA0007",
   "category": "Cobalt Strike",
   "subcategory": "Discovery",
   "riskLevel": "Low",
   "estimatedDuration": 5,
   "executionType": "cobalt_strike",
-  "robotKeyword": "GetUID",
-  "robotTemplate": "${uid}=    Run Getuid    ${session}",
+  "robotKeyword": "Get processes",
+  "robotTemplate": "${processes}=    Issue Shell Cmd    ${session}    tasklist",
+  "shellCommand": "tasklist",
   "inputs": [
     {
       "id": "session",
@@ -42,16 +43,19 @@
     "libraries": [
       "cobaltstrikec2/cobaltstrike.py"
     ],
-    "keyword": "GetUID",
-    "captureOutput": "UID_RESULT",
+    "keyword": "Issue Shell Cmd",
+    "captureOutput": "PROCESSES",
     "keywordArgs": [
       {
         "position": 1,
         "sessionVariable": "CURRENT_SESSION"
+      },
+      {
+        "position": 2,
+        "staticValue": "tasklist"
       }
     ],
     "variables": [],
-    "preKeywordLog": "Running GetUID",
-    "postKeywordLog": "UID: ${UID_RESULT}"
+    "preKeywordLog": "Getting running processes"
   }
 }

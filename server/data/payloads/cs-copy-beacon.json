@@ -1,16 +1,17 @@
 {
-  "_key": "cs-upload-file",
-  "name": "Upload File",
-  "description": "Upload a file from operator machine to target via Cobalt Strike beacon",
-  "icon": "\u2b06\ufe0f",
-  "tactic": "TA0001",
+  "_key": "cs-copy-beacon",
+  "name": "Copy Beacon",
+  "description": "Copy beacon executable to a new location to stage for persistence",
+  "icon": "\ud83d\udccb",
+  "tactic": "TA0005",
   "category": "Cobalt Strike",
-  "subcategory": "Staging",
+  "subcategory": "Defense Evasion",
   "riskLevel": "Medium",
-  "estimatedDuration": 20,
+  "estimatedDuration": 5,
   "executionType": "cobalt_strike",
-  "robotKeyword": "Upload File",
-  "robotTemplate": "cobaltstrike.Upload File    ${session}    ${local_file}    ${upload_path}",
+  "robotKeyword": "Copy Beacon",
+  "robotTemplate": "Issue Shell Cmd    ${session}    copy ${current_location} ${new_location}",
+  "shellCommand": "copy ${current_location} ${new_location}",
   "inputs": [
     {
       "id": "session",
@@ -35,18 +36,18 @@
       "placeholder": "${session}"
     },
     {
-      "id": "local_file",
-      "label": "Local File Path",
-      "type": "string",
-      "required": true,
-      "placeholder": "${WORKDIR}/update.exe"
-    },
-    {
-      "id": "upload_path",
-      "label": "Remote Destination",
+      "id": "current_location",
+      "label": "Source Path",
       "type": "string",
       "required": true,
       "placeholder": "C:\\Users\\Administrator\\Downloads\\update.exe"
+    },
+    {
+      "id": "new_location",
+      "label": "Destination Path",
+      "type": "string",
+      "required": true,
+      "placeholder": "C:\\Users\\Administrator\\AppData\\Local\\Temp\\update.exe"
     }
   ],
   "requirements": {
@@ -56,7 +57,7 @@
     "libraries": [
       "cobaltstrikec2/cobaltstrike.py"
     ],
-    "keyword": "Upload File",
+    "keyword": "Copy Beacon",
     "keywordArgs": [
       {
         "position": 1,
@@ -64,14 +65,14 @@
       },
       {
         "position": 2,
-        "param": "local_file"
+        "param": "current_location"
       },
       {
         "position": 3,
-        "param": "upload_path"
+        "param": "new_location"
       }
     ],
     "variables": [],
-    "preKeywordLog": "Uploading ${local_file}"
+    "preKeywordLog": "Copying beacon to ${new_location}"
   }
 }

@@ -1,0 +1,79 @@
+{
+  "_key": "cs-query-registry",
+  "name": "Query Registry",
+  "description": "Query a registry path via beacon to verify persistence keys",
+  "icon": "\ud83d\udd0e",
+  "tactic": "TA0007",
+  "category": "Cobalt Strike",
+  "subcategory": "Discovery",
+  "riskLevel": "Low",
+  "estimatedDuration": 5,
+  "executionType": "cobalt_strike",
+  "robotKeyword": "Query Registry",
+  "robotTemplate": "${output}=    Issue Shell Cmd    ${session}    reg query ${arch} ${registry_path}",
+  "shellCommand": "reg query ${arch} ${registry_path}",
+  "inputs": [
+    {
+      "id": "session",
+      "label": "Beacon Session",
+      "type": "Agent_Session",
+      "required": true
+    }
+  ],
+  "outputs": [
+    {
+      "id": "session",
+      "label": "Session",
+      "type": "Agent_Session"
+    }
+  ],
+  "parameters": [
+    {
+      "id": "session",
+      "label": "Session",
+      "type": "string",
+      "required": true,
+      "placeholder": "${session}"
+    },
+    {
+      "id": "arch",
+      "label": "Architecture Flag",
+      "type": "select",
+      "required": true,
+      "options": [
+        "/reg:64",
+        "/reg:32"
+      ],
+      "default": "/reg:64"
+    },
+    {
+      "id": "registry_path",
+      "label": "Registry Path",
+      "type": "string",
+      "required": true,
+      "placeholder": "HKEY_CURRENT_USER\\Software\\Microsoft\\Windows\\CurrentVersion\\Run"
+    }
+  ],
+  "requirements": {
+    "c2Server": true
+  },
+  "robotFramework": {
+    "libraries": [
+      "cobaltstrikec2/cobaltstrike.py"
+    ],
+    "keyword": "Issue Shell Cmd",
+    "captureOutput": "REG_DATA",
+    "keywordArgs": [
+      {
+        "position": 1,
+        "sessionVariable": "CURRENT_SESSION"
+      },
+      {
+        "position": 2,
+        "param": "registry_path"
+      }
+    ],
+    "variables": [],
+    "preKeywordLog": "Querying registry"
+  }
+}

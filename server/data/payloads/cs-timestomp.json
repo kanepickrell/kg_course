@@ -1,16 +1,16 @@
 {
-  "_key": "cs-upload-file",
-  "name": "Upload File",
-  "description": "Upload a file from operator machine to target via Cobalt Strike beacon",
-  "icon": "\u2b06\ufe0f",
-  "tactic": "TA0001",
+  "_key": "cs-timestomp",
+  "name": "Timestomp File",
+  "description": "Modify file timestamps to match a reference file to defeat forensic analysis",
+  "icon": "\ud83d\udd50",
+  "tactic": "TA0005",
   "category": "Cobalt Strike",
-  "subcategory": "Staging",
+  "subcategory": "Defense Evasion",
   "riskLevel": "Medium",
-  "estimatedDuration": 20,
+  "estimatedDuration": 5,
   "executionType": "cobalt_strike",
-  "robotKeyword": "Upload File",
-  "robotTemplate": "cobaltstrike.Upload File    ${session}    ${local_file}    ${upload_path}",
+  "robotKeyword": "Run Btimestomp",
+  "robotTemplate": "Run Btimestomp    ${session}    ${target_file}    ${reference_file}",
   "inputs": [
     {
       "id": "session",
@@ -35,18 +35,18 @@
       "placeholder": "${session}"
     },
     {
-      "id": "local_file",
-      "label": "Local File Path",
+      "id": "target_file",
+      "label": "File to Modify",
       "type": "string",
       "required": true,
-      "placeholder": "${WORKDIR}/update.exe"
+      "placeholder": "C:\\inetpub\\wwwroot\\http.php"
     },
     {
-      "id": "upload_path",
-      "label": "Remote Destination",
+      "id": "reference_file",
+      "label": "Reference File",
       "type": "string",
       "required": true,
-      "placeholder": "C:\\Users\\Administrator\\Downloads\\update.exe"
+      "placeholder": "C:\\inetpub\\wwwroot\\index.html"
     }
   ],
   "requirements": {
@@ -56,7 +56,7 @@
     "libraries": [
       "cobaltstrikec2/cobaltstrike.py"
     ],
-    "keyword": "Upload File",
+    "keyword": "Run Btimestomp",
     "keywordArgs": [
       {
         "position": 1,
@@ -64,14 +64,14 @@
       },
       {
         "position": 2,
-        "param": "local_file"
+        "param": "target_file"
       },
       {
         "position": 3,
-        "param": "upload_path"
+        "param": "reference_file"
       }
     ],
     "variables": [],
-    "preKeywordLog": "Uploading ${local_file}"
+    "preKeywordLog": "Timestomping ${target_file}"
   }
 }

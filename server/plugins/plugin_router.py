@@ -75,7 +75,7 @@ OPERATOR_PAYLOAD_FIELDS = [
     "inputs", "outputs", "parameters", "requirements",
     "executionType", "cobaltStrikeCommand", "robotKeyword",
     "robotTemplate", "shellCommand", "estimatedDuration",
-    "subcategory", "icon"
+    "subcategory", "icon", "robotFramework"
 ]
 
 

@@ -1,63 +1,67 @@
 {
-  "_payload_version": "2.0",
-  "_saved_at": "2026-01-23T22:24:31.445337",
-  "_artifact_key": "cs-create-listener",
-  "id": "cs-create-listener",
+  "_key": "cs-create-listener",
   "name": "Create Listener",
-  "description": "Create a C2 listener for beacon callbacks",
-  "type": "LibraryModule",
+  "description": "Create an HTTP, HTTPS, or SMB listener on the Cobalt Strike teamserver",
   "icon": "\ud83d\udce1",
-  "tactic": "Command and Control",
+  "tactic": "TA0011",
   "category": "Cobalt Strike",
   "subcategory": "Infrastructure",
-  "riskLevel": "medium",
-  "estimatedDuration": 5,
+  "riskLevel": "Medium",
+  "estimatedDuration": 20,
+  "executionType": "cobalt_strike",
+  "robotKeyword": "Create Listener",
+  "robotTemplate": "Create Listener    ${listener_name}    ${listener_port}    ${listener_type}    ${cs_ip}",
   "inputs": [
     {
-      "id": "c2_ready",
-      "label": "C2 Ready",
-      "type": "boolean",
-      "required": true
+      "id": "c2_server",
+      "label": "C2 Server",
+      "type": "C2_Server",
+      "required": false
     }
   ],
   "outputs": [
     {
-      "id": "listener_active",
-      "label": "Listener Active",
-      "type": "boolean",
-      "description": "Indicates listener is running"
+      "id": "listener",
+      "label": "C2 Listener",
+      "type": "Agent_Session"
     }
   ],
   "parameters": [
     {
-      "id": "listenerName",
+      "id": "listener_name",
       "label": "Listener Name",
       "type": "string",
       "required": true,
-      "default": "HTTP",
-      "description": "Name identifier for the listener"
+      "placeholder": "HTTP",
+      "default": "HTTP"
     },
     {
-      "id": "listenerPort",
+      "id": "listener_port",
       "label": "Port",
       "type": "number",
       "required": true,
-      "default": 80,
-      "description": "Port for listener to bind"
+      "placeholder": "80",
+      "default": 80
     },
     {
-      "id": "listenerType",
-      "label": "Listener Type",
+      "id": "listener_type",
+      "label": "Type",
       "type": "select",
       "required": true,
       "options": [
         "Beacon_HTTP",
         "Beacon_HTTPS",
-        "Beacon_DNS",
         "Beacon_SMB"
       ],
-      "default": "Beacon_HTTP",
-      "description": "Type of beacon listener"
+      "default": "Beacon_HTTP"
+    },
+    {
+      "id": "cs_ip",
+      "label": "CS Team Server IP",
+      "type": "string",
+      "required": true,
+      "placeholder": "${CS_IP}",
+      "default": "${CS_IP}"
     }
   ],
   "requirements": {
@@ -67,56 +71,33 @@
     "libraries": [
       "cobaltstrikec2/cobaltstrike.py"
     ],
-    "resources": [],
     "keyword": "Create Listener",
     "keywordArgs": [
       {
-        "param": "listenerName",
         "position": 1,
-        "variableRef": true,
-        "variableName": "LISTENER_NAME"
+        "param": "listener_name"
       },
       {
-        "param": "listenerPort",
         "position": 2,
-        "variableRef": true,
-        "variableName": "LISTENER_PORT"
+        "param": "listener_port"
       },
       {
-        "param": "listenerType",
         "position": 3,
-        "variableRef": true,
-        "variableName": "LISTENER_TYPE"
+        "param": "listener_type"
       },
       {
-        "globalSetting": "CS_IP",
-        "position": 4
+        "position": 4,
+        "globalSetting": "CS_IP"
       }
     ],
     "variables": [
       {
         "name": "LISTENER_NAME",
-        "fromParam": "listenerName",
-        "scope": "suite"
-      },
-      {
-        "name": "LISTENER_PORT",
-        "fromParam": "listenerPort",
-        "scope": "suite"
-      },
-      {
-        "name": "LISTENER_TYPE",
-        "fromParam": "listenerType",
-        "scope": "suite"
+        "fromParam": "listener_name",
+        "scope": "suite",
+        "default": "HTTP"
       }
     ],
-    "preKeywordLog": "=== Creating Listener: ${LISTENER_NAME} ===",
-    "documentation": "Create a C2 listener for beacon callbacks",
-    "tags": [
-      "tid:t1071",
-      "c2",
-      "listener",
-      "infrastructure"
-    ]
+    "preKeywordLog": "Creating listener: ${LISTENER_NAME}"
   }
 }

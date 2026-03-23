@@ -1,16 +1,16 @@
 {
-  "_key": "cs-upload-file",
-  "name": "Upload File",
-  "description": "Upload a file from operator machine to target via Cobalt Strike beacon",
-  "icon": "\u2b06\ufe0f",
-  "tactic": "TA0001",
+  "_key": "cs-session-sleep",
+  "name": "Session Sleep",
+  "description": "Set beacon sleep timer and jitter to control callback frequency",
+  "icon": "\ud83d\udca4",
+  "tactic": "TA0005",
   "category": "Cobalt Strike",
-  "subcategory": "Staging",
-  "riskLevel": "Medium",
-  "estimatedDuration": 20,
+  "subcategory": "Defense Evasion",
+  "riskLevel": "Low",
+  "estimatedDuration": 5,
   "executionType": "cobalt_strike",
-  "robotKeyword": "Upload File",
-  "robotTemplate": "cobaltstrike.Upload File    ${session}    ${local_file}    ${upload_path}",
+  "robotKeyword": "Session Sleep",
+  "robotTemplate": "Session Sleep    ${session}    ${sleep_seconds}    ${jitter_percent}",
   "inputs": [
     {
       "id": "session",
@@ -35,18 +35,20 @@
       "placeholder": "${session}"
     },
     {
-      "id": "local_file",
-      "label": "Local File Path",
-      "type": "string",
+      "id": "sleep_seconds",
+      "label": "Sleep (seconds)",
+      "type": "number",
       "required": true,
-      "placeholder": "${WORKDIR}/update.exe"
+      "default": 30,
+      "placeholder": "30"
     },
     {
-      "id": "upload_path",
-      "label": "Remote Destination",
-      "type": "string",
-      "required": true,
-      "placeholder": "C:\\Users\\Administrator\\Downloads\\update.exe"
+      "id": "jitter_percent",
+      "label": "Jitter %",
+      "type": "number",
+      "required": false,
+      "default": 20,
+      "placeholder": "20"
     }
   ],
   "requirements": {
@@ -56,7 +58,7 @@
     "libraries": [
       "cobaltstrikec2/cobaltstrike.py"
     ],
-    "keyword": "Upload File",
+    "keyword": "Session Sleep",
     "keywordArgs": [
       {
         "position": 1,
@@ -64,14 +66,14 @@
       },
       {
         "position": 2,
-        "param": "local_file"
+        "param": "sleep_seconds"
       },
       {
         "position": 3,
-        "param": "upload_path"
+        "param": "jitter_percent"
       }
     ],
     "variables": [],
-    "preKeywordLog": "Uploading ${local_file}"
+    "preKeywordLog": "Setting beacon sleep timer"
   }
 }

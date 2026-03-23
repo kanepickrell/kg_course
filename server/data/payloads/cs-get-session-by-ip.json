@@ -1,89 +1,62 @@
 {
-  "_payload_version": "2.0",
-  "_saved_at": "2026-01-27T23:16:18.601772",
-  "_artifact_key": "cs-get-session-by-ip",
-  "id": "cs-get-session-by-ip",
+  "_key": "cs-get-session-by-ip",
   "name": "Get Session By IP",
-  "description": "Retrieve an active beacon session by target IP address",
-  "tactic": "Execution",
+  "description": "Retrieve active beacon sessions for a target IP from the teamserver",
+  "icon": "\ud83d\udd0c",
+  "tactic": "TA0011",
   "category": "Cobalt Strike",
   "subcategory": "Session Management",
-  "riskLevel": "low",
-  "estimatedDuration": 15,
+  "riskLevel": "Low",
+  "estimatedDuration": 10,
+  "executionType": "cobalt_strike",
+  "robotKeyword": "Get Sessions By Ip",
+  "robotTemplate": "@{sessions}=    Get Sessions By Ip    ${target_ip}\n${session}=    SET VARIABLE    ${sessions[0]}",
   "inputs": [
     {
-      "id": "trigger",
-      "label": "Previous Step",
-      "type": "any",
-      "required": true,
-      "description": "Connect from previous node to ensure execution order"
+      "id": "c2_server",
+      "label": "C2 Server / Prior Step",
+      "type": "C2_Server",
+      "required": false
     }
   ],
   "outputs": [
     {
       "id": "session",
-      "label": "Session",
-      "type": "session",
-      "description": "Retrieved beacon session"
+      "label": "Beacon Session",
+      "type": "Agent_Session"
     }
   ],
   "parameters": [
     {
-      "id": "targetIp",
+      "id": "target_ip",
       "label": "Target IP",
       "type": "string",
       "required": true,
-      "default": "",
-      "description": "IP address of target with active beacon"
-    },
-    {
-      "id": "sleepBefore",
-      "label": "Wait Before (seconds)",
-      "type": "number",
-      "required": false,
-      "default": 10,
-      "description": "Seconds to wait before checking for session"
+      "placeholder": "172.16.2.5"
     }
   ],
   "requirements": {
-    "c2Server": true,
-    "activeSession": false
+    "c2Server": true
   },
   "robotFramework": {
     "libraries": [
-      "cobaltstrike.py"
+      "cobaltstrikec2/cobaltstrike.py"
     ],
     "keyword": "Get Sessions By Ip",
+    "captureOutput": "SESSIONS",
+    "captureOutputAsList": true,
     "keywordArgs": [
       {
-        "param": "targetIp",
         "position": 1,
-        "variableRef": true,
-        "variableName": "TARGET_IP"
+        "param": "target_ip"
       }
     ],
-    "variables": [
-      {
-        "name": "TARGET_IP",
-        "fromParam": "targetIp",
-        "scope": "suite"
-      },
-      {
-        "name": "SLEEP_BEFORE",
-        "fromParam": "sleepBefore",
-        "scope": "suite"
-      }
-    ],
-    "preKeywordStatements": [
-      "Sleep    ${SLEEP_BEFORE}s"
-    ],
-    "captureOutput": "sessions",
-    "captureOutputAsList": true,
     "postKeywordStatements": [
-      "${CURRENT_SESSION}=    Set Variable    ${sessions}[0]"
+      "${CURRENT_SESSION}=    SET VARIABLE    ${SESSIONS[0]}"
     ],
     "sessionVariable": "CURRENT_SESSION",
-    "preKeywordLog": "=== Getting Session for ${TARGET_IP} ===",
-    "postKeywordLog": "Retrieved session: ${CURRENT_SESSION}"
+    "variables": [],
+    "preKeywordLog": "Getting beacon session",
+    "postKeywordLog": "Session acquired"
   }
 }

@@ -1,0 +1,89 @@
+{
+  "_key": "cs-inject-process",
+  "name": "Inject Process",
+  "description": "Inject beacon shellcode into a running process by PID",
+  "icon": "\ud83d\udc89",
+  "tactic": "TA0004",
+  "category": "Cobalt Strike",
+  "subcategory": "Privilege Escalation",
+  "riskLevel": "High",
+  "estimatedDuration": 15,
+  "executionType": "cobalt_strike",
+  "robotKeyword": "Inject Process",
+  "robotTemplate": "${output}=    Run Binject    ${session}    ${pid}    ${listener_name}    ${arch}",
+  "inputs": [
+    {
+      "id": "session",
+      "label": "Source Beacon",
+      "type": "Agent_Session",
+      "required": true
+    }
+  ],
+  "outputs": [
+    {
+      "id": "session",
+      "label": "Injected Session",
+      "type": "Agent_Session"
+    }
+  ],
+  "parameters": [
+    {
+      "id": "session",
+      "label": "Session",
+      "type": "string",
+      "required": true,
+      "placeholder": "${session}"
+    },
+    {
+      "id": "pid",
+      "label": "Target PID",
+      "type": "string",
+      "required": true,
+      "placeholder": "${explorer_pid}"
+    },
+    {
+      "id": "listener_name",
+      "label": "Listener",
+      "type": "string",
+      "required": true,
+      "placeholder": "HTTP",
+      "default": "HTTP"
+    },
+    {
+      "id": "arch",
+      "label": "Architecture",
+      "type": "select",
+      "required": true,
+      "options": [
+        "x64",
+        "x86"
+      ],
+      "default": "x64"
+    }
+  ],
+  "requirements": {
+    "c2Server": true,
+    "listeners": [
+      "HTTP"
+    ]
+  },
+  "robotFramework": {
+    "libraries": [
+      "cobaltstrikec2/cobaltstrike.py"
+    ],
+    "keyword": "Inject Process",
+    "captureOutput": "INJECT_RESULT",
+    "keywordArgs": [
+      {
+        "position": 1,
+        "sessionVariable": "CURRENT_SESSION"
+      },
+      {
+        "position": 2,
+        "param": "pid"
+      }
+    ],
+    "variables": [],
+    "preKeywordLog": "Injecting into PID: ${pid}"
+  }
+}

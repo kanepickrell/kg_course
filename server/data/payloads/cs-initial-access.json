@@ -1,125 +1,94 @@
 {
-  "_payload_version": "2.0",
-  "_saved_at": "2026-01-27T23:36:04.354687",
-  "_artifact_key": "cs-initial-access",
-  "id": "cs-initial-access",
-  "name": "Initial Access (SCP/SSH)",
-  "description": "Deploy and execute beacon on target via SCP file transfer and SSH execution",
+  "_key": "cs-initial-access",
+  "name": "Initial Access via SCP/SSH",
+  "description": "Copy beacon payload to target via SCP then execute via SSH",
+  "icon": "\ud83d\udeaa",
+  "tactic": "TA0001",
   "category": "Cobalt Strike",
-  "tactic": "Initial Access",
-  "subcategory": "Access",
-  "riskLevel": "high",
-  "estimatedDuration": 30,
+  "subcategory": "Initial Access",
+  "riskLevel": "High",
+  "estimatedDuration": 60,
+  "executionType": "cobalt_strike",
+  "robotKeyword": "Initial Access",
+  "robotTemplate": "Initial Access    ${target_ip}    ${username}    ${password}    ${local_beacon_path}",
   "inputs": [
     {
       "id": "payload",
-      "label": "Payload File",
-      "type": "file",
-      "required": true,
-      "description": "Path to beacon executable from payload generation"
+      "label": "Payload / Prior Step",
+      "type": "C2_Server",
+      "required": false
     }
   ],
   "outputs": [
     {
-      "id": "completed",
-      "label": "Completed",
-      "type": "any",
-      "description": "Signals beacon was deployed and executed"
+      "id": "session",
+      "label": "Beacon Session",
+      "type": "Agent_Session"
     }
   ],
   "parameters": [
     {
-      "id": "targetIp",
+      "id": "target_ip",
       "label": "Target IP",
       "type": "string",
       "required": true,
-      "default": "",
-      "description": "IP address of target Windows system"
+      "placeholder": "172.16.2.5"
     },
     {
       "id": "username",
       "label": "Username",
       "type": "string",
       "required": true,
-      "default": "Administrator",
-      "description": "SSH/SCP username on target"
+      "placeholder": "Administrator"
     },
     {
       "id": "password",
       "label": "Password",
-      "type": "credential",
+      "type": "string",
       "required": true,
-      "default": "",
-      "description": "SSH/SCP password for target"
+      "placeholder": "P@ssw0rd"
     },
     {
-      "id": "localBeacon",
+      "id": "local_beacon_path",
       "label": "Local Beacon Path",
       "type": "string",
       "required": true,
-      "default": "",
-      "description": "Local path to beacon executable"
+      "placeholder": "${WORKDIR}update.exe",
+      "default": "${WORKDIR}update.exe"
     }
   ],
   "requirements": {
     "c2Server": true,
-    "activeSession": false,
-    "networkAccess": true
+    "listeners": [
+      "HTTP"
+    ]
   },
   "robotFramework": {
     "libraries": [
-      "cobaltstrike.py"
+      "cobaltstrikec2/cobaltstrike.py",
+      "SCPLibrary",
+      "SSHLibrary"
     ],
-    "keyword": "Initial_Access",
+    "keyword": "Initial Access",
     "keywordArgs": [
       {
-        "param": "targetIp",
         "position": 1,
-        "variableRef": true,
-        "variableName": "TARGET_IP"
+        "param": "target_ip"
       },
       {
-        "param": "username",
         "position": 2,
-        "variableRef": true,
-        "variableName": "USERNAME"
+        "param": "username"
       },
       {
-        "param": "password",
         "position": 3,
-        "variableRef": true,
-        "variableName": "PASSWORD"
+        "param": "password"
       },
       {
-        "param": "localBeacon",
         "position": 4,
-        "variableRef": true,
-        "variableName": "LOCAL_BEACON"
+        "param": "local_beacon_path"
       }
     ],
-    "variables": [
-      {
-        "name": "TARGET_IP",
-        "fromParam": "targetIp",
-        "scope": "suite"
-      },
-      {
-        "name": "USERNAME",
-        "fromParam": "username",
-        "scope": "suite"
-      },
-      {
-        "name": "PASSWORD",
-        "fromParam": "password",
-        "scope": "suite"
-      },
-      {
-        "name": "LOCAL_BEACON",
-        "fromParam": "localBeacon",
-        "scope": "suite"
-      }
-    ],
-    "preKeywordLog": "=== Initial Access to ${TARGET_IP} ===",
-    "postKeywordLog": "Beacon deployed and executed on ${TARGET_IP}"
+    "variables": [],
+    "preKeywordLog": "Establishing initial access"
   }
 }

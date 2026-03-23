@@ -1,16 +1,16 @@
 {
-  "_key": "cs-upload-file",
-  "name": "Upload File",
-  "description": "Upload a file from operator machine to target via Cobalt Strike beacon",
-  "icon": "\u2b06\ufe0f",
-  "tactic": "TA0001",
+  "_key": "cs-stage-data",
+  "name": "Stage Data",
+  "description": "Archive target files using PowerShell Compress-Archive for exfiltration",
+  "icon": "\ud83d\udce6",
+  "tactic": "TA0009",
   "category": "Cobalt Strike",
-  "subcategory": "Staging",
-  "riskLevel": "Medium",
-  "estimatedDuration": 20,
+  "subcategory": "Collection",
+  "riskLevel": "High",
+  "estimatedDuration": 30,
   "executionType": "cobalt_strike",
-  "robotKeyword": "Upload File",
-  "robotTemplate": "cobaltstrike.Upload File    ${session}    ${local_file}    ${upload_path}",
+  "robotKeyword": "Stage Data",
+  "robotTemplate": "${output}=    Issue Powershell Cmd    ${session}    Compress-Archive -Path ${source_directory} -DestinationPath ${destination}",
   "inputs": [
     {
       "id": "session",
@@ -35,18 +35,18 @@
       "placeholder": "${session}"
     },
     {
-      "id": "local_file",
-      "label": "Local File Path",
+      "id": "source_directory",
+      "label": "Source Path",
       "type": "string",
       "required": true,
-      "placeholder": "${WORKDIR}/update.exe"
+      "placeholder": "C:\\Users\\Administrator\\Documents\\*.jpg"
     },
     {
-      "id": "upload_path",
-      "label": "Remote Destination",
+      "id": "destination",
+      "label": "Destination Archive",
       "type": "string",
       "required": true,
-      "placeholder": "C:\\Users\\Administrator\\Downloads\\update.exe"
+      "placeholder": "C:\\Windows\\Temp\\tmp.zip"
     }
   ],
   "requirements": {
@@ -56,7 +56,8 @@
     "libraries": [
       "cobaltstrikec2/cobaltstrike.py"
     ],
-    "keyword": "Upload File",
+    "keyword": "Stage Data",
+    "captureOutput": "STAGE_RESULT",
     "keywordArgs": [
       {
         "position": 1,
@@ -64,14 +65,14 @@
       },
       {
         "position": 2,
-        "param": "local_file"
+        "param": "source_directory"
       },
       {
         "position": 3,
-        "param": "upload_path"
+        "param": "destination"
       }
     ],
     "variables": [],
-    "preKeywordLog": "Uploading ${local_file}"
+    "preKeywordLog": "Staging data for exfiltration"
   }
 }

@@ -1,16 +1,17 @@
 {
-  "_key": "cs-getuid",
-  "name": "Get UID",
-  "description": "Get the current user identity from an active beacon session",
-  "icon": "\ud83d\udc64",
+  "_key": "cs-list-directory",
+  "name": "List Directory",
+  "description": "List contents of a directory on target via beacon",
+  "icon": "\ud83d\udcc1",
   "tactic": "TA0007",
   "category": "Cobalt Strike",
   "subcategory": "Discovery",
   "riskLevel": "Low",
   "estimatedDuration": 5,
   "executionType": "cobalt_strike",
-  "robotKeyword": "GetUID",
-  "robotTemplate": "${uid}=    Run Getuid    ${session}",
+  "robotKeyword": "list directory",
+  "robotTemplate": "${output}=    Issue Shell Cmd    ${session}    dir ${directory}",
+  "shellCommand": "dir ${directory}",
   "inputs": [
     {
       "id": "session",
@@ -33,6 +34,14 @@
       "type": "string",
       "required": true,
       "placeholder": "${session}"
+    },
+    {
+      "id": "directory",
+      "label": "Directory Path",
+      "type": "string",
+      "required": false,
+      "placeholder": "C:\\Users\\Administrator\\Downloads",
+      "default": "."
     }
   ],
   "requirements": {
@@ -42,16 +51,19 @@
     "libraries": [
       "cobaltstrikec2/cobaltstrike.py"
     ],
-    "keyword": "GetUID",
-    "captureOutput": "UID_RESULT",
+    "keyword": "Issue Shell Cmd",
+    "captureOutput": "DIR_LISTING",
     "keywordArgs": [
       {
         "position": 1,
         "sessionVariable": "CURRENT_SESSION"
+      },
+      {
+        "position": 2,
+        "param": "directory"
       }
     ],
     "variables": [],
-    "preKeywordLog": "Running GetUID",
-    "postKeywordLog": "UID: ${UID_RESULT}"
+    "preKeywordLog": "Listing directory"
   }
 }
