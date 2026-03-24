@@ -14,13 +14,11 @@ import os
 import json
 from datetime import datetime
 from typing import Optional, List, Dict, Any
-from fastapi import FastAPI, HTTPException, Query, Request
+from fastapi import FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
 from dotenv import load_dotenv
 from pydantic import BaseModel, Field
 from enum import Enum
-from pathlib import Path
-import httpx
 import ollama
 
 from analytics import calculate_team_coupling
@@ -2392,8 +2390,9 @@ async def get_library_modules_for_operator(
     tags: Optional[str] = Query(None, description="Comma-separated tags"),
     limit: int = 100
 ):
-    if not gdb:
-        raise HTTPException(status_code=503, detail="GraphDB not connected")
+    """
+    Get library modules from GraphDB, enriched with payload file data.
+    """
     try:
         result = gdb.get_library_modules(
             category=category,
@@ -2438,6 +2437,7 @@ async def get_library_modules_for_operator(
                 enriched.setdefault("outputs", [])
                 enriched.setdefault("parameters", [])
 
+            # Filter by execution_type post-query (GraphDB method doesn't support it natively)
             if execution_type and enriched.get("executionType") != execution_type:
                 continue
 
@@ -2463,43 +2463,31 @@ async def get_library_modules_for_operator(
 async def get_library_module(module_key: str):
     """
     Get a specific library module by key.
+    
+    Example:
+    - /api/library-modules/lib_cs_mimikatz
     """
-    if not gdb:
-        raise HTTPException(status_code=503, detail="GraphDB not connected")
-
+    if not db:
+        raise HTTPException(status_code=503, detail="Database not connected")
+    
     try:
-        module = gdb.get_library_module(module_key)
-        if not module:
+        collection = db.collection("LibraryModule")
+        
+        if not collection.has(module_key):
             raise HTTPException(status_code=404, detail=f"Module '{module_key}' not found")
-
-        # Enrich with payload file
-        payload_dir = os.getenv("PAYLOAD_STORAGE_DIR", "./data/payloads")
-        payload_path = os.path.join(payload_dir, f"{module_key}.json")
-        if os.path.exists(payload_path):
-            try:
-                with open(payload_path, "r", encoding="utf-8") as f:
-                    payload = json.load(f)
-                module["inputs"] = payload.get("inputs", [])
-                module["outputs"] = payload.get("outputs", [])
-                module["parameters"] = payload.get("parameters", [])
-                module["requirements"] = payload.get("requirements", {})
-                module["robotFramework"] = payload.get("robotFramework", {})
-                module["robotKeyword"] = payload.get("robotKeyword") or module.get("robotKeyword")
-                module["robotTemplate"] = payload.get("robotTemplate") or module.get("robotTemplate")
-                module["executionType"] = payload.get("executionType") or module.get("executionType")
-                module["estimatedDuration"] = payload.get("estimatedDuration") or module.get("estimatedDuration")
-                module["subcategory"] = payload.get("subcategory") or module.get("subcategory", "")
-                module["icon"] = payload.get("icon") or module.get("icon", "⚡")
-            except Exception as e:
-                print(f"⚠️ Payload load failed for {module_key}: {e}")
-
-        return {"success": True, "module": module}
-
+        
+        module = collection.get(module_key)
+        
+        return {
+            "success": True,
+            "module": module
+        }
+        
     except HTTPException:
         raise
     except Exception as e:
         print(f"❌ Failed to fetch module: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail=f"Failed to fetch module: {str(e)}")
 
 
 @app.get("/api/library-modules/categories")
@@ -2895,50 +2883,6 @@ async def run_discovery(artifact_id: str, max_candidates: int = 10):
         import traceback
         traceback.print_exc()
         raise HTTPException(status_code=500, detail=str(e))
-
-@app.post("/api/ingest/payloads/{key}.json")
-async def save_payload_file(key: str, request: Request):
-    payload = await request.json()
-    path = Path("./data/payloads") / f"{key}.json"
-    path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(json.dumps(payload, indent=2, ensure_ascii=False))
-    return {"saved": str(path), "key": key}
-
-@app.post("/api/ingest/ttl")
-async def ingest_ttl(request: Request):
-    """
-    Proxy TTL (Turtle RDF) to GraphDB.
-
-    The browser cannot POST directly to GraphDB due to CORS restrictions.
-    All TTL writes from the frontend go through this endpoint instead.
-
-    Used by: LibraryModuleWizard (DataIngestionModal) on commit.
-    """
-    ttl_body = await request.body()
-    try:
-        async with httpx.AsyncClient(timeout=30.0) as client:
-            res = await client.post(
-                f"{GRAPHDB_ENDPOINT}/repositories/{GRAPHDB_REPO}/statements",
-                content=ttl_body,
-                headers={"Content-Type": "text/turtle"},
-            )
-        if res.status_code not in (200, 204):
-            raise HTTPException(
-                status_code=res.status_code,
-                detail=f"GraphDB rejected TTL: {res.text[:500]}"
-            )
-        return {"ok": True, "status": res.status_code}
-    except httpx.ConnectError:
-        raise HTTPException(
-            status_code=503,
-            detail=f"Cannot reach GraphDB at {GRAPHDB_ENDPOINT}"
-        )
-    except HTTPException:
-        raise
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"TTL ingest failed: {str(e)}")
-
-
 
 
 def _save_suggestions_to_pending(artifact_id: str, suggestions: List[Dict]):

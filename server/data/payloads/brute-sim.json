@@ -1,0 +1,115 @@
+{
+  "_key": "brute-sim",
+  "name": "Brute Sim",
+  "description": "Simulate credential brute force activity against a domain with configurable attempt count and delay",
+  "icon": "⚡",
+  "tactic": "TA0006",
+  "category": "Cobalt Strike",
+  "subcategory": "Brute Force",
+  "riskLevel": "High",
+  "estimatedDuration": 30,
+  "executionType": "cobalt_strike",
+  "robotKeyword": "Brute Sim",
+  "robotTemplate": "${output}=    Brute Sim    ${session}    ${target_ip}    ${username}    ${password}    ${domain}",
+  "inputs": [
+    {
+      "id": "agent_session",
+      "label": "Beacon Session",
+      "type": "Agent_Session",
+      "required": true
+    }
+  ],
+  "outputs": [],
+  "parameters": [
+    {
+      "id": "target_ip",
+      "label": "Target IP",
+      "type": "string",
+      "required": true,
+      "placeholder": "192.168.1.10",
+      "default": ""
+    },
+    {
+      "id": "username",
+      "label": "Username",
+      "type": "string",
+      "required": true,
+      "placeholder": "Administrator",
+      "default": ""
+    },
+    {
+      "id": "password",
+      "label": "Password",
+      "type": "string",
+      "required": true,
+      "placeholder": "P@ssw0rd",
+      "default": ""
+    },
+    {
+      "id": "domain",
+      "label": "Domain",
+      "type": "string",
+      "required": true,
+      "placeholder": "WORKGROUP",
+      "default": ""
+    }
+  ],
+  "requirements": {
+    "activeBeacon": true
+  },
+  "robotFramework": {
+    "libraries": [
+      "cobaltstrikec2/cobaltstrike.py"
+    ],
+    "keyword": "Brute Sim",
+    "keywordArgs": [
+      {
+        "position": 1,
+        "param": "session"
+      },
+      {
+        "position": 2,
+        "param": "target_ip"
+      },
+      {
+        "position": 3,
+        "param": "username"
+      },
+      {
+        "position": 4,
+        "param": "password"
+      },
+      {
+        "position": 5,
+        "param": "domain"
+      }
+    ],
+    "variables": [
+      {
+        "name": "TARGET_IP",
+        "fromParam": "target_ip",
+        "scope": "suite",
+        "default": ""
+      },
+      {
+        "name": "USERNAME",
+        "fromParam": "username",
+        "scope": "suite",
+        "default": ""
+      },
+      {
+        "name": "PASSWORD",
+        "fromParam": "password",
+        "scope": "suite",
+        "default": ""
+      },
+      {
+        "name": "DOMAIN",
+        "fromParam": "domain",
+        "scope": "suite",
+        "default": ""
+      }
+    ],
+    "preKeywordLog": "Executing: Brute Sim"
+  }
+}

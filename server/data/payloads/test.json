@@ -1,0 +1,12 @@
+{
+  "_payload_version": "2.0",
+  "_saved_at": "2026-03-23T23:39:33.166330+00:00",
+  "_artifact_key": "test",
+  "_artifact_type": "Library Module",
+  "name": "Test",
+  "robotKeyword": "Test",
+  "description": "Test",
+  "tactic": "TA0011",
+  "category": "Cobalt Strike",
+  "riskLevel": "Medium"
+}

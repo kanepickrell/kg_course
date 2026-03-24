@@ -13,7 +13,10 @@ import {
   Sparkles,
 } from "lucide-react";
 
+import LibraryModuleWizard from "./LibraryModuleWizard";
+
 const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:8000";
+const GRAPHDB_BASE = "http://localhost:8000";
 
 // =====================================================
 // TYPES
@@ -416,8 +419,46 @@ export default function DataIngestionModal({
             </div>
           )}
 
-          {/* Step 2: Fill Form */}
-          {step === "fill" && selectedType && (
+          {/* Step 2: Fill Form — LibraryModule uses dedicated wizard */}
+          {step === "fill" && selectedType && selectedType.label === "Library Module" && (
+            <LibraryModuleWizard
+              onCommit={async (payload, ttl) => {
+                // 1. Write triples to GraphDB
+                const graphRes = await fetch(
+                  `${API_BASE}/api/ingest/ttl`,
+                  { method: "POST", headers: { "Content-Type": "text/turtle" }, body: ttl }
+                );
+                if (!graphRes.ok) throw new Error(`GraphDB error: ${graphRes.status}`);
+
+                // 2. Save payload file via ProtoGraph backend
+                const key = payload._key as string;
+                const payloadRes = await fetch(
+                  `${API_BASE}/api/ingest/payloads/${key}.json`,
+                  { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload) }
+                );
+                if (!payloadRes.ok) throw new Error(`Payload save error: ${payloadRes.status}`);
+
+                // 3. Advance modal to success
+                setCommitResult({
+                  success: true,
+                  artifact_type: "Library Module",
+                  collection: "LibraryModule",
+                  document_id: `LibraryModule/${key}`,
+                  document_key: key,
+                  payload_url: `/api/ingest/payloads/${key}.json`,
+                  payload_saved: true,
+                  edges_created: [],
+                  edge_count: 0,
+                });
+                setStep("success");
+                onSuccess?.({ document_key: key, artifact_type: "Library Module" });
+              }}
+              onCancel={() => setStep("select")}
+            />
+          )}
+
+          {/* Step 2: Fill Form — generic form for all other types */}
+          {step === "fill" && selectedType && selectedType.label !== "Library Module" && (
             <div className="space-y-4">
               {/* Type info */}
               <div className="p-3 bg-[#1a1a1a] rounded-lg border border-[#2d2d2d] flex items-start justify-between">
@@ -538,7 +579,7 @@ export default function DataIngestionModal({
                 </div>
               </div>
             </div>
-          )}
+          )} {/* end generic fill form */}
 
           {/* Step 3: Review */}
           {step === "review" && selectedType && (
@@ -644,7 +685,7 @@ export default function DataIngestionModal({
             </button>
           )}
 
-          {step === "fill" && (
+          {step === "fill" && selectedType?.label !== "Library Module" && (
             <>
               <button
                 onClick={() => setStep("select")}
