@@ -1,0 +1,50 @@
+[
+  {
+    "question": "What library modules do we have?",
+    "sparql": "SELECT ?name ?tactic ?category ?riskLevel ?owner WHERE {\n    ?m a proto:LibraryModule ;\n       proto:name ?name .\n    OPTIONAL { ?m proto:tactic ?tactic }\n    OPTIONAL { ?m proto:category ?cat . ?cat skos:prefLabel ?category }\n    OPTIONAL { ?m proto:riskLevel ?rl . ?rl skos:prefLabel ?riskLevel }\n    OPTIONAL { ?m proto:owner ?ow . ?ow skos:prefLabel ?owner }\n} ORDER BY ?name",
+    "source": "seed",
+    "embedding": null
+  },
+  {
+    "question": "Show me credential access modules",
+    "sparql": "SELECT ?name ?description ?tactic ?riskLevel WHERE {\n    ?m a proto:LibraryModule ;\n       proto:name ?name ;\n       proto:tactic \"Credential Access\" .\n    OPTIONAL { ?m proto:description ?description }\n    OPTIONAL { ?m proto:riskLevel ?rl . ?rl skos:prefLabel ?riskLevel }\n} ORDER BY ?name",
+    "source": "seed",
+    "embedding": null
+  },
+  {
+    "question": "Show me all TTPs in the graph",
+    "sparql": "SELECT ?name ?mitreId ?description WHERE {\n    ?t a proto:TTP ;\n       proto:name ?name .\n    OPTIONAL { ?t proto:mitreId ?mitreId }\n    OPTIONAL { ?t proto:description ?description }\n} ORDER BY ?name",
+    "source": "seed",
+    "embedding": null
+  },
+  {
+    "question": "Which tactics have the fewest modules?",
+    "sparql": "SELECT ?tacticLabel (COUNT(?m) AS ?moduleCount) WHERE {\n    ?tactic a skos:Concept ;\n            skos:inScheme ?scheme ;\n            skos:prefLabel ?tacticLabel .\n    FILTER(CONTAINS(STR(?scheme), \"mitre-tactics\"))\n    OPTIONAL {\n        ?m a proto:LibraryModule ;\n           proto:tactic ?tacticLabel .\n    }\n} GROUP BY ?tacticLabel ORDER BY ?moduleCount",
+    "source": "seed",
+    "embedding": null
+  },
+  {
+    "question": "What teams own the most modules?",
+    "sparql": "SELECT ?teamName (COUNT(?m) AS ?moduleCount) WHERE {\n    ?team a proto:Team ;\n          proto:name ?teamName .\n    OPTIONAL {\n        ?m a proto:LibraryModule .\n        ?m proto:owner ?team .\n    }\n} GROUP BY ?teamName ORDER BY DESC(?moduleCount)",
+    "source": "seed",
+    "embedding": null
+  },
+  {
+    "question": "Show high risk modules",
+    "sparql": "SELECT ?name ?tactic ?riskLevel WHERE {\n    ?m a proto:LibraryModule ;\n       proto:name ?name .\n    ?m proto:riskLevel ?rl .\n    ?rl skos:prefLabel ?riskLevel .\n    FILTER(?riskLevel = \"High\" || ?riskLevel = \"Critical\")\n    OPTIONAL { ?m proto:tactic ?tactic }\n} ORDER BY ?name",
+    "source": "seed",
+    "embedding": null
+  },
+  {
+    "question": "How many library modules are there?",
+    "sparql": "SELECT (COUNT(?m) AS ?count) WHERE { ?m a proto:LibraryModule }",
+    "source": "seed",
+    "embedding": null
+  },
+  {
+    "question": "Show attack chains \u2014 what leads to what?",
+    "sparql": "SELECT ?fromName ?toName WHERE {\n    ?from rel:LEADS_TO ?to .\n    ?from proto:name ?fromName .\n    ?to proto:name ?toName .\n} ORDER BY ?fromName",
+    "source": "seed",
+    "embedding": null
+  }
+]

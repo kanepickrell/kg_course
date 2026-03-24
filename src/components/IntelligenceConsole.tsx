@@ -15,6 +15,10 @@ import {
   Check,
   AlertTriangle,
   ChevronDown,
+  Layers,
+  BookOpen,
+  Radar,
+  ThumbsUp,
 } from "lucide-react";
 
 const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:8000";
@@ -32,6 +36,20 @@ interface QueryResult {
   answer?: string;
   timing_ms: number;
   error?: string;
+  rag_context?: RagFragment[];
+  few_shot_examples?: FewShotExample[];
+  recon_values?: string;   // live graph value sample from reconnaissance
+}
+
+interface RagFragment {
+  category: string;
+  label: string;
+  text: string;
+}
+
+interface FewShotExample {
+  question: string;
+  sparql: string;
 }
 
 interface ExampleCategory {
@@ -50,6 +68,12 @@ interface ConversationEntry {
   error?: string;
   timestamp: Date;
   subgraph?: SubgraphData | null;
+  ragContext?: RagFragment[];
+  fewShotExamples?: FewShotExample[];
+  recon_values?: string;
+  // UI state for confirmation
+  confirmed?: boolean;
+  confirmPending?: boolean;
 }
 
 interface SubgraphNode {
@@ -78,6 +102,13 @@ interface SubgraphData {
   total_count: number;
 }
 
+const FRAGMENT_CATEGORY_COLORS: Record<string, string> = {
+  namespaces:    "text-[#4A9ECC] bg-[#4A9ECC]/10 border-[#4A9ECC]/20",
+  class:         "text-[#6EBE46] bg-[#6EBE46]/10 border-[#6EBE46]/20",
+  taxonomy:      "text-[#E6AA32] bg-[#E6AA32]/10 border-[#E6AA32]/20",
+  relationships: "text-[#9B59B6] bg-[#9B59B6]/10 border-[#9B59B6]/20",
+};
+
 // =====================================================
 // MAIN COMPONENT
 // =====================================================
@@ -87,12 +118,13 @@ export default function IntelligenceConsole() {
   const [isQuerying, setIsQuerying] = useState(false);
   const [conversation, setConversation] = useState<ConversationEntry[]>([]);
   const [examples, setExamples] = useState<ExampleCategory[]>([]);
-  const [expandedSparql, setExpandedSparql] = useState<Set<string>>(new Set());
-  const [expandedResults, setExpandedResults] = useState<Set<string>>(new Set());
-  const [expandedGraphs, setExpandedGraphs] = useState<Set<string>>(new Set());
+  const [expandedSparql,   setExpandedSparql]   = useState<Set<string>>(new Set());
+  const [expandedResults,  setExpandedResults]  = useState<Set<string>>(new Set());
+  const [expandedGraphs,   setExpandedGraphs]   = useState<Set<string>>(new Set());
+  const [expandedContext,  setExpandedContext]   = useState<Set<string>>(new Set());
   const [copiedId, setCopiedId] = useState<string | null>(null);
 
-  const inputRef = useRef<HTMLInputElement>(null);
+  const inputRef  = useRef<HTMLInputElement>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -123,17 +155,11 @@ export default function IntelligenceConsole() {
     if (!q || isQuerying) return;
 
     const questionId = `q-${Date.now()}`;
-    const answerId = `a-${Date.now()}`;
+    const answerId   = `a-${Date.now()}`;
 
-    // Add question to conversation
     setConversation((prev) => [
       ...prev,
-      {
-        id: questionId,
-        type: "question",
-        content: q,
-        timestamp: new Date(),
-      },
+      { id: questionId, type: "question", content: q, timestamp: new Date() },
     ]);
 
     setQuery("");
@@ -148,7 +174,6 @@ export default function IntelligenceConsole() {
 
       const data: QueryResult = await res.json();
 
-      // Fetch subgraph for visualization
       let subgraph: SubgraphData | null = null;
       if (data.success && data.results && data.results.length > 0) {
         try {
@@ -159,9 +184,7 @@ export default function IntelligenceConsole() {
           });
           if (sgRes.ok) {
             const sgData = await sgRes.json();
-            if (sgData.nodes && sgData.nodes.length > 0) {
-              subgraph = sgData;
-            }
+            if (sgData.nodes && sgData.nodes.length > 0) subgraph = sgData;
           }
         } catch (err) {
           console.warn("Subgraph fetch failed:", err);
@@ -181,6 +204,9 @@ export default function IntelligenceConsole() {
           error: data.error,
           timestamp: new Date(),
           subgraph,
+          ragContext:      data.rag_context,
+          fewShotExamples: data.few_shot_examples,
+          recon_values:    data.recon_values,
         },
       ]);
     } catch (err: any) {
@@ -200,6 +226,35 @@ export default function IntelligenceConsole() {
     }
   };
 
+  // ── Confirm a query as correct — calls /fewshot/confirm ──────────────
+  const handleConfirm = async (entry: ConversationEntry) => {
+    if (!entry.sparql || entry.confirmed || entry.confirmPending) return;
+
+    // Find the question that preceded this answer
+    const idx = conversation.findIndex((e) => e.id === entry.id);
+    const questionEntry = idx > 0 ? conversation[idx - 1] : null;
+    const question = questionEntry?.type === "question" ? questionEntry.content : entry.content;
+
+    setConversation((prev) =>
+      prev.map((e) => e.id === entry.id ? { ...e, confirmPending: true } : e)
+    );
+
+    try {
+      await fetch(`${API_BASE}/api/query/fewshot/confirm`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ question, sparql: entry.sparql }),
+      });
+      setConversation((prev) =>
+        prev.map((e) => e.id === entry.id ? { ...e, confirmed: true, confirmPending: false } : e)
+      );
+    } catch {
+      setConversation((prev) =>
+        prev.map((e) => e.id === entry.id ? { ...e, confirmPending: false } : e)
+      );
+    }
+  };
+
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
@@ -207,28 +262,10 @@ export default function IntelligenceConsole() {
     }
   };
 
-  const toggleSparql = (id: string) => {
-    setExpandedSparql((prev) => {
-      const next = new Set(prev);
-      next.has(id) ? next.delete(id) : next.add(id);
-      return next;
-    });
-  };
-
-  const toggleResults = (id: string) => {
-    setExpandedResults((prev) => {
-      const next = new Set(prev);
-      next.has(id) ? next.delete(id) : next.add(id);
-      return next;
-    });
-  };
-
-  const toggleGraph = (id: string) => {
-    setExpandedGraphs((prev) => {
-      const next = new Set(prev);
-      next.has(id) ? next.delete(id) : next.add(id);
-      return next;
-    });
+  const toggle = (set: Set<string>, id: string, setter: (s: Set<string>) => void) => {
+    const next = new Set(set);
+    next.has(id) ? next.delete(id) : next.add(id);
+    setter(next);
   };
 
   const copySparql = (id: string, sparql: string) => {
@@ -236,6 +273,11 @@ export default function IntelligenceConsole() {
     setCopiedId(id);
     setTimeout(() => setCopiedId(null), 2000);
   };
+
+  const hasContextData = (entry: ConversationEntry) =>
+    (entry.ragContext && entry.ragContext.length > 0) ||
+    (entry.fewShotExamples && entry.fewShotExamples.length > 0) ||
+    !!entry.recon_values;
 
   const hasConversation = conversation.length > 0;
 
@@ -259,7 +301,7 @@ export default function IntelligenceConsole() {
                 className="text-[10px] text-[#444] tracking-widest uppercase"
                 style={{ fontFamily: "'JetBrains Mono', monospace" }}
               >
-                Natural Language → SPARQL → Knowledge Graph
+                NL → Recon → RAG Schema → Few-shot → SPARQL → GraphDB
               </p>
             </div>
           </div>
@@ -278,11 +320,9 @@ export default function IntelligenceConsole() {
 
       {/* Main Content */}
       <div className="flex-1 flex overflow-hidden">
-        {/* Conversation Panel */}
         <div className="flex-1 flex flex-col">
           <div ref={scrollRef} className="flex-1 overflow-y-auto">
             {!hasConversation ? (
-              /* Empty State */
               <div className="flex flex-col items-center justify-center h-full px-8">
                 <div className="w-16 h-16 rounded-xl bg-[#6EBE46]/5 border border-[#6EBE46]/10 flex items-center justify-center mb-6">
                   <Database className="w-8 h-8 text-[#6EBE46]/40" />
@@ -294,11 +334,9 @@ export default function IntelligenceConsole() {
                   Query Your Knowledge Graph
                 </h2>
                 <p className="text-sm text-[#555] text-center max-w-md mb-8">
-                  Ask questions in plain English. The system translates to SPARQL,
-                  queries GraphDB, and returns precise answers from your ontology.
+                  Ask questions in plain English. The engine samples live graph values,
+                  retrieves relevant schema fragments, then generates precise SPARQL.
                 </p>
-
-                {/* Example Categories */}
                 <div className="grid grid-cols-2 gap-3 w-full max-w-2xl">
                   {examples.map((cat) => (
                     <div
@@ -328,18 +366,15 @@ export default function IntelligenceConsole() {
                 </div>
               </div>
             ) : (
-              /* Conversation Thread */
               <div className="max-w-3xl mx-auto py-6 px-4 space-y-4">
                 {conversation.map((entry) =>
                   entry.type === "question" ? (
-                    /* User Question */
                     <div key={entry.id} className="flex justify-end">
                       <div className="bg-[#6EBE46]/10 border border-[#6EBE46]/20 rounded-lg px-4 py-2.5 max-w-lg">
                         <p className="text-sm text-white">{entry.content}</p>
                       </div>
                     </div>
                   ) : (
-                    /* System Answer */
                     <div key={entry.id} className="space-y-2">
                       {/* Answer text */}
                       <div className="bg-[#111] border border-[#1a1a1a] rounded-lg px-4 py-3">
@@ -353,7 +388,7 @@ export default function IntelligenceConsole() {
                         )}
 
                         {/* Metadata bar */}
-                        <div className="flex items-center gap-3 mt-3 pt-2 border-t border-[#1a1a1a]">
+                        <div className="flex items-center gap-3 mt-3 pt-2 border-t border-[#1a1a1a] flex-wrap">
                           {entry.timingMs !== undefined && (
                             <span className="flex items-center gap-1 text-[10px] text-[#444]">
                               <Clock className="w-3 h-3" />
@@ -366,27 +401,50 @@ export default function IntelligenceConsole() {
                               {entry.resultCount} results
                             </span>
                           )}
+
+                          {/* Context toggle */}
+                          {hasContextData(entry) && (
+                            <button
+                              onClick={() => toggle(expandedContext, entry.id, setExpandedContext)}
+                              className="flex items-center gap-1 text-[10px] text-[#555] hover:text-[#4A9ECC] transition-colors"
+                            >
+                              <Layers className="w-3 h-3" />
+                              {expandedContext.has(entry.id) ? "Hide" : "Show"} Context
+                              {entry.ragContext && (
+                                <span className="text-[9px] text-[#333]">
+                                  ({entry.ragContext.length} frags
+                                  {entry.fewShotExamples && entry.fewShotExamples.length > 0
+                                    ? ` · ${entry.fewShotExamples.length} shots`
+                                    : ""}
+                                  {entry.recon_values ? " · recon" : ""})
+                                </span>
+                              )}
+                            </button>
+                          )}
+
                           {entry.sparql && (
                             <button
-                              onClick={() => toggleSparql(entry.id)}
+                              onClick={() => toggle(expandedSparql, entry.id, setExpandedSparql)}
                               className="flex items-center gap-1 text-[10px] text-[#555] hover:text-[#6EBE46] transition-colors"
                             >
                               <Code className="w-3 h-3" />
                               {expandedSparql.has(entry.id) ? "Hide" : "Show"} SPARQL
                             </button>
                           )}
+
                           {entry.results && entry.results.length > 0 && (
                             <button
-                              onClick={() => toggleResults(entry.id)}
+                              onClick={() => toggle(expandedResults, entry.id, setExpandedResults)}
                               className="flex items-center gap-1 text-[10px] text-[#555] hover:text-[#6EBE46] transition-colors"
                             >
                               <GitBranch className="w-3 h-3" />
                               {expandedResults.has(entry.id) ? "Hide" : "Show"} Data
                             </button>
                           )}
+
                           {entry.subgraph && entry.subgraph.nodes.length > 0 && (
                             <button
-                              onClick={() => toggleGraph(entry.id)}
+                              onClick={() => toggle(expandedGraphs, entry.id, setExpandedGraphs)}
                               className="flex items-center gap-1 text-[10px] text-[#555] hover:text-[#6EBE46] transition-colors"
                             >
                               <Zap className="w-3 h-3" />
@@ -396,8 +454,137 @@ export default function IntelligenceConsole() {
                               </span>
                             </button>
                           )}
+
+                          {/* ── Confirm button ── */}
+                          {entry.sparql && !entry.error && (
+                            <button
+                              onClick={() => handleConfirm(entry)}
+                              disabled={entry.confirmed || entry.confirmPending}
+                              className={`flex items-center gap-1 text-[10px] transition-colors ml-auto ${
+                                entry.confirmed
+                                  ? "text-[#6EBE46] cursor-default"
+                                  : entry.confirmPending
+                                  ? "text-[#444] cursor-wait"
+                                  : "text-[#444] hover:text-[#6EBE46]"
+                              }`}
+                              title="Mark this answer as correct — saves to few-shot library as confirmed"
+                            >
+                              {entry.confirmed ? (
+                                <>
+                                  <Check className="w-3 h-3" />
+                                  <span>Confirmed</span>
+                                </>
+                              ) : (
+                                <>
+                                  <ThumbsUp className="w-3 h-3" />
+                                  <span>{entry.confirmPending ? "Saving…" : "Correct"}</span>
+                                </>
+                              )}
+                            </button>
+                          )}
                         </div>
                       </div>
+
+                      {/* ── Expandable Context Panel ── */}
+                      {hasContextData(entry) && expandedContext.has(entry.id) && (
+                        <div className="bg-[#0a0a0a] border border-[#1a1a1a] rounded-lg overflow-hidden">
+                          <div className="flex items-center gap-2 px-3 py-1.5 bg-[#0e0e0e] border-b border-[#1a1a1a]">
+                            <Layers className="w-3 h-3 text-[#4A9ECC]" />
+                            <span
+                              className="text-[10px] text-[#4A9ECC] uppercase tracking-wider"
+                              style={{ fontFamily: "'JetBrains Mono', monospace" }}
+                            >
+                              LLM Context
+                            </span>
+                            <span className="text-[10px] text-[#333] ml-auto">
+                              what was injected into the prompt
+                            </span>
+                          </div>
+
+                          <div className="p-3 space-y-3">
+
+                            {/* Section 0: Graph reconnaissance */}
+                            {entry.recon_values && (
+                              <>
+                                <div>
+                                  <div className="flex items-center gap-2 mb-2">
+                                    <Radar className="w-3 h-3 text-[#E84855]" />
+                                    <span
+                                      className="text-[10px] font-medium text-[#E84855] uppercase tracking-wider"
+                                      style={{ fontFamily: "'JetBrains Mono', monospace" }}
+                                    >
+                                      Graph reconnaissance · actual stored values
+                                    </span>
+                                    <span className="text-[9px] text-[#333]">
+                                      sampled live before generation
+                                    </span>
+                                  </div>
+                                  <pre
+                                    className="px-3 py-2 text-[10px] text-[#888] whitespace-pre-wrap bg-[#111] border border-[#1a1a1a] rounded"
+                                    style={{ fontFamily: "'JetBrains Mono', monospace" }}
+                                  >
+                                    {entry.recon_values}
+                                  </pre>
+                                </div>
+                                {(entry.ragContext?.length || entry.fewShotExamples?.length) ? (
+                                  <div className="border-t border-[#1a1a1a]" />
+                                ) : null}
+                              </>
+                            )}
+
+                            {/* Section 1: RAG schema fragments */}
+                            {entry.ragContext && entry.ragContext.length > 0 && (
+                              <div>
+                                <div className="flex items-center gap-2 mb-2">
+                                  <Database className="w-3 h-3 text-[#4A9ECC]" />
+                                  <span
+                                    className="text-[10px] font-medium text-[#4A9ECC] uppercase tracking-wider"
+                                    style={{ fontFamily: "'JetBrains Mono', monospace" }}
+                                  >
+                                    Schema fragments retrieved by RAG
+                                  </span>
+                                  <span className="text-[9px] text-[#333]">
+                                    {entry.ragContext.length} of full ontology · dual-channel scored
+                                  </span>
+                                </div>
+                                <div className="space-y-1.5">
+                                  {entry.ragContext.map((frag, i) => (
+                                    <ContextFragment key={i} fragment={frag} />
+                                  ))}
+                                </div>
+                              </div>
+                            )}
+
+                            {entry.ragContext && entry.ragContext.length > 0 &&
+                             entry.fewShotExamples && entry.fewShotExamples.length > 0 && (
+                              <div className="border-t border-[#1a1a1a]" />
+                            )}
+
+                            {/* Section 2: Few-shot examples */}
+                            {entry.fewShotExamples && entry.fewShotExamples.length > 0 && (
+                              <div>
+                                <div className="flex items-center gap-2 mb-2">
+                                  <BookOpen className="w-3 h-3 text-[#E6AA32]" />
+                                  <span
+                                    className="text-[10px] font-medium text-[#E6AA32] uppercase tracking-wider"
+                                    style={{ fontFamily: "'JetBrains Mono', monospace" }}
+                                  >
+                                    Few-shot examples retrieved
+                                  </span>
+                                  <span className="text-[9px] text-[#333]">
+                                    top-{entry.fewShotExamples.length} by similarity · semantic dedup active
+                                  </span>
+                                </div>
+                                <div className="space-y-2">
+                                  {entry.fewShotExamples.map((ex, i) => (
+                                    <FewShotCard key={i} index={i + 1} example={ex} />
+                                  ))}
+                                </div>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      )}
 
                       {/* Expandable SPARQL */}
                       {entry.sparql && expandedSparql.has(entry.id) && (
@@ -471,7 +658,7 @@ export default function IntelligenceConsole() {
                         </div>
                       )}
 
-                      {/* Expandable Graph Visualization */}
+                      {/* Expandable Graph */}
                       {entry.subgraph && entry.subgraph.nodes.length > 0 && expandedGraphs.has(entry.id) && (
                         <div className="bg-[#0a0a0a] border border-[#1a1a1a] rounded-lg overflow-hidden">
                           <div className="flex items-center justify-between px-3 py-1.5 bg-[#0e0e0e] border-b border-[#1a1a1a]">
@@ -479,28 +666,26 @@ export default function IntelligenceConsole() {
                               className="text-[10px] text-[#444] uppercase tracking-wider"
                               style={{ fontFamily: "'JetBrains Mono', monospace" }}
                             >
-                              Subgraph • {entry.subgraph.highlighted_count} matched • {entry.subgraph.total_count} total
+                              Subgraph · {entry.subgraph.highlighted_count} matched · {entry.subgraph.total_count} total
                             </span>
                             <div className="flex items-center gap-3">
-                              {/* Legend */}
-                              {Array.from(new Set(entry.subgraph.nodes.map((n) => n.type))).slice(0, 5).map((type) => {
-                                const node = entry.subgraph!.nodes.find((n) => n.type === type);
-                                return (
-                                  <span key={type} className="flex items-center gap-1 text-[9px] text-[#555]">
-                                    <span
-                                      className="w-2 h-2 rounded-full"
-                                      style={{ backgroundColor: node?.color || "#555" }}
-                                    />
-                                    {type}
-                                  </span>
-                                );
-                              })}
+                              {Array.from(new Set(entry.subgraph.nodes.map((n) => n.type)))
+                                .slice(0, 5)
+                                .map((type) => {
+                                  const node = entry.subgraph!.nodes.find((n) => n.type === type);
+                                  return (
+                                    <span key={type} className="flex items-center gap-1 text-[9px] text-[#555]">
+                                      <span
+                                        className="w-2 h-2 rounded-full"
+                                        style={{ backgroundColor: node?.color || "#555" }}
+                                      />
+                                      {type}
+                                    </span>
+                                  );
+                                })}
                             </div>
                           </div>
-                          <MiniGraph
-                            nodes={entry.subgraph.nodes}
-                            edges={entry.subgraph.edges}
-                          />
+                          <MiniGraph nodes={entry.subgraph.nodes} edges={entry.subgraph.edges} />
                         </div>
                       )}
                     </div>
@@ -515,7 +700,7 @@ export default function IntelligenceConsole() {
                       <span className="w-1.5 h-1.5 rounded-full bg-[#6EBE46] animate-bounce" style={{ animationDelay: "150ms" }} />
                       <span className="w-1.5 h-1.5 rounded-full bg-[#6EBE46] animate-bounce" style={{ animationDelay: "300ms" }} />
                     </div>
-                    <span className="text-xs text-[#444]">Generating SPARQL & querying graph...</span>
+                    <span className="text-xs text-[#444]">Sampling graph values · retrieving schema · generating SPARQL…</span>
                   </div>
                 )}
               </div>
@@ -533,7 +718,7 @@ export default function IntelligenceConsole() {
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
                   onKeyDown={handleKeyDown}
-                  placeholder="Ask a question about your knowledge graph..."
+                  placeholder="Ask a question about your knowledge graph…"
                   disabled={isQuerying}
                   className="w-full pl-10 pr-4 py-2.5 bg-[#111] border border-[#1a1a1a] rounded-lg text-sm text-white placeholder-[#333] focus:outline-none focus:border-[#6EBE46]/30 focus:ring-1 focus:ring-[#6EBE46]/10 disabled:opacity-50"
                   style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: "13px" }}
@@ -556,7 +741,7 @@ export default function IntelligenceConsole() {
               className="max-w-3xl mx-auto text-[10px] text-[#222] mt-2 pl-10"
               style={{ fontFamily: "'JetBrains Mono', monospace" }}
             >
-              Queries are translated to SPARQL and executed against GraphDB in real-time
+              Recon → RAG schema · few-shot library · SPARQL → GraphDB · confirm correct answers to train the library
             </p>
           </div>
         </div>
@@ -566,59 +751,123 @@ export default function IntelligenceConsole() {
 }
 
 // =====================================================
+// CONTEXT FRAGMENT CARD
+// =====================================================
+
+function ContextFragment({ fragment }: { fragment: RagFragment }) {
+  const [expanded, setExpanded] = useState(false);
+  const colorClass =
+    FRAGMENT_CATEGORY_COLORS[fragment.category] ||
+    "text-[#888] bg-[#888]/10 border-[#888]/20";
+
+  const preview = fragment.text.split("\n").slice(0, 2).join("  ·  ");
+
+  return (
+    <div className="bg-[#111] border border-[#1a1a1a] rounded overflow-hidden">
+      <button
+        onClick={() => setExpanded(!expanded)}
+        className="w-full flex items-center gap-2 px-3 py-1.5 hover:bg-[#161616] transition-colors text-left"
+      >
+        <span
+          className={`px-1.5 py-0.5 text-[9px] rounded border font-medium uppercase tracking-wider flex-shrink-0 ${colorClass}`}
+          style={{ fontFamily: "'JetBrains Mono', monospace" }}
+        >
+          {fragment.category}
+        </span>
+        <span className="text-[10px] text-[#888] font-medium flex-shrink-0">
+          {fragment.label}
+        </span>
+        <span className="text-[10px] text-[#444] truncate flex-1">
+          {!expanded && preview}
+        </span>
+        <ChevronDown
+          className={`w-3 h-3 text-[#333] flex-shrink-0 transition-transform ${expanded ? "rotate-180" : ""}`}
+        />
+      </button>
+      {expanded && (
+        <pre
+          className="px-3 pb-2 text-[10px] text-[#666] whitespace-pre-wrap border-t border-[#1a1a1a]"
+          style={{ fontFamily: "'JetBrains Mono', monospace" }}
+        >
+          {fragment.text}
+        </pre>
+      )}
+    </div>
+  );
+}
+
+// =====================================================
+// FEW-SHOT EXAMPLE CARD
+// =====================================================
+
+function FewShotCard({ index, example }: { index: number; example: FewShotExample }) {
+  const [expanded, setExpanded] = useState(false);
+
+  return (
+    <div className="bg-[#111] border border-[#E6AA32]/15 rounded overflow-hidden">
+      <button
+        onClick={() => setExpanded(!expanded)}
+        className="w-full flex items-center gap-2 px-3 py-1.5 hover:bg-[#161616] transition-colors text-left"
+      >
+        <span
+          className="text-[9px] text-[#E6AA32]/60 font-medium flex-shrink-0 w-4"
+          style={{ fontFamily: "'JetBrains Mono', monospace" }}
+        >
+          {index}.
+        </span>
+        <span className="text-[10px] text-[#888] truncate flex-1">
+          {example.question}
+        </span>
+        <ChevronDown
+          className={`w-3 h-3 text-[#333] flex-shrink-0 transition-transform ${expanded ? "rotate-180" : ""}`}
+        />
+      </button>
+      {expanded && (
+        <pre
+          className="px-3 pb-2 text-[10px] text-[#666] whitespace-pre-wrap border-t border-[#1a1a1a]"
+          style={{ fontFamily: "'JetBrains Mono', monospace" }}
+        >
+          {example.sparql}
+        </pre>
+      )}
+    </div>
+  );
+}
+
+// =====================================================
 // HELPERS
 // =====================================================
 
 function formatCellValue(val: string): string {
-  // Shorten URIs for display
-  if (val.startsWith("https://proto.atlas/data/")) {
+  if (val.startsWith("https://proto.atlas/data/"))
     return val.replace("https://proto.atlas/data/", "");
-  }
-  if (val.startsWith("https://proto.atlas/ontology/")) {
+  if (val.startsWith("https://proto.atlas/ontology/"))
     return val.replace("https://proto.atlas/ontology/", "proto:");
-  }
-  if (val.startsWith("https://proto.atlas/taxonomy/")) {
+  if (val.startsWith("https://proto.atlas/taxonomy/"))
     return val.replace("https://proto.atlas/taxonomy/", "tax:");
-  }
-  if (val.startsWith("https://proto.atlas/relationship/")) {
+  if (val.startsWith("https://proto.atlas/relationship/"))
     return val.replace("https://proto.atlas/relationship/", "rel:");
-  }
-  // Truncate long strings
-  if (val.length > 80) {
-    return val.slice(0, 77) + "...";
-  }
+  if (val.length > 80) return val.slice(0, 77) + "...";
   return val;
 }
 
 // =====================================================
-// MINI GRAPH (inline D3 force-directed)
+// MINI GRAPH (unchanged)
 // =====================================================
 
-function MiniGraph({
-  nodes,
-  edges,
-}: {
-  nodes: SubgraphNode[];
-  edges: SubgraphEdge[];
-}) {
+function MiniGraph({ nodes, edges }: { nodes: SubgraphNode[]; edges: SubgraphEdge[] }) {
   const svgRef = useRef<SVGSVGElement>(null);
 
   useEffect(() => {
     if (!svgRef.current || nodes.length === 0) return;
 
-    const width = svgRef.current.clientWidth || 700;
+    const width  = svgRef.current.clientWidth || 700;
     const height = 320;
 
-    // Clear previous
     const svg = d3.select(svgRef.current);
     svg.selectAll("*").remove();
+    svg.attr("width", width).attr("height", height).attr("viewBox", `0 0 ${width} ${height}`);
 
-    svg
-      .attr("width", width)
-      .attr("height", height)
-      .attr("viewBox", `0 0 ${width} ${height}`);
-
-    // Deep clone nodes and edges for D3 mutation
     const simNodes: any[] = nodes.map((n) => ({ ...n }));
     const simEdges: any[] = edges.map((e) => ({
       ...e,
@@ -626,114 +875,68 @@ function MiniGraph({
       target: typeof e.target === "string" ? e.target : (e.target as SubgraphNode).id,
     }));
 
-    const g = svg.append("g");
-
-    // Zoom
+    const g    = svg.append("g");
     const zoom = d3.zoom<SVGSVGElement, unknown>()
       .scaleExtent([0.3, 3])
       .on("zoom", (event) => g.attr("transform", event.transform));
     svg.call(zoom);
 
-    // Simulation
     const simulation = d3.forceSimulation(simNodes)
       .force("link", d3.forceLink(simEdges).id((d: any) => d.id).distance(80))
       .force("charge", d3.forceManyBody().strength(-200))
       .force("center", d3.forceCenter(width / 2, height / 2))
       .force("collision", d3.forceCollide().radius(25));
 
-    // Edges
     const link = g.append("g")
-      .selectAll("line")
-      .data(simEdges)
-      .join("line")
-      .attr("stroke", "#222")
-      .attr("stroke-width", 1)
-      .attr("stroke-opacity", 0.6);
+      .selectAll("line").data(simEdges).join("line")
+      .attr("stroke", "#222").attr("stroke-width", 1).attr("stroke-opacity", 0.6);
 
-    // Edge labels
     const edgeLabel = g.append("g")
-      .selectAll("text")
-      .data(simEdges)
-      .join("text")
+      .selectAll("text").data(simEdges).join("text")
       .text((d: any) => d.type)
-      .attr("font-size", "8px")
-      .attr("fill", "#333")
-      .attr("text-anchor", "middle")
+      .attr("font-size", "8px").attr("fill", "#333").attr("text-anchor", "middle")
       .style("font-family", "'JetBrains Mono', monospace");
 
-    // Nodes
     const node = g.append("g")
-      .selectAll("circle")
-      .data(simNodes)
-      .join("circle")
+      .selectAll("circle").data(simNodes).join("circle")
       .attr("r", (d: any) => d.highlighted ? 10 : 6)
-      .attr("fill", (d: any) => d.color || "#555")
+      .attr("fill",   (d: any) => d.color || "#555")
       .attr("stroke", (d: any) => d.highlighted ? "#fff" : "none")
       .attr("stroke-width", (d: any) => d.highlighted ? 2 : 0)
       .attr("opacity", (d: any) => d.highlighted ? 1 : 0.5)
       .style("cursor", "pointer")
       .call(
         d3.drag<SVGCircleElement, any>()
-          .on("start", (event, d) => {
-            if (!event.active) simulation.alphaTarget(0.3).restart();
-            d.fx = d.x;
-            d.fy = d.y;
-          })
-          .on("drag", (event, d) => {
-            d.fx = event.x;
-            d.fy = event.y;
-          })
-          .on("end", (event, d) => {
-            if (!event.active) simulation.alphaTarget(0);
-            d.fx = null;
-            d.fy = null;
-          })
+          .on("start", (event, d) => { if (!event.active) simulation.alphaTarget(0.3).restart(); d.fx = d.x; d.fy = d.y; })
+          .on("drag",  (event, d) => { d.fx = event.x; d.fy = event.y; })
+          .on("end",   (event, d) => { if (!event.active) simulation.alphaTarget(0); d.fx = null; d.fy = null; })
       );
 
-    // Node labels
     const label = g.append("g")
-      .selectAll("text")
-      .data(simNodes)
-      .join("text")
+      .selectAll("text").data(simNodes).join("text")
       .text((d: any) => d.label)
-      .attr("font-size", (d: any) => d.highlighted ? "11px" : "9px")
-      .attr("fill", (d: any) => d.highlighted ? "#eee" : "#555")
+      .attr("font-size",   (d: any) => d.highlighted ? "11px" : "9px")
+      .attr("fill",        (d: any) => d.highlighted ? "#eee" : "#555")
       .attr("text-anchor", "middle")
-      .attr("dy", (d: any) => (d.highlighted ? -16 : -12))
+      .attr("dy",          (d: any) => d.highlighted ? -16 : -12)
       .style("font-family", "'JetBrains Mono', monospace")
       .style("pointer-events", "none");
 
-    // Tick
     simulation.on("tick", () => {
       link
-        .attr("x1", (d: any) => d.source.x)
-        .attr("y1", (d: any) => d.source.y)
-        .attr("x2", (d: any) => d.target.x)
-        .attr("y2", (d: any) => d.target.y);
-
+        .attr("x1", (d: any) => d.source.x).attr("y1", (d: any) => d.source.y)
+        .attr("x2", (d: any) => d.target.x).attr("y2", (d: any) => d.target.y);
       edgeLabel
         .attr("x", (d: any) => (d.source.x + d.target.x) / 2)
         .attr("y", (d: any) => (d.source.y + d.target.y) / 2);
-
-      node
-        .attr("cx", (d: any) => d.x)
-        .attr("cy", (d: any) => d.y);
-
-      label
-        .attr("x", (d: any) => d.x)
-        .attr("y", (d: any) => d.y);
+      node.attr("cx", (d: any) => d.x).attr("cy", (d: any) => d.y);
+      label.attr("x", (d: any) => d.x).attr("y", (d: any) => d.y);
     });
 
-    return () => {
-      simulation.stop();
-    };
+    return () => { simulation.stop(); };
   }, [nodes, edges]);
 
   return (
-    <svg
-      ref={svgRef}
-      className="w-full"
-      style={{ height: "320px", background: "#080808" }}
-    />
+    <svg ref={svgRef} className="w-full" style={{ height: "320px", background: "#080808" }} />
   );
 }

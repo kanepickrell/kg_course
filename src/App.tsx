@@ -11,6 +11,7 @@ import DataUpload from "@/components/DataUpload";
 import ProtographLogin from "@/components/ProtographLogin";
 import ProtographDashboard from "@/components/ProtographDashboard";
 import IntelligenceConsole from "./components/IntelligenceConsole";
+import AppOnboarding from "./components/AppOnboarding";
 import 'reactflow/dist/style.css';
 
 const queryClient = new QueryClient();
@@ -38,11 +39,12 @@ const App = () => (
           <Route path="/home" element={<RequireAuth><ProtographDashboard /></RequireAuth>} />
 
           {/* Tools */}
-          <Route path="/graph" element={<RequireAuth><Index /></RequireAuth>} />
-          <Route path="/ontology" element={<RequireAuth><OntologyManager /></RequireAuth>} />
+          <Route path="/graph"     element={<RequireAuth><Index /></RequireAuth>} />
+          <Route path="/ontology"  element={<RequireAuth><OntologyManager /></RequireAuth>} />
           <Route path="/pipelines" element={<RequireAuth><Pipelines /></RequireAuth>} />
-          <Route path="/upload" element={<RequireAuth><DataUpload /></RequireAuth>} />
-          <Route path="/console" element={<RequireAuth><IntelligenceConsole /></RequireAuth>} />
+          <Route path="/upload"    element={<RequireAuth><DataUpload /></RequireAuth>} />
+          <Route path="/console"   element={<RequireAuth><IntelligenceConsole /></RequireAuth>} />
+          <Route path="/apps"      element={<RequireAuth><AppOnboarding /></RequireAuth>} />
 
           {/* Legacy /dashboard route → full ProtoGraph */}
           <Route path="/dashboard" element={<RequireAuth><Index /></RequireAuth>} />
