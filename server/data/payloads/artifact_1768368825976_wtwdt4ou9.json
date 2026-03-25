@@ -1,6 +1,0 @@
-{
-  "name": "Create C2 Listener",
-  "category": "Cobalt Strike",
-  "tactic": "TA0011",
-  "description": "Configure and start a C2 listener"
-}

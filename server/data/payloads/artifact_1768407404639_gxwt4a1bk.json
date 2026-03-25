@@ -1,7 +1,0 @@
-{
-  "name": "Credential Dump (Mimikatz)",
-  "category": "Cobalt Strike",
-  "tactic": "TA0006",
-  "description": "Cobalt Strike TTP for credential extraction",
-  "riskLevel": "critical"
-}

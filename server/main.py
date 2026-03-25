@@ -603,6 +603,31 @@ async def batch_approve_connections(confidence_threshold: float=0.8,
 
 # ── Router mounts ─────────────────────────────────────────────────────────────
 import plugins.operator_plugin  # noqa: F401 - registers OperatorPlugin in PluginRegistry
+
+# ── Load persisted plugin manifests ───────────────────────────────────────────
+def _load_persisted_plugins():
+    """
+    Reload any plugins registered via POST /api/plugins/register.
+    Manifests are saved to data/plugin_manifests/{id}.json at registration time.
+    This runs once at startup so registered apps survive server restarts.
+    """
+    manifests_dir = Path(PAYLOAD_DIR).parent / "plugin_manifests"
+    if not manifests_dir.exists():
+        return
+    from plugins.endpoints import register_plugin, RegisterManifest
+    loaded = 0
+    for manifest_file in manifests_dir.glob("*.json"):
+        try:
+            data = json.loads(manifest_file.read_text())
+            manifest = RegisterManifest(**data)
+            register_plugin(manifest)
+            loaded += 1
+        except Exception as e:
+            print(f"⚠️  Failed to reload plugin manifest {manifest_file.name}: {e}")
+    if loaded:
+        print(f"✓ Reloaded {loaded} persisted plugin(s) from {manifests_dir}")
+
+_load_persisted_plugins()
 from plugins.endpoints import router as plugin_router
 from plugins.plugin_router import create_plugin_data_router
 

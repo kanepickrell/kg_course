@@ -37,8 +37,11 @@ router = APIRouter(prefix="/api/query", tags=["natural-language-query"])
 # Injected by init
 gdb = None
 
-OLLAMA_HOST  = os.getenv("OLLAMA_HOST",  "http://localhost:11434")
-OLLAMA_MODEL = os.getenv("OLLAMA_MODEL", "llama3")
+# LLM config is now centralised in llm_client.py
+# These vars are kept for reference but the actual client reads from llm_client
+from llm_client import chat_completion as _llm_chat, get_embedding as _llm_embed, active_model, active_embed_model, backend_info as _llm_backend_info
+OLLAMA_HOST  = os.getenv("OLLAMA_HOST",  "http://10.10.80.99:4001")
+OLLAMA_MODEL = os.getenv("OLLAMA_MODEL", "gpt-oss:120b")
 EMBED_MODEL  = os.getenv("OLLAMA_EMBED_MODEL", "nomic-embed-text:latest")
 
 # Storage paths
@@ -126,19 +129,7 @@ class SchemaVectorIndex:
         return dot / (na * nb + 1e-9)
 
     def _get_embedding(self, text: str) -> Optional[List[float]]:
-        try:
-            import httpx
-            res = httpx.post(
-                f"{OLLAMA_HOST}/api/embeddings",
-                json={"model": EMBED_MODEL, "prompt": text[:512]},
-                timeout=30.0,
-            )
-            if res.status_code == 200:
-                data = res.json()
-                return data.get("embedding") or data.get("embeddings", [None])[0]
-        except Exception as e:
-            print(f"⚠️  Embedding error: {e}")
-        return None
+        return _llm_embed(text)
 
     def _build_schema_elements(self) -> List[Dict[str, str]]:
         """Decompose the ontology into individual indexable fragments."""
@@ -156,10 +147,45 @@ class SchemaVectorIndex:
                 "  rel:   <https://proto.atlas/relationship/>\n"
                 "  skos:  <http://www.w3.org/2004/02/skos/core#>\n"
                 "SPARQL NOTES:\n"
-                "  - Taxonomy fields link to SKOS concepts; use skos:prefLabel\n"
+                "  - Taxonomy fields (tactic, category, riskLevel, owner) store URI values, NOT strings\n"
+                "  - To filter by tactic label use: FILTER(CONTAINS(STR(?t), \"TA0006\"))\n"
+                "  - MITRE tactic URIs: TA0001=InitialAccess TA0002=Execution TA0003=Persistence\n"
+                "    TA0004=PrivilegeEscalation TA0005=DefenseEvasion TA0006=CredentialAccess\n"
+                "    TA0007=Discovery TA0008=LateralMovement TA0009=Collection\n"
+                "    TA0010=Exfiltration TA0011=CommandAndControl TA0040=Impact\n"
+                "  - To get tactic label: ?m proto:tactic ?t . ?t skos:prefLabel ?tacticLabel\n"
                 "  - Use OPTIONAL for non-required fields\n"
                 "  - Filter by class: ?x a proto:LibraryModule\n"
-                "  - Instances: data:{key} e.g. data:cs-start-c2"
+                "  - Instances: data:{key} e.g. data:cs-start-c2\n"
+                "\n"
+                "WORKING SPARQL PATTERNS (use these exact structures):\n"
+                "  # Filter by tactic:\n"
+                "  ?m proto:tactic ?t . FILTER(CONTAINS(STR(?t), \"TA0006\"))\n"
+                "\n"
+                "  # Get tactic label:\n"
+                "  ?m proto:tactic ?t . ?t skos:prefLabel ?tacticLabel .\n"
+                "\n"
+                "  # Count modules per tactic (GROUP BY):\n"
+                "  SELECT ?tacticLabel (COUNT(?m) AS ?count) WHERE {\n"
+                "    ?m a proto:LibraryModule ; proto:tactic ?t .\n"
+                "    ?t skos:prefLabel ?tacticLabel .\n"
+                "  } GROUP BY ?tacticLabel ORDER BY DESC(?count)\n"
+                "\n"
+                "  # Gap analysis - MITRE tactics with no modules:\n"
+                "  # Use CONTAINS(STR(?t), \"mitre-TA\") to match only MITRE tactic URIs\n"
+                "  SELECT DISTINCT ?tacticLabel WHERE {\n"
+                "    ?t skos:prefLabel ?tacticLabel .\n"
+                "    FILTER(CONTAINS(STR(?t), \"mitre-TA\"))\n"
+                "    FILTER(NOT EXISTS { ?m a proto:LibraryModule ; proto:tactic ?t . })\n"
+                "  }\n"
+                "\n"
+                "GRAPHDB RESTRICTIONS:\n"
+                "  - tax:mitre-tactics scheme does NOT exist in the graph — never use skos:inScheme tax:mitre-tactics\n"
+                "  - To find all tactics derive them from modules: ?m proto:tactic ?t . ?t skos:prefLabel ?label\n"
+                "  - NEVER use: FILTER(?x NOT IN (SELECT ...)) — use FILTER(NOT EXISTS {...}) instead\n"
+                "  - NEVER hardcode tactic URIs like proto:TA0006 — use FILTER(CONTAINS(STR(?t),\"TA00XX\"))\n"
+                "  - GROUP BY requires all SELECT vars to be either aggregated or in GROUP BY\n"
+                "  - Subqueries must use { SELECT ... } syntax inside the WHERE block\n"
             ),
         })
 
@@ -362,19 +388,7 @@ class FewShotLibrary:
         self._loaded = False
 
     def _get_embedding(self, text: str) -> Optional[List[float]]:
-        try:
-            import httpx
-            res = httpx.post(
-                f"{OLLAMA_HOST}/api/embeddings",
-                json={"model": EMBED_MODEL, "prompt": text[:256]},
-                timeout=30.0,
-            )
-            if res.status_code == 200:
-                data = res.json()
-                return data.get("embedding") or data.get("embeddings", [None])[0]
-        except Exception:
-            pass
-        return None
+        return _llm_embed(text)
 
     def _cosine(self, a: List[float], b: List[float]) -> float:
         dot = sum(x * y for x, y in zip(a, b))
@@ -517,13 +531,12 @@ def _seed_fewshot_library():
         ),
         (
             "Show me credential access modules",
-            """SELECT ?name ?description ?tactic ?riskLevel WHERE {
+            """SELECT ?name ?tactic WHERE {
     ?m a proto:LibraryModule ;
        proto:name ?name ;
-       proto:tactic "Credential Access" .
-    OPTIONAL { ?m proto:description ?description }
-    OPTIONAL { ?m proto:riskLevel ?rl . ?rl skos:prefLabel ?riskLevel }
-} ORDER BY ?name""",
+       proto:tactic ?t .
+    FILTER(CONTAINS(STR(?t), "TA0006"))
+} ORDER BY ?name LIMIT 25""",
         ),
         (
             "Show me all TTPs in the graph",
@@ -781,26 +794,11 @@ Return ONLY the SPARQL query — no explanation, no markdown fences, no commenta
 
 
 async def _call_llm(prompt: str) -> str:
-    """Call the Ollama-compatible LLM endpoint."""
-    import httpx
-
-    async with httpx.AsyncClient(timeout=120.0) as client:
-        res = await client.post(
-            f"{OLLAMA_HOST}/v1/chat/completions",
-            json={
-                "model": OLLAMA_MODEL,
-                "messages": [{"role": "user", "content": prompt}],
-                "temperature": 0.1,
-            },
-        )
-
-    if res.status_code != 200:
-        raise Exception(f"LLM returned {res.status_code}: {res.text[:200]}")
-
-    data = res.json()
-    content = data["choices"][0]["message"]["content"].strip()
+    """Call LLM via llm_client (routes to OpenAI or Ollama based on env)."""
+    raw = await _llm_chat(prompt, temperature=0.1)
 
     # Strip markdown fences
+    content = raw.strip()
     if content.startswith("```"):
         content = content.split("\n", 1)[1] if "\n" in content else content[3:]
         if content.endswith("```"):
@@ -1158,8 +1156,9 @@ async def get_query_schema():
     _require_gdb()
     return {
         "schema": _build_full_schema_context(),
-        "model":  OLLAMA_MODEL,
-        "host":   OLLAMA_HOST,
+        "model":  active_model(),
+        "embed_model": active_embed_model(),
+        "backend": _llm_backend_info()["backend"],
         "index_built": _schema_index._loaded,
         "fewshot_count": len(_fewshot_library._entries),
     }

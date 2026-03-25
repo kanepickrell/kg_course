@@ -1,9 +1,0 @@
-{
-  "_payload_version": "2.0",
-  "_saved_at": "2026-03-04T21:39:23.447161+00:00",
-  "_artifact_key": "lsass-memory",
-  "_artifact_type": "TTP",
-  "mitreId": "T1003.001",
-  "name": "LSASS Memory",
-  "tactic": "Credential Access"
-}

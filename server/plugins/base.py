@@ -28,6 +28,17 @@ class PluginConfig(BaseModel):
     created_at: str
     updated_at: str
     created_by: str
+    # Agent fields (set by App Onboarding wizard)
+    mode: Optional[str] = "action"
+    llm_model: Optional[str] = None
+    domain_classes: Optional[List[str]] = []
+    domain_relationships: Optional[List[str]] = []
+    write_permissions: Optional[List[str]] = []
+    session_cache_ttl: Optional[int] = 300
+    system_prompt: Optional[str] = None
+    has_code: bool = False
+    generated_tools: Optional[List[Dict[str, Any]]] = []
+    improvement_policy: Optional[Dict[str, Any]] = None
 
 
 class Plugin:

@@ -1,6 +1,0 @@
-{
-  "name": "LibraryModule",
-  "category": "Cobalt Strike",
-  "tactic": "TA0011",
-  "description": "This is data about C2 capabilities we are building, in this case it will be a cobalt strike command for creating a C2 listener"
-}
