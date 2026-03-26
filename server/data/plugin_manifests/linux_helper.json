@@ -1,0 +1,117 @@
+{
+  "id": "linux_helper",
+  "name": "Linux Helper",
+  "description": "Helps operators work with files and directories on the Linux system.",
+  "icon": "🔧",
+  "mode": "hybrid",
+  "domain_classes": [
+    "Thing"
+  ],
+  "domain_relationships": [],
+  "write_permissions": [],
+  "llm_model": "llama3.3:70b",
+  "system_prompt": "You are Linux Helper, a utility agent that can perform simple file and text operations.\n\nYou have access to three tools:\n- add_numbers: add two numbers together\n- reverse_text: reverse a string of text\n- list_files: list files in a directory\n\nRules:\n- Always call a tool to answer — never guess at results\n- If a tool returns an error, report it clearly and suggest a fix\n- Decline requests outside your tool set and explain what you can help with",
+  "session_cache_ttl": 300,
+  "generated_tools": [
+    {
+      "name": "get_thing_by_id",
+      "signature": "get_thing_by_id(key: str) -> Optional[Thing]",
+      "description": "Retrieve a single Thing artifact by its graph key.",
+      "sparql_template": "SELECT * WHERE { data:{key} a proto:Thing ; ?p ?o }",
+      "arg_types": {
+        "key": "str"
+      },
+      "return_type": "Optional[Thing]",
+      "source": "ontology"
+    },
+    {
+      "name": "list_things",
+      "signature": "list_things(search: str | None = None, limit: int = 25) -> List[Thing]",
+      "description": "List Thing artifacts with optional text search.",
+      "sparql_template": "SELECT ?name ?key WHERE { ?x a proto:Thing ; proto:name ?name . BIND(STRAFTER(STR(?x), \"data/\") AS ?key) } LIMIT {limit}",
+      "arg_types": {
+        "search": "str | None",
+        "limit": "int"
+      },
+      "return_type": "List[Thing]",
+      "source": "ontology"
+    },
+    {
+      "name": "exec_add_numbers",
+      "signature": "exec_add_numbers(a: str, b: str) -> dict",
+      "description": "Add two numbers together and return the result.",
+      "sparql_template": "# No SPARQL — calls subprocess: add_numbers(a, b)",
+      "arg_types": {
+        "a": "str",
+        "b": "str"
+      },
+      "return_type": "dict",
+      "source": "code_analysis"
+    },
+    {
+      "name": "exec_reverse_text",
+      "signature": "exec_reverse_text(text: str) -> dict",
+      "description": "Reverse a string of text.",
+      "sparql_template": "# No SPARQL — calls subprocess: reverse_text(text)",
+      "arg_types": {
+        "text": "str"
+      },
+      "return_type": "dict",
+      "source": "code_analysis"
+    },
+    {
+      "name": "exec_list_files",
+      "signature": "exec_list_files(directory: str) -> dict",
+      "description": "List files in a directory.",
+      "sparql_template": "# No SPARQL — calls subprocess: list_files(directory)",
+      "arg_types": {
+        "directory": "str"
+      },
+      "return_type": "dict",
+      "source": "code_analysis"
+    },
+    {
+      "name": "program_start",
+      "signature": "program_start() -> ExecutionStatus",
+      "description": "Start the registered program using the configured execution context.",
+      "sparql_template": "# subprocess: start_command in working_dir",
+      "arg_types": {},
+      "return_type": "ExecutionStatus",
+      "source": "code_analysis"
+    },
+    {
+      "name": "program_stop",
+      "signature": "program_stop() -> ExecutionStatus",
+      "description": "Stop the running program cleanly.",
+      "sparql_template": "# subprocess: stop_command",
+      "arg_types": {},
+      "return_type": "ExecutionStatus",
+      "source": "code_analysis"
+    },
+    {
+      "name": "program_status",
+      "signature": "program_status() -> ExecutionStatus",
+      "description": "Check if the program is running and return last N lines of stdout.",
+      "sparql_template": "# subprocess: process health check",
+      "arg_types": {},
+      "return_type": "ExecutionStatus",
+      "source": "code_analysis"
+    }
+  ],
+  "execution_context": {
+    "start_mode": "python_module",
+    "working_dir": "/home/gopher/repos/kg_course/server",
+    "start_command": "./tools.py",
+    "ready_signal_type": "exit_code",
+    "ready_signal_value": "0",
+    "stop_command": "kill -SIGTERM $PID"
+  },
+  "improvement_policy": {
+    "enabled": false,
+    "correction_threshold": 0.25,
+    "tool_usage_window_days": 7,
+    "prompt_revision_requires_review": true,
+    "track_execution_failures": true,
+    "auto_propose_tool_additions": false
+  }
+}

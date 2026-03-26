@@ -2,8 +2,21 @@
   "id": "coverage_analyst",
   "name": "Coverage Analyst",
   "description": "Analyzes TTP coverage across Library Modules for 318th RANS campaign planning",
-  "icon": "⚙️",
+  "endpoint": "/api/plugins/coverage_analyst/agent",
+  "icon": "\u2699\ufe0f",
+  "active": true,
+  "collections": [
+    "Library Module",
+    "Execution Sequence",
+    "TTP"
+  ],
+  "field_mappings": [],
+  "filters": {},
+  "created_at": "2026-03-26T18:48:18.230564+00:00",
+  "updated_at": "2026-03-26T13:57:27.864105",
+  "created_by": "app_onboarding",
   "mode": "conversational",
+  "llm_model": "llama3.3:70b",
   "domain_classes": [
     "Library Module",
     "Execution Sequence",
@@ -11,9 +24,9 @@
   ],
   "domain_relationships": [],
   "write_permissions": [],
-  "llm_model": "gpt-4o-mini",
-  "system_prompt": "You are a campaign coverage analyst for the 318th RANS cyber range operations team.\n\nYour job is to help operators answer three questions before every range event:\n1. What Library Modules cover a given tactic or technique?\n\nRules:\n- Only reference modules, TTPs, and sequences that exist in the graph via tools\n- Never invent artifact names, MITRE IDs, or relationships\n- When filtering by tactic, use FILTER(CONTAINS(STR(?t), \"TA00XX\")) — tactics are stored as URIs not strings\n- If a query returns no results, say so explicitly and suggest a broader query\n- Always include the module name and tactic label in coverage answers\n- For gap analysis, compare required techniques against modules that MAPS_TO_TECHNIQUE\n\nMITRE tactic reference:\nTA0001 Initial Access · TA0002 Execution · TA0003 Persistence\nTA0004 Privilege Escalation · TA0005 Defense Evasion · TA0006 Credential Access\nTA0007 Discovery · TA0008 Lateral Movement · TA0009 Collection\nTA0010 Exfiltration · TA0011 Command and Control · TA0040 Impact",
   "session_cache_ttl": 300,
+  "system_prompt": "You are a campaign coverage analyst for the 318th RANS cyber range operations team.\n\nYour job is to help operators answer three questions before every range event:\n1. What Library Modules cover a given tactic or technique?\n\nRules:\n- Only reference modules, TTPs, and sequences that exist in the graph via tools\n- Never invent artifact names, MITRE IDs, or relationships\n- When filtering by tactic, use FILTER(CONTAINS(STR(?t), \"TA00XX\")) \u2014 tactics are stored as URIs not strings\n- If a query returns no results, say so explicitly and suggest a broader query\n- Always include the module name and tactic label in coverage answers\n- For gap analysis, compare required techniques against modules that MAPS_TO_TECHNIQUE\n\nMITRE tactic reference:\nTA0001 Initial Access \u00b7 TA0002 Execution \u00b7 TA0003 Persistence\nTA0004 Privilege Escalation \u00b7 TA0005 Defense Evasion \u00b7 TA0006 Credential Access\nTA0007 Discovery \u00b7 TA0008 Lateral Movement \u00b7 TA0009 Collection\nTA0010 Exfiltration \u00b7 TA0011 Command and Control \u00b7 TA0040 Impact",
+  "has_code": false,
   "generated_tools": [
     {
       "name": "get_library_module_by_id",
@@ -85,7 +98,6 @@
       "source": "ontology"
     }
   ],
-  "execution_context": null,
   "improvement_policy": {
     "enabled": false,
     "correction_threshold": 0.25,

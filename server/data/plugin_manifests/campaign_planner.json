@@ -1,0 +1,185 @@
+{
+  "id": "campaign_planner",
+  "name": "Campaign Planner",
+  "description": "Builds and analyzes adversary emulation campaigns by chaining Library Modules across MITRE tactics.",
+  "icon": "⚡",
+  "mode": "hybrid",
+  "domain_classes": [
+    "Library Module",
+    "TTP",
+    "Execution Sequence"
+  ],
+  "domain_relationships": [],
+  "write_permissions": [],
+  "llm_model": "gpt-4o-mini",
+  "system_prompt": "You are Campaign Planner, an adversary emulation planning agent for the 318th RANS cyber range operations team.\n\nYou help operators build, validate, and analyze campaigns before range events by calling your planning tools directly. You have access to the following tools:\n- build_campaign: select Library Modules that cover a given MITRE tactic\n- get_coverage_gaps: find techniques with no module coverage\n- suggest_sequence: find Execution Sequences matching an objective\n- list_tactics_with_coverage: overview of all tactics and module counts\n- get_module_details: full details on a specific module\n\nRules:\n- Always call a tool before answering — never guess at coverage or module names\n- If a tool returns no results, say so and suggest a broader search term\n- When building a campaign, always include tactic, module name, and risk level\n- For gap analysis, always state the count of uncovered techniques clearly\n- Decline requests outside campaign planning — redirect to what you can help with",
+  "session_cache_ttl": 300,
+  "generated_tools": [
+    {
+      "name": "get_library_module_by_id",
+      "signature": "get_library_module_by_id(key: str) -> Optional[Library Module]",
+      "description": "Retrieve a single Library Module artifact by its graph key.",
+      "sparql_template": "SELECT * WHERE { data:{key} a proto:LibraryModule ; ?p ?o }",
+      "arg_types": {
+        "key": "str"
+      },
+      "return_type": "Optional[Library Module]",
+      "source": "ontology"
+    },
+    {
+      "name": "list_library_modules",
+      "signature": "list_library_modules(search: str | None = None, limit: int = 25) -> List[Library Module]",
+      "description": "List Library Module artifacts with optional text search.",
+      "sparql_template": "SELECT ?name ?key WHERE { ?x a proto:LibraryModule ; proto:name ?name . BIND(STRAFTER(STR(?x), \"data/\") AS ?key) } LIMIT {limit}",
+      "arg_types": {
+        "search": "str | None",
+        "limit": "int"
+      },
+      "return_type": "List[Library Module]",
+      "source": "ontology"
+    },
+    {
+      "name": "get_ttp_by_id",
+      "signature": "get_ttp_by_id(key: str) -> Optional[TTP]",
+      "description": "Retrieve a single TTP artifact by its graph key.",
+      "sparql_template": "SELECT * WHERE { data:{key} a proto:TTP ; ?p ?o }",
+      "arg_types": {
+        "key": "str"
+      },
+      "return_type": "Optional[TTP]",
+      "source": "ontology"
+    },
+    {
+      "name": "list_ttps",
+      "signature": "list_ttps(search: str | None = None, limit: int = 25) -> List[TTP]",
+      "description": "List TTP artifacts with optional text search.",
+      "sparql_template": "SELECT ?name ?key WHERE { ?x a proto:TTP ; proto:name ?name . BIND(STRAFTER(STR(?x), \"data/\") AS ?key) } LIMIT {limit}",
+      "arg_types": {
+        "search": "str | None",
+        "limit": "int"
+      },
+      "return_type": "List[TTP]",
+      "source": "ontology"
+    },
+    {
+      "name": "get_execution_sequence_by_id",
+      "signature": "get_execution_sequence_by_id(key: str) -> Optional[Execution Sequence]",
+      "description": "Retrieve a single Execution Sequence artifact by its graph key.",
+      "sparql_template": "SELECT * WHERE { data:{key} a proto:ExecutionSequence ; ?p ?o }",
+      "arg_types": {
+        "key": "str"
+      },
+      "return_type": "Optional[Execution Sequence]",
+      "source": "ontology"
+    },
+    {
+      "name": "list_execution_sequences",
+      "signature": "list_execution_sequences(search: str | None = None, limit: int = 25) -> List[Execution Sequence]",
+      "description": "List Execution Sequence artifacts with optional text search.",
+      "sparql_template": "SELECT ?name ?key WHERE { ?x a proto:ExecutionSequence ; proto:name ?name . BIND(STRAFTER(STR(?x), \"data/\") AS ?key) } LIMIT {limit}",
+      "arg_types": {
+        "search": "str | None",
+        "limit": "int"
+      },
+      "return_type": "List[Execution Sequence]",
+      "source": "ontology"
+    },
+    {
+      "name": "exec_build_campaign",
+      "signature": "exec_build_campaign(tactic: str, max_modules: str) -> Dict[str, Any]",
+      "description": "Build a campaign by selecting Library Modules that cover a given MITRE tactic.",
+      "sparql_template": "# No SPARQL — calls subprocess: build_campaign(tactic, max_modules)",
+      "arg_types": {
+        "tactic": "str",
+        "max_modules": "str"
+      },
+      "return_type": "Dict[str, Any]",
+      "source": "code_analysis"
+    },
+    {
+      "name": "exec_get_coverage_gaps",
+      "signature": "exec_get_coverage_gaps(tactic: str) -> Dict[str, Any]",
+      "description": "Identify TTPs within a tactic that have no corresponding Library Module.",
+      "sparql_template": "# No SPARQL — calls subprocess: get_coverage_gaps(tactic)",
+      "arg_types": {
+        "tactic": "str"
+      },
+      "return_type": "Dict[str, Any]",
+      "source": "code_analysis"
+    },
+    {
+      "name": "exec_suggest_sequence",
+      "signature": "exec_suggest_sequence(objective: str) -> Dict[str, Any]",
+      "description": "Suggest an Execution Sequence that matches a given campaign objective.",
+      "sparql_template": "# No SPARQL — calls subprocess: suggest_sequence(objective)",
+      "arg_types": {
+        "objective": "str"
+      },
+      "return_type": "Dict[str, Any]",
+      "source": "code_analysis"
+    },
+    {
+      "name": "exec_list_tactics_with_coverage",
+      "signature": "exec_list_tactics_with_coverage() -> Dict[str, Any]",
+      "description": "List all MITRE tactics present in the graph with their module counts.",
+      "sparql_template": "# No SPARQL — calls subprocess: list_tactics_with_coverage()",
+      "arg_types": {},
+      "return_type": "Dict[str, Any]",
+      "source": "code_analysis"
+    },
+    {
+      "name": "exec_get_module_details",
+      "signature": "exec_get_module_details(module_name: str) -> Dict[str, Any]",
+      "description": "Retrieve full details for a specific Library Module by name.",
+      "sparql_template": "# No SPARQL — calls subprocess: get_module_details(module_name)",
+      "arg_types": {
+        "module_name": "str"
+      },
+      "return_type": "Dict[str, Any]",
+      "source": "code_analysis"
+    },
+    {
+      "name": "program_start",
+      "signature": "program_start() -> ExecutionStatus",
+      "description": "Start the registered program using the configured execution context.",
+      "sparql_template": "# subprocess: start_command in working_dir",
+      "arg_types": {},
+      "return_type": "ExecutionStatus",
+      "source": "code_analysis"
+    },
+    {
+      "name": "program_stop",
+      "signature": "program_stop() -> ExecutionStatus",
+      "description": "Stop the running program cleanly.",
+      "sparql_template": "# subprocess: stop_command",
+      "arg_types": {},
+      "return_type": "ExecutionStatus",
+      "source": "code_analysis"
+    },
+    {
+      "name": "program_status",
+      "signature": "program_status() -> ExecutionStatus",
+      "description": "Check if the program is running and return last N lines of stdout.",
+      "sparql_template": "# subprocess: process health check",
+      "arg_types": {},
+      "return_type": "ExecutionStatus",
+      "source": "code_analysis"
+    }
+  ],
+  "execution_context": {
+    "start_mode": "python_module",
+    "working_dir": "",
+    "start_command": "./campaign_planner.py",
+    "ready_signal_type": "exit_code",
+    "ready_signal_value": "0",
+    "stop_command": "kill -SIGTERM $PID"
+  },
+  "improvement_policy": {
+    "enabled": false,
+    "correction_threshold": 0.25,
+    "tool_usage_window_days": 7,
+    "prompt_revision_requires_review": true,
+    "track_execution_failures": true,
+    "auto_propose_tool_additions": false
+  }
+}

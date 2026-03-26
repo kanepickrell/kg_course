@@ -1,0 +1,128 @@
+{
+  "id": "crypto",
+  "name": "Crypto Helper",
+  "description": "Converts text to hashes",
+  "icon": "\ud83e\udd16",
+  "mode": "hybrid",
+  "domain_classes": [
+    "Thing"
+  ],
+  "domain_relationships": [],
+  "write_permissions": [],
+  "llm_model": "gpt-4o-mini",
+  "system_prompt": "You are Crypto Helper, a security utility agent.\nYou can hash strings, encode/decode base64, and generate secure passwords.\nAlways call a tool \u2014 never produce a hash, encoded value, or password yourself.\n\nSTRICT ROUTING RULES:\n- Only respond to explicit requests to hash, encode, decode, or generate a password\n- Anything that isnt related to hash strings, encode/decode base64, and generate secure passwords.  \u2192 decline\n- Decline everything else with: \"I can only hash strings, encode/decode base64, and generate passwords.\"",
+  "session_cache_ttl": 300,
+  "generated_tools": [
+    {
+      "name": "get_thing_by_id",
+      "signature": "get_thing_by_id(key: str) -> Optional[Thing]",
+      "description": "Retrieve a single Thing artifact by its graph key.",
+      "sparql_template": "SELECT * WHERE { data:{key} a proto:Thing ; ?p ?o }",
+      "arg_types": {
+        "key": "str"
+      },
+      "return_type": "Optional[Thing]",
+      "source": "ontology"
+    },
+    {
+      "name": "list_things",
+      "signature": "list_things(search: str | None = None, limit: int = 25) -> List[Thing]",
+      "description": "List Thing artifacts with optional text search.",
+      "sparql_template": "SELECT ?name ?key WHERE { ?x a proto:Thing ; proto:name ?name . BIND(STRAFTER(STR(?x), \"data/\") AS ?key) } LIMIT {limit}",
+      "arg_types": {
+        "search": "str | None",
+        "limit": "int"
+      },
+      "return_type": "List[Thing]",
+      "source": "ontology"
+    },
+    {
+      "name": "exec_hash_string",
+      "signature": "exec_hash_string(text: str, algorithm: str) -> dict",
+      "description": "Hash a string using the specified algorithm.",
+      "sparql_template": "# No SPARQL \u2014 calls subprocess: hash_string(text, algorithm)",
+      "arg_types": {
+        "text": "str",
+        "algorithm": "str"
+      },
+      "return_type": "dict",
+      "source": "code_analysis"
+    },
+    {
+      "name": "exec_base64_encode",
+      "signature": "exec_base64_encode(text: str) -> dict",
+      "description": "Encode a plain-text string to standard base64.",
+      "sparql_template": "# No SPARQL \u2014 calls subprocess: base64_encode(text)",
+      "arg_types": {
+        "text": "str"
+      },
+      "return_type": "dict",
+      "source": "code_analysis"
+    },
+    {
+      "name": "exec_base64_decode",
+      "signature": "exec_base64_decode(text: str) -> dict",
+      "description": "Decode a base64 string back to plain text.",
+      "sparql_template": "# No SPARQL \u2014 calls subprocess: base64_decode(text)",
+      "arg_types": {
+        "text": "str"
+      },
+      "return_type": "dict",
+      "source": "code_analysis"
+    },
+    {
+      "name": "exec_generate_password",
+      "signature": "exec_generate_password(length: str) -> dict",
+      "description": "Generate a cryptographically secure random password.",
+      "sparql_template": "# No SPARQL \u2014 calls subprocess: generate_password(length)",
+      "arg_types": {
+        "length": "str"
+      },
+      "return_type": "dict",
+      "source": "code_analysis"
+    },
+    {
+      "name": "program_start",
+      "signature": "program_start() -> ExecutionStatus",
+      "description": "Start the registered program using the configured execution context.",
+      "sparql_template": "# subprocess: start_command in working_dir",
+      "arg_types": {},
+      "return_type": "ExecutionStatus",
+      "source": "code_analysis"
+    },
+    {
+      "name": "program_stop",
+      "signature": "program_stop() -> ExecutionStatus",
+      "description": "Stop the running program cleanly.",
+      "sparql_template": "# subprocess: stop_command",
+      "arg_types": {},
+      "return_type": "ExecutionStatus",
+      "source": "code_analysis"
+    },
+    {
+      "name": "program_status",
+      "signature": "program_status() -> ExecutionStatus",
+      "description": "Check if the program is running and return last N lines of stdout.",
+      "sparql_template": "# subprocess: process health check",
+      "arg_types": {},
+      "return_type": "ExecutionStatus",
+      "source": "code_analysis"
+    }
+  ],
+  "execution_context": {
+    "start_mode": "custom",
+    "working_dir": "/home/gopher/repos/kg_course/server",
+    "start_command": "python -m crypto_tools",
+    "ready_signal_type": "exit_code",
+    "ready_signal_value": "0",
+    "stop_command": "kill -SIGTERM $PID"
+  },
+  "improvement_policy": {
+    "enabled": false,
+    "correction_threshold": 0.25,
+    "tool_usage_window_days": 7,
+    "prompt_revision_requires_review": true,
+    "track_execution_failures": true,
+    "auto_propose_tool_additions": false
+  }
+}

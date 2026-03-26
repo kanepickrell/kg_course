@@ -1,0 +1,127 @@
+{
+  "id": "operator",
+  "name": "Operator TTP Library",
+  "description": "Expose library modules to the Operator/Lumen workflow builder",
+  "endpoint": "/api/plugins/operator/modules",
+  "icon": "\u2699\ufe0f",
+  "active": true,
+  "collections": [
+    "LibraryModule"
+  ],
+  "field_mappings": [
+    {
+      "source": "_key",
+      "target": "_key",
+      "transform": null
+    },
+    {
+      "source": "_key",
+      "target": "id",
+      "transform": null
+    },
+    {
+      "source": "name",
+      "target": "name",
+      "transform": null
+    },
+    {
+      "source": "category",
+      "target": "category",
+      "transform": null
+    },
+    {
+      "source": "tactic",
+      "target": "tactic",
+      "transform": null
+    },
+    {
+      "source": "icon",
+      "target": "icon",
+      "transform": null
+    },
+    {
+      "source": "payload.subcategory",
+      "target": "subcategory",
+      "transform": null
+    },
+    {
+      "source": "payload.description",
+      "target": "description",
+      "transform": null
+    },
+    {
+      "source": "payload.riskLevel",
+      "target": "riskLevel",
+      "transform": null
+    },
+    {
+      "source": "payload.estimatedDuration",
+      "target": "estimatedDuration",
+      "transform": null
+    },
+    {
+      "source": "payload.executionType",
+      "target": "executionType",
+      "transform": null
+    },
+    {
+      "source": "payload.cobaltStrikeCommand",
+      "target": "cobaltStrikeCommand",
+      "transform": null
+    },
+    {
+      "source": "payload.robotKeyword",
+      "target": "robotKeyword",
+      "transform": null
+    },
+    {
+      "source": "payload.robotTemplate",
+      "target": "robotTemplate",
+      "transform": null
+    },
+    {
+      "source": "payload.shellCommand",
+      "target": "shellCommand",
+      "transform": null
+    },
+    {
+      "source": "payload.inputs",
+      "target": "inputs",
+      "transform": null
+    },
+    {
+      "source": "payload.outputs",
+      "target": "outputs",
+      "transform": null
+    },
+    {
+      "source": "payload.parameters",
+      "target": "parameters",
+      "transform": null
+    },
+    {
+      "source": "payload.requirements",
+      "target": "requirements",
+      "transform": null
+    },
+    {
+      "source": "payload.metadata",
+      "target": "metadata",
+      "transform": null
+    }
+  ],
+  "filters": {},
+  "created_at": "2026-03-26T13:35:01.821561",
+  "updated_at": "2026-03-26T13:40:24.564847",
+  "created_by": "system",
+  "mode": "action",
+  "llm_model": null,
+  "domain_classes": [],
+  "domain_relationships": [],
+  "write_permissions": [],
+  "session_cache_ttl": 300,
+  "system_prompt": null,
+  "has_code": false,
+  "generated_tools": [],
+  "improvement_policy": null
+}

@@ -26,7 +26,7 @@ OLLAMA_MODEL     = os.getenv("OLLAMA_MODEL", "gpt-oss:120b")
 PAYLOAD_DIR      = os.getenv("PAYLOAD_STORAGE_DIR", "./data/payloads")
 JSON_PATH        = "llm_edge_suggestions.json"
 
-app = FastAPI(title="ATLAS Unified API", version="5.0.0")
+app = FastAPI(title="ProtoGraph Unified API", version="5.0.0")
 app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_credentials=True,
                    allow_methods=["*"], allow_headers=["*"])
 
@@ -630,10 +630,15 @@ def _load_persisted_plugins():
 _load_persisted_plugins()
 from plugins.endpoints import router as plugin_router
 from plugins.plugin_router import create_plugin_data_router
+from plugins.config_endpoints import router as config_router
+from onboard_endpoints import router as onboard_router
 
 app.include_router(plugin_router)
 plugin_data_router = create_plugin_data_router(None, PAYLOAD_DIR, gdb)
 app.include_router(plugin_data_router)
+
+app.include_router(config_router)
+app.include_router(onboard_router)
 
 if gdb:
     try:

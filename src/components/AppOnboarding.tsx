@@ -566,10 +566,22 @@ function CodeDropZone({ onAnalyzed }: { onAnalyzed: (analysis: CodeAnalysis) => 
   const processFile = async (file: File) => {
     setAnalyzing(true);
     const text = await file.text();
-    await new Promise(r => setTimeout(r, 800)); // simulate API call
-    const result = simulateCodeAnalysis(file.name, text);
-    onAnalyzed(result);
-    setAnalyzing(false);
+    try {
+      const res = await fetch(`${API_BASE}/api/onboard/analyze-code`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ filename: file.name, content: text }),
+      });
+      if (!res.ok) throw new Error(`Analysis failed: ${res.status}`);
+      const result = await res.json();
+      onAnalyzed(result);
+    } catch (err) {
+      console.error("Code analysis failed, falling back to simulation:", err);
+      const result = simulateCodeAnalysis(file.name, text);
+      onAnalyzed(result);
+    } finally {
+      setAnalyzing(false);
+    }
   };
 
   return (

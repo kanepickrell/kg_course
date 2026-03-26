@@ -62,6 +62,8 @@ class NaturalQueryRequest(BaseModel):
     question: str
     show_sparql: bool = True
     max_results: int = 25
+    plugin_id: Optional[str] = None       # if set, load agent system prompt from disk
+    system_prompt: Optional[str] = None   # or pass directly
 
 
 class NaturalQueryResponse(BaseModel):
@@ -818,20 +820,34 @@ def _extract_sparql(raw: str) -> str:
     return raw.strip()
 
 
-async def _generate_answer(question: str, results: List[Dict], sparql: str) -> str:
+async def _generate_answer(question: str, results: List[Dict], sparql: str,
+                           system_prompt: Optional[str] = None) -> str:
     if not results:
+        # Check if question is out of scope based on system prompt
+        if system_prompt and any(kw in question.lower() for kw in ["cve", "exploit", "patch", "vulnerability", "nvd"]):
+            return "That information is not available in the ProtoGraph knowledge graph. I can only answer questions about Library Modules, TTPs, and Execution Sequences."
         return "No results found for your query."
 
     result_text = json.dumps(results[:10], indent=2, default=str)
-    prompt = f"""Given this question and the query results, provide a clear, concise answer.
+
+    scope_block = ""
+    if system_prompt:
+        scope_block = f"""AGENT CONTEXT (follow these rules strictly):
+{system_prompt}
+
+"""
+
+    prompt = f"""{scope_block}Given this question and the query results, provide a clear, concise answer.
 Do not mention SPARQL or databases. Just answer the question naturally.
+Only use information from the results below — do not add external knowledge.
 
 Question: {question}
 
 Results ({len(results)} total):
 {result_text}
 
-Answer in 2-3 sentences. Be specific — cite names, counts, and key details from the results."""
+Answer in 2-3 sentences. Be specific — cite names, counts, and key details from the results.
+If the question asks about something not in the results (like CVEs, exploits, or threat intel), say: 'That information is not available in the ProtoGraph knowledge graph.'"""
 
     try:
         return await _call_llm(prompt)
@@ -864,6 +880,21 @@ async def natural_language_query(request: NaturalQueryRequest):
 
     if not question:
         raise HTTPException(status_code=400, detail="Question is required")
+
+    # Load agent system prompt — from request directly or from disk via plugin_id
+    agent_system_prompt: Optional[str] = request.system_prompt
+    if not agent_system_prompt and request.plugin_id:
+        try:
+            import re as _re
+            from pathlib import Path as _Path
+            agent_py = _Path(__file__).parent.parent / "plugins" / request.plugin_id / "agent.py"
+            if agent_py.exists():
+                agent_src = agent_py.read_text()
+                m = _re.search(r'\s*SYSTEM_PROMPT\s*=\s*"""(.*?)"""', agent_src, _re.DOTALL)
+                if m:
+                    agent_system_prompt = m.group(1).strip()
+        except Exception:
+            pass
 
     sparql        = None
     llm_available = True
@@ -950,7 +981,7 @@ async def natural_language_query(request: NaturalQueryRequest):
 
         # ── Step 6: Generate answer ───────────────────────────────────
         if llm_available:
-            answer = await _generate_answer(question, results, sparql)
+            answer = await _generate_answer(question, results, sparql, system_prompt=agent_system_prompt)
         else:
             answer = _generate_mock_answer(question, results)
 
