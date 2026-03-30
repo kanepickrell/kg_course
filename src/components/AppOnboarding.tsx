@@ -74,6 +74,12 @@ interface ImprovementPolicy {
   auto_propose_tool_additions: boolean;
 }
 
+interface IntentRules {
+  direct_answer_triggers: string[];
+  decline_triggers: string[];
+  graph_query_triggers: string[];
+}
+
 interface AppManifest {
   id: string;
   name: string;
@@ -90,6 +96,7 @@ interface AppManifest {
   code_analysis?: CodeAnalysis;
   execution_context?: ExecutionContext;
   improvement_policy?: ImprovementPolicy;
+  filters?: { intent_rules?: IntentRules };
 }
 
 interface RegisteredPlugin {
@@ -636,6 +643,7 @@ export default function AppOnboarding() {
     domain_classes: [], domain_relationships: [],
     write_permissions: [], llm_model: "llama3.3:70b",
     system_prompt: "", session_cache_ttl: 300, generated_tools: [],
+    filters: { intent_rules: { direct_answer_triggers: [], decline_triggers: [], graph_query_triggers: [] } },
     improvement_policy: {
       enabled: false,
       correction_threshold: 0.25,
@@ -1381,6 +1389,101 @@ Autonomous operation rules:
                       ))}
                     </InfoBox>
                   </div>
+
+                  {/* ── Intent routing rules ── */}
+                  <div>
+                    <Label>Intent Routing Rules</Label>
+                    <Helper>
+                      These phrase lists control how the agent classifies every incoming message.
+                      The router checks them in order: direct_answer → decline → tool_call.
+                      Leave empty to rely on the agent's system prompt domain alone.
+                    </Helper>
+
+                    <div style={{ display: "flex", flexDirection: "column", gap: 10, marginTop: 8 }}>
+
+                      {/* Direct answer triggers */}
+                      <div style={{ border: "1px solid var(--accent-green-border)", borderRadius: 8, overflow: "hidden", background: "var(--accent-green-bg)" }}>
+                        <div style={{ padding: "7px 11px", borderBottom: "1px solid var(--accent-green-border)", fontSize: 10, fontWeight: 700, color: "var(--accent-green)", textTransform: "uppercase", letterSpacing: "0.07em" }}>
+                          ✓ Direct answer triggers — respond from system prompt, skip tools
+                        </div>
+                        <div style={{ padding: "10px 11px", display: "flex", flexDirection: "column", gap: 6 }}>
+                          {(manifest.filters?.intent_rules?.direct_answer_triggers ?? []).map((t, i) => (
+                            <div key={i} style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                              <span style={{ flex: 1, fontSize: 12, color: "var(--text-primary)", background: "var(--bg-input)", border: "1px solid var(--border)", borderRadius: 5, padding: "4px 8px", fontFamily: "monospace" }}>{t}</span>
+                              <button onClick={() => {
+                                const triggers = [...(manifest.filters?.intent_rules?.direct_answer_triggers ?? [])];
+                                triggers.splice(i, 1);
+                                update({ filters: { intent_rules: { ...(manifest.filters?.intent_rules ?? { decline_triggers: [], graph_query_triggers: [] }), direct_answer_triggers: triggers } } });
+                              }} style={{ background: "none", border: "none", cursor: "pointer", color: "var(--text-muted)", fontSize: 14, padding: "0 4px" }}>×</button>
+                            </div>
+                          ))}
+                          <div style={{ display: "flex", gap: 6 }}>
+                            <input
+                              placeholder="e.g. what are you, what can you do"
+                              onKeyDown={e => {
+                                if (e.key === "Enter" && (e.target as HTMLInputElement).value.trim()) {
+                                  const val = (e.target as HTMLInputElement).value.trim();
+                                  const triggers = [...(manifest.filters?.intent_rules?.direct_answer_triggers ?? []), val];
+                                  update({ filters: { intent_rules: { ...(manifest.filters?.intent_rules ?? { decline_triggers: [], graph_query_triggers: [] }), direct_answer_triggers: triggers } } });
+                                  (e.target as HTMLInputElement).value = "";
+                                }
+                              }}
+                              style={{ ...inputStyle(), flex: 1, fontSize: 12, padding: "5px 9px" }}
+                            />
+                            <span style={{ fontSize: 10, color: "var(--text-muted)", alignSelf: "center" }}>Enter to add</span>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Decline triggers */}
+                      <div style={{ border: "1px solid var(--accent-amber-border)", borderRadius: 8, overflow: "hidden", background: "var(--accent-amber-bg)" }}>
+                        <div style={{ padding: "7px 11px", borderBottom: "1px solid var(--accent-amber-border)", fontSize: 10, fontWeight: 700, color: "var(--accent-amber)", textTransform: "uppercase", letterSpacing: "0.07em" }}>
+                          ✗ Decline triggers — out of scope, push back with decline message
+                        </div>
+                        <div style={{ padding: "10px 11px", display: "flex", flexDirection: "column", gap: 6 }}>
+                          {(manifest.filters?.intent_rules?.decline_triggers ?? []).map((t, i) => (
+                            <div key={i} style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                              <span style={{ flex: 1, fontSize: 12, color: "var(--text-primary)", background: "var(--bg-input)", border: "1px solid var(--border)", borderRadius: 5, padding: "4px 8px", fontFamily: "monospace" }}>{t}</span>
+                              <button onClick={() => {
+                                const triggers = [...(manifest.filters?.intent_rules?.decline_triggers ?? [])];
+                                triggers.splice(i, 1);
+                                update({ filters: { intent_rules: { ...(manifest.filters?.intent_rules ?? { direct_answer_triggers: [], graph_query_triggers: [] }), decline_triggers: triggers } } });
+                              }} style={{ background: "none", border: "none", cursor: "pointer", color: "var(--text-muted)", fontSize: 14, padding: "0 4px" }}>×</button>
+                            </div>
+                          ))}
+                          <div style={{ display: "flex", gap: 6 }}>
+                            <input
+                              placeholder="e.g. weather, homework, general questions"
+                              onKeyDown={e => {
+                                if (e.key === "Enter" && (e.target as HTMLInputElement).value.trim()) {
+                                  const val = (e.target as HTMLInputElement).value.trim();
+                                  const triggers = [...(manifest.filters?.intent_rules?.decline_triggers ?? []), val];
+                                  update({ filters: { intent_rules: { ...(manifest.filters?.intent_rules ?? { direct_answer_triggers: [], graph_query_triggers: [] }), decline_triggers: triggers } } });
+                                  (e.target as HTMLInputElement).value = "";
+                                }
+                              }}
+                              style={{ ...inputStyle(), flex: 1, fontSize: 12, padding: "5px 9px" }}
+                            />
+                            <span style={{ fontSize: 10, color: "var(--text-muted)", alignSelf: "center" }}>Enter to add</span>
+                          </div>
+                        </div>
+                      </div>
+
+                      <InfoBox color="amber" title="How routing works">
+                        {[
+                          "direct_answer: message matches trigger → respond from system prompt only, no tool call",
+                          "decline: message matches trigger → respond with decline message, no tool call",
+                          "tool_call: everything else → dispatch to tools or graph (default)",
+                          "Priority order: direct_answer → decline → tool_call",
+                        ].map((tip, i) => (
+                          <p key={i} style={{ margin: i === 0 ? 0 : "4px 0 0", display: "flex", gap: 7, lineHeight: 1.5 }}>
+                            <span style={{ color: "var(--accent-amber)", opacity: 0.5, flexShrink: 0 }}>·</span>{tip}
+                          </p>
+                        ))}
+                      </InfoBox>
+                    </div>
+                  </div>
+
                 </div>
               )}
 

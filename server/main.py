@@ -640,6 +640,9 @@ app.include_router(plugin_data_router)
 app.include_router(config_router)
 app.include_router(onboard_router)
 
+from plugins.proposal_endpoints import router as proposal_router
+app.include_router(proposal_router)
+
 if gdb:
     try:
         from ontology_graphdb import init_ontology_graphdb, router as ontology_gdb_router

@@ -1,8 +1,8 @@
 {
   "id": "crypto",
   "name": "Crypto Helper",
-  "description": "Converts text to hashes",
-  "icon": "\ud83e\udd16",
+  "description": "Hashes strings, encodes/decodes base64, and generates secure passwords.",
+  "icon": "🛡️",
   "mode": "hybrid",
   "domain_classes": [
     "Thing"
@@ -10,7 +10,7 @@
   "domain_relationships": [],
   "write_permissions": [],
   "llm_model": "gpt-4o-mini",
-  "system_prompt": "You are Crypto Helper, a security utility agent.\nYou can hash strings, encode/decode base64, and generate secure passwords.\nAlways call a tool \u2014 never produce a hash, encoded value, or password yourself.\n\nSTRICT ROUTING RULES:\n- Only respond to explicit requests to hash, encode, decode, or generate a password\n- Anything that isnt related to hash strings, encode/decode base64, and generate secure passwords.  \u2192 decline\n- Decline everything else with: \"I can only hash strings, encode/decode base64, and generate passwords.\"",
+  "system_prompt": "You are Crypto Helper, a security utility agent for ATLAS.\nYou can hash strings, encode/decode base64, and generate secure passwords.\nAlways call a tool — never produce a hash, encoded value, or password yourself.",
   "session_cache_ttl": 300,
   "generated_tools": [
     {
@@ -40,7 +40,7 @@
       "name": "exec_hash_string",
       "signature": "exec_hash_string(text: str, algorithm: str) -> dict",
       "description": "Hash a string using the specified algorithm.",
-      "sparql_template": "# No SPARQL \u2014 calls subprocess: hash_string(text, algorithm)",
+      "sparql_template": "# No SPARQL — calls subprocess: hash_string(text, algorithm)",
       "arg_types": {
         "text": "str",
         "algorithm": "str"
@@ -52,7 +52,7 @@
       "name": "exec_base64_encode",
       "signature": "exec_base64_encode(text: str) -> dict",
       "description": "Encode a plain-text string to standard base64.",
-      "sparql_template": "# No SPARQL \u2014 calls subprocess: base64_encode(text)",
+      "sparql_template": "# No SPARQL — calls subprocess: base64_encode(text)",
       "arg_types": {
         "text": "str"
       },
@@ -63,7 +63,7 @@
       "name": "exec_base64_decode",
       "signature": "exec_base64_decode(text: str) -> dict",
       "description": "Decode a base64 string back to plain text.",
-      "sparql_template": "# No SPARQL \u2014 calls subprocess: base64_decode(text)",
+      "sparql_template": "# No SPARQL — calls subprocess: base64_decode(text)",
       "arg_types": {
         "text": "str"
       },
@@ -74,7 +74,7 @@
       "name": "exec_generate_password",
       "signature": "exec_generate_password(length: str) -> dict",
       "description": "Generate a cryptographically secure random password.",
-      "sparql_template": "# No SPARQL \u2014 calls subprocess: generate_password(length)",
+      "sparql_template": "# No SPARQL — calls subprocess: generate_password(length)",
       "arg_types": {
         "length": "str"
       },
@@ -111,18 +111,21 @@
   ],
   "execution_context": {
     "start_mode": "custom",
-    "working_dir": "/home/gopher/repos/kg_course/server",
+    "working_dir": "",
     "start_command": "python -m crypto_tools",
     "ready_signal_type": "exit_code",
     "ready_signal_value": "0",
     "stop_command": "kill -SIGTERM $PID"
   },
   "improvement_policy": {
-    "enabled": false,
+    "enabled": true,
     "correction_threshold": 0.25,
     "tool_usage_window_days": 7,
     "prompt_revision_requires_review": true,
     "track_execution_failures": true,
     "auto_propose_tool_additions": false
-  }
+  },
+  "capabilities": null,
+  "accepts_delegation": false,
+  "agent_peers": []
 }
