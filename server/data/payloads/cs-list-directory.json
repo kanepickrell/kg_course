@@ -1,0 +1,73 @@
+{
+  "_key": "cs-list-directory",
+  "name": "List Directory",
+  "description": "List contents of a directory on target via beacon using dir command",
+  "executionType": "cobalt_strike",
+  "estimatedDuration": 5,
+  "inputs": [
+    {
+      "id": "session",
+      "label": "Beacon Session",
+      "type": "session",
+      "required": true
+    }
+  ],
+  "outputs": [
+    {
+      "id": "dir_listing",
+      "label": "Directory Listing",
+      "type": "string",
+      "description": "Directory contents"
+    }
+  ],
+  "parameters": [
+    {
+      "id": "session",
+      "label": "Session",
+      "type": "string",
+      "required": true,
+      "placeholder": "${CURRENT_SESSION}",
+      "default": "${CURRENT_SESSION}"
+    },
+    {
+      "id": "directory",
+      "label": "Directory",
+      "type": "string",
+      "required": true,
+      "placeholder": "C:\\Users\\",
+      "default": "C:\\Users\\"
+    }
+  ],
+  "requirements": {
+    "c2Server": true,
+    "listeners": [],
+    "payloads": [],
+    "libraries": [
+      "hunt_1.resource"
+    ]
+  },
+  "robotFramework": {
+    "keyword": "List Directory",
+    "resources": [
+      "hunt_1.resource"
+    ],
+    "keywordArgs": [
+      {
+        "param": "session",
+        "position": 1,
+        "sessionVariable": "CURRENT_SESSION"
+      },
+      {
+        "param": "directory",
+        "position": 2,
+        "variableRef": false
+      }
+    ],
+    "pythonCall": "Issue Shell Cmd",
+    "documentation": "List directory contents",
+    "tags": [
+      "discovery",
+      "filesystem"
+    ]
+  }
+}

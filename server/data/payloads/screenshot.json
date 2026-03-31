@@ -1,0 +1,60 @@
+{
+  "_key": "screenshot",
+  "name": "Screenshot",
+  "description": "Capture a screenshot of the current desktop on the target host via beacon",
+  "executionType": "cobalt_strike",
+  "estimatedDuration": 5,
+  "inputs": [
+    {
+      "id": "session",
+      "label": "Beacon Session",
+      "type": "session",
+      "required": true
+    }
+  ],
+  "outputs": [
+    {
+      "id": "screenshot_file",
+      "label": "Screenshot File",
+      "type": "string",
+      "description": "Screenshot saved to artifact directory"
+    }
+  ],
+  "parameters": [
+    {
+      "id": "session",
+      "label": "Session",
+      "type": "string",
+      "required": true,
+      "placeholder": "${CURRENT_SESSION}",
+      "default": "${CURRENT_SESSION}"
+    }
+  ],
+  "requirements": {
+    "c2Server": true,
+    "listeners": [],
+    "payloads": [],
+    "libraries": [
+      "hunt_1.resource"
+    ]
+  },
+  "robotFramework": {
+    "keyword": "Screenshot",
+    "resources": [
+      "hunt_1.resource"
+    ],
+    "keywordArgs": [
+      {
+        "param": "session",
+        "position": 1,
+        "sessionVariable": "CURRENT_SESSION"
+      }
+    ],
+    "pythonCall": "Issue Shell Cmd",
+    "documentation": "Capture desktop screenshot",
+    "tags": [
+      "collection",
+      "screenshot"
+    ]
+  }
+}

@@ -1,0 +1,73 @@
+{
+  "_key": "cs-download-file",
+  "name": "Download File",
+  "description": "Download a file from target to operator machine via Cobalt Strike beacon channel",
+  "executionType": "cobalt_strike",
+  "estimatedDuration": 30,
+  "inputs": [
+    {
+      "id": "session",
+      "label": "Beacon Session",
+      "type": "session",
+      "required": true
+    }
+  ],
+  "outputs": [
+    {
+      "id": "file_downloaded",
+      "label": "File Downloaded",
+      "type": "boolean",
+      "description": "File retrieved to operator machine"
+    }
+  ],
+  "parameters": [
+    {
+      "id": "session",
+      "label": "Session",
+      "type": "string",
+      "required": true,
+      "placeholder": "${CURRENT_SESSION}",
+      "default": "${CURRENT_SESSION}"
+    },
+    {
+      "id": "remotePath",
+      "label": "Remote Path",
+      "type": "string",
+      "required": true,
+      "placeholder": "C:\\Windows\\Temp\\staged.zip",
+      "default": "C:\\Windows\\Temp\\staged.zip"
+    }
+  ],
+  "requirements": {
+    "c2Server": true,
+    "listeners": [],
+    "payloads": [],
+    "libraries": [
+      "hunt_1.resource"
+    ]
+  },
+  "robotFramework": {
+    "keyword": "Download File",
+    "resources": [
+      "hunt_1.resource"
+    ],
+    "keywordArgs": [
+      {
+        "param": "session",
+        "position": 1,
+        "sessionVariable": "CURRENT_SESSION"
+      },
+      {
+        "param": "remotePath",
+        "position": 2,
+        "variableRef": false
+      }
+    ],
+    "pythonCall": "cobaltstrike.Download File",
+    "documentation": "Download file from target",
+    "tags": [
+      "exfiltration",
+      "download"
+    ]
+  }
+}

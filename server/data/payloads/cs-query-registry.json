@@ -1,0 +1,73 @@
+{
+  "_key": "cs-query-registry",
+  "name": "Query Registry",
+  "description": "Query a registry path via beacon to verify persistence keys or enumerate configuration",
+  "executionType": "cobalt_strike",
+  "estimatedDuration": 5,
+  "inputs": [
+    {
+      "id": "session",
+      "label": "Beacon Session",
+      "type": "session",
+      "required": true
+    }
+  ],
+  "outputs": [
+    {
+      "id": "reg_result",
+      "label": "Registry Result",
+      "type": "string",
+      "description": "Registry query output"
+    }
+  ],
+  "parameters": [
+    {
+      "id": "session",
+      "label": "Session",
+      "type": "string",
+      "required": true,
+      "placeholder": "${CURRENT_SESSION}",
+      "default": "${CURRENT_SESSION}"
+    },
+    {
+      "id": "regPath",
+      "label": "Registry Path",
+      "type": "string",
+      "required": true,
+      "placeholder": "HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Run",
+      "default": "HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Run"
+    }
+  ],
+  "requirements": {
+    "c2Server": true,
+    "listeners": [],
+    "payloads": [],
+    "libraries": [
+      "hunt_1.resource"
+    ]
+  },
+  "robotFramework": {
+    "keyword": "Query Registry",
+    "resources": [
+      "hunt_1.resource"
+    ],
+    "keywordArgs": [
+      {
+        "param": "session",
+        "position": 1,
+        "sessionVariable": "CURRENT_SESSION"
+      },
+      {
+        "param": "regPath",
+        "position": 2,
+        "variableRef": false
+      }
+    ],
+    "pythonCall": "Issue Shell Cmd",
+    "documentation": "Query registry key",
+    "tags": [
+      "discovery",
+      "registry"
+    ]
+  }
+}

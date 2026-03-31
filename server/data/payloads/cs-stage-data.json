@@ -1,0 +1,87 @@
+{
+  "_key": "cs-stage-data",
+  "name": "Stage Data",
+  "description": "Archive target files using PowerShell Compress-Archive to stage data for exfiltration",
+  "executionType": "cobalt_strike",
+  "estimatedDuration": 30,
+  "inputs": [
+    {
+      "id": "session",
+      "label": "Beacon Session",
+      "type": "session",
+      "required": true
+    }
+  ],
+  "outputs": [
+    {
+      "id": "archive_ready",
+      "label": "Archive Ready",
+      "type": "string",
+      "description": "Path to staged archive"
+    }
+  ],
+  "parameters": [
+    {
+      "id": "session",
+      "label": "Session",
+      "type": "string",
+      "required": true,
+      "placeholder": "${CURRENT_SESSION}",
+      "default": "${CURRENT_SESSION}"
+    },
+    {
+      "id": "sourcePath",
+      "label": "Source Path",
+      "type": "string",
+      "required": true,
+      "placeholder": "C:\\Users\\*\\Documents",
+      "default": "C:\\Users\\*\\Documents"
+    },
+    {
+      "id": "archivePath",
+      "label": "Archive Path",
+      "type": "string",
+      "required": true,
+      "placeholder": "C:\\Windows\\Temp\\staged.zip",
+      "default": "C:\\Windows\\Temp\\staged.zip"
+    }
+  ],
+  "requirements": {
+    "c2Server": true,
+    "listeners": [],
+    "payloads": [],
+    "libraries": [
+      "hunt_1.resource"
+    ]
+  },
+  "robotFramework": {
+    "keyword": "Stage Data",
+    "resources": [
+      "hunt_1.resource"
+    ],
+    "keywordArgs": [
+      {
+        "param": "session",
+        "position": 1,
+        "sessionVariable": "CURRENT_SESSION"
+      },
+      {
+        "param": "sourcePath",
+        "position": 2,
+        "variableRef": false
+      },
+      {
+        "param": "archivePath",
+        "position": 3,
+        "variableRef": false
+      }
+    ],
+    "pythonCall": "Issue Powershell Cmd",
+    "preKeywordLog": "=== Staging Data from ${sourcePath} ===",
+    "documentation": "Archive data for exfiltration",
+    "tags": [
+      "collection",
+      "stage"
+    ]
+  }
+}

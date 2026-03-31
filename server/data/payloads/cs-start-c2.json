@@ -1,0 +1,128 @@
+{
+  "_key": "cs-start-c2",
+  "name": "Start C2 Server",
+  "description": "Connect to Cobalt Strike teamserver and initialize C2 infrastructure",
+  "executionType": "cobalt_strike",
+  "estimatedDuration": 30,
+  "inputs": [],
+  "outputs": [
+    {
+      "id": "c2_ready",
+      "label": "C2 Ready",
+      "type": "boolean",
+      "description": "C2 server is initialized"
+    }
+  ],
+  "parameters": [
+    {
+      "id": "csIp",
+      "label": "CS IP",
+      "type": "string",
+      "required": true,
+      "placeholder": "10.50.100.5",
+      "default": "${CS_IP}"
+    },
+    {
+      "id": "csUser",
+      "label": "CS User",
+      "type": "string",
+      "required": true,
+      "placeholder": "operator",
+      "default": "${CS_USER}"
+    },
+    {
+      "id": "csPass",
+      "label": "CS Password",
+      "type": "string",
+      "required": true,
+      "placeholder": "password",
+      "default": "${CS_PASS}"
+    },
+    {
+      "id": "csDir",
+      "label": "CS Directory",
+      "type": "string",
+      "required": true,
+      "placeholder": "/opt/cobaltstrike",
+      "default": "${CS_DIR}"
+    },
+    {
+      "id": "csPort",
+      "label": "CS Port",
+      "type": "number",
+      "required": true,
+      "placeholder": "50050",
+      "default": "${CS_PORT}"
+    }
+  ],
+  "requirements": {
+    "c2Server": false,
+    "listeners": [],
+    "payloads": [],
+    "libraries": [
+      "hunt_1.resource"
+    ]
+  },
+  "robotFramework": {
+    "keyword": "Setup C2",
+    "isSuiteSetup": true,
+    "resources": [
+      "hunt_1.resource"
+    ],
+    "keywordArgs": [
+      {
+        "globalSetting": "CS_IP",
+        "argName": "ip",
+        "position": 1,
+        "named": true
+      },
+      {
+        "globalSetting": "CS_USER",
+        "argName": "user",
+        "position": 2,
+        "named": true
+      },
+      {
+        "globalSetting": "CS_PASS",
+        "argName": "password",
+        "position": 3,
+        "named": true
+      },
+      {
+        "globalSetting": "CS_DIR",
+        "argName": "cs_dir",
+        "position": 4,
+        "named": true
+      },
+      {
+        "globalSetting": "CS_PORT",
+        "argName": "port",
+        "position": 5,
+        "named": true
+      },
+      {
+        "globalSetting": "ARTIFACT_DIR",
+        "argName": "data_dir",
+        "position": 6,
+        "named": true
+      },
+      {
+        "globalSetting": "DEBUG_MODE",
+        "argName": "debug",
+        "position": 7,
+        "named": true
+      },
+      {
+        "globalSetting": "SUDO_NEEDED",
+        "argName": "sudo_required",
+        "position": 8,
+        "named": true
+      }
+    ],
+    "documentation": "Start C2 team server",
+    "tags": [
+      "infrastructure",
+      "c2"
+    ]
+  }
+}

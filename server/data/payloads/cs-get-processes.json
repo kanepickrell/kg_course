@@ -1,0 +1,61 @@
+{
+  "_key": "cs-get-processes",
+  "name": "Get Processes",
+  "description": "List all running processes on target via beacon using tasklist",
+  "executionType": "cobalt_strike",
+  "estimatedDuration": 10,
+  "inputs": [
+    {
+      "id": "session",
+      "label": "Beacon Session",
+      "type": "session",
+      "required": true
+    }
+  ],
+  "outputs": [
+    {
+      "id": "process_list",
+      "label": "Process List",
+      "type": "string",
+      "description": "Running processes output"
+    }
+  ],
+  "parameters": [
+    {
+      "id": "session",
+      "label": "Session",
+      "type": "string",
+      "required": true,
+      "placeholder": "${CURRENT_SESSION}",
+      "default": "${CURRENT_SESSION}"
+    }
+  ],
+  "requirements": {
+    "c2Server": true,
+    "listeners": [],
+    "payloads": [],
+    "libraries": [
+      "hunt_1.resource"
+    ]
+  },
+  "robotFramework": {
+    "keyword": "Get Processes",
+    "resources": [
+      "hunt_1.resource"
+    ],
+    "keywordArgs": [
+      {
+        "param": "session",
+        "position": 1,
+        "sessionVariable": "CURRENT_SESSION"
+      }
+    ],
+    "captureOutput": "PROCESS_LIST",
+    "pythonCall": "Issue Shell Cmd",
+    "documentation": "List running processes",
+    "tags": [
+      "discovery",
+      "processes"
+    ]
+  }
+}

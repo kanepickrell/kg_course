@@ -1,0 +1,119 @@
+{
+  "_key": "cs-create-listener",
+  "name": "Create Listener",
+  "description": "Create an HTTP, HTTPS, or SMB listener on the Cobalt Strike teamserver for beacon callbacks",
+  "executionType": "cobalt_strike",
+  "estimatedDuration": 10,
+  "inputs": [
+    {
+      "id": "c2_ready",
+      "label": "C2 Ready",
+      "type": "boolean",
+      "required": true
+    }
+  ],
+  "outputs": [
+    {
+      "id": "listener_active",
+      "label": "Listener Active",
+      "type": "boolean",
+      "description": "Listener is ready to receive beacons"
+    }
+  ],
+  "parameters": [
+    {
+      "id": "listenerName",
+      "label": "Listener Name",
+      "type": "string",
+      "required": true,
+      "placeholder": "HTTP",
+      "default": "HTTP",
+      "outputVariable": "HTTP_LISTENER"
+    },
+    {
+      "id": "listenerPort",
+      "label": "Port",
+      "type": "number",
+      "required": true,
+      "placeholder": "80",
+      "default": 80,
+      "outputVariable": "HTTP_LISTENER_PORT"
+    },
+    {
+      "id": "listenerType",
+      "label": "Listener Type",
+      "type": "select",
+      "required": true,
+      "options": [
+        "Beacon_HTTP",
+        "Beacon_HTTPS",
+        "Beacon_SMB"
+      ],
+      "default": "Beacon_HTTP",
+      "outputVariable": "HTTP_LISTENER_TYPE"
+    }
+  ],
+  "requirements": {
+    "c2Server": true,
+    "listeners": [],
+    "payloads": [],
+    "libraries": [
+      "hunt_1.resource"
+    ]
+  },
+  "robotFramework": {
+    "keyword": "Create Listener",
+    "resources": [
+      "hunt_1.resource"
+    ],
+    "keywordArgs": [
+      {
+        "param": "listenerName",
+        "position": 1,
+        "variableRef": true,
+        "variableName": "HTTP_LISTENER"
+      },
+      {
+        "param": "listenerPort",
+        "position": 2,
+        "variableRef": true,
+        "variableName": "HTTP_LISTENER_PORT"
+      },
+      {
+        "param": "listenerType",
+        "position": 3,
+        "variableRef": true,
+        "variableName": "HTTP_LISTENER_TYPE"
+      },
+      {
+        "globalSetting": "CS_IP",
+        "position": 4,
+        "variableRef": true
+      }
+    ],
+    "variables": [
+      {
+        "name": "HTTP_LISTENER",
+        "fromParam": "listenerName",
+        "scope": "suite"
+      },
+      {
+        "name": "HTTP_LISTENER_PORT",
+        "fromParam": "listenerPort",
+        "scope": "suite"
+      },
+      {
+        "name": "HTTP_LISTENER_TYPE",
+        "fromParam": "listenerType",
+        "scope": "suite"
+      }
+    ],
+    "pythonCall": "Create Listener",
+    "preKeywordLog": "=== Creating Listener: ${HTTP_LISTENER} ===",
+    "documentation": "Create Scenario Listeners",
+    "tags": [
+      "c2",
+      "listener"
+    ]
+  }
+}

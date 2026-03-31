@@ -1,0 +1,47 @@
+{
+  "_key": "cs-stop-c2",
+  "name": "Stop C2 Server",
+  "description": "Disconnect from teamserver and remove listeners - teardown C2 infrastructure",
+  "executionType": "cobalt_strike",
+  "estimatedDuration": 15,
+  "inputs": [
+    {
+      "id": "c2_ready",
+      "label": "C2 Ready",
+      "type": "boolean",
+      "required": false
+    }
+  ],
+  "outputs": [],
+  "parameters": [
+    {
+      "id": "listenerName",
+      "label": "Listener to Remove",
+      "type": "string",
+      "required": false,
+      "default": "HTTP",
+      "placeholder": "HTTP"
+    }
+  ],
+  "requirements": {
+    "c2Server": true,
+    "listeners": [],
+    "payloads": [],
+    "libraries": [
+      "hunt_1.resource"
+    ]
+  },
+  "robotFramework": {
+    "keyword": "Teardown C2",
+    "isSuiteTeardown": true,
+    "resources": [
+      "hunt_1.resource"
+    ],
+    "keywordArgs": [],
+    "documentation": "Remove listeners and stop C2",
+    "tags": [
+      "infrastructure",
+      "teardown"
+    ]
+  }
+}

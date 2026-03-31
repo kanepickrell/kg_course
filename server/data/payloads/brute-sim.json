@@ -1,0 +1,125 @@
+{
+  "_key": "brute-sim",
+  "name": "Brute Sim",
+  "description": "Simulate credential brute force activity against a domain with configurable attempt count and delay",
+  "executionType": "cobalt_strike",
+  "estimatedDuration": 60,
+  "inputs": [
+    {
+      "id": "session",
+      "label": "Beacon Session",
+      "type": "session",
+      "required": true
+    }
+  ],
+  "outputs": [
+    {
+      "id": "brute_complete",
+      "label": "Brute Sim Complete",
+      "type": "boolean",
+      "description": "Simulation completed"
+    }
+  ],
+  "parameters": [
+    {
+      "id": "session",
+      "label": "Session",
+      "type": "string",
+      "required": true,
+      "placeholder": "${CURRENT_SESSION}",
+      "default": "${CURRENT_SESSION}"
+    },
+    {
+      "id": "targetDomain",
+      "label": "Target Domain",
+      "type": "string",
+      "required": true,
+      "placeholder": "${DOMAIN1}",
+      "default": "${DOMAIN1}"
+    },
+    {
+      "id": "userList",
+      "label": "User List",
+      "type": "string",
+      "required": true,
+      "placeholder": "${BRUTESIM_INFO.userfile}",
+      "default": "${BRUTESIM_INFO.userfile}"
+    },
+    {
+      "id": "passFile",
+      "label": "Password File",
+      "type": "string",
+      "required": true,
+      "placeholder": "${BRUTESIM_INFO.passfile}",
+      "default": "${BRUTESIM_INFO.passfile}"
+    },
+    {
+      "id": "attempts",
+      "label": "Max Attempts",
+      "type": "number",
+      "required": false,
+      "placeholder": "10",
+      "default": 10
+    },
+    {
+      "id": "delay",
+      "label": "Delay (seconds)",
+      "type": "number",
+      "required": false,
+      "placeholder": "2",
+      "default": 2
+    }
+  ],
+  "requirements": {
+    "c2Server": true,
+    "listeners": [],
+    "payloads": [],
+    "libraries": [
+      "hunt_1.resource"
+    ]
+  },
+  "robotFramework": {
+    "keyword": "Brute Sim",
+    "resources": [
+      "hunt_1.resource"
+    ],
+    "keywordArgs": [
+      {
+        "param": "session",
+        "position": 1,
+        "sessionVariable": "CURRENT_SESSION"
+      },
+      {
+        "param": "targetDomain",
+        "position": 2,
+        "variableRef": false
+      },
+      {
+        "param": "userList",
+        "position": 3,
+        "variableRef": false
+      },
+      {
+        "param": "passFile",
+        "position": 4,
+        "variableRef": false
+      },
+      {
+        "param": "attempts",
+        "position": 5,
+        "variableRef": false
+      },
+      {
+        "param": "delay",
+        "position": 6,
+        "variableRef": false
+      }
+    ],
+    "pythonCall": "Issue Shell Cmd",
+    "documentation": "Simulate credential brute force",
+    "tags": [
+      "credential-access",
+      "brute-force"
+    ]
+  }
+}

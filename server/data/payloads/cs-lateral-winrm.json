@@ -1,0 +1,89 @@
+{
+  "_key": "cs-lateral-winrm",
+  "name": "Lateral Move WinRM",
+  "description": "Move laterally to a target host using WinRM via Cobalt Strike bjump",
+  "executionType": "cobalt_strike",
+  "estimatedDuration": 15,
+  "inputs": [
+    {
+      "id": "session",
+      "label": "Beacon Session",
+      "type": "session",
+      "required": true
+    }
+  ],
+  "outputs": [
+    {
+      "id": "lateral_session",
+      "label": "Lateral Session",
+      "type": "session",
+      "description": "New beacon on lateral target via WinRM"
+    }
+  ],
+  "parameters": [
+    {
+      "id": "session",
+      "label": "Session",
+      "type": "string",
+      "required": true,
+      "placeholder": "${CURRENT_SESSION}",
+      "default": "${CURRENT_SESSION}"
+    },
+    {
+      "id": "targetIp",
+      "label": "Target IP",
+      "type": "string",
+      "required": true,
+      "placeholder": "${TARGET2}",
+      "default": "${TARGET2}"
+    },
+    {
+      "id": "listener",
+      "label": "Listener",
+      "type": "string",
+      "required": true,
+      "placeholder": "${HTTP_LISTENER}",
+      "default": "${HTTP_LISTENER}"
+    }
+  ],
+  "requirements": {
+    "c2Server": true,
+    "listeners": [
+      "HTTP"
+    ],
+    "payloads": [],
+    "libraries": [
+      "hunt_1.resource"
+    ]
+  },
+  "robotFramework": {
+    "keyword": "Lateral Move (WinRM)",
+    "resources": [
+      "hunt_1.resource"
+    ],
+    "keywordArgs": [
+      {
+        "param": "session",
+        "position": 1,
+        "sessionVariable": "CURRENT_SESSION"
+      },
+      {
+        "param": "targetIp",
+        "position": 2,
+        "variableRef": false
+      },
+      {
+        "param": "listener",
+        "position": 3,
+        "variableRef": true,
+        "variableName": "HTTP_LISTENER"
+      }
+    ],
+    "pythonCall": "Run Bjump",
+    "documentation": "Lateral movement via WinRM",
+    "tags": [
+      "lateral-movement",
+      "winrm"
+    ]
+  }
+}

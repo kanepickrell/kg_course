@@ -1,0 +1,53 @@
+{
+  "_key": "cs-kill-session",
+  "name": "Kill Session",
+  "description": "Terminate an active beacon session on the teamserver",
+  "executionType": "cobalt_strike",
+  "estimatedDuration": 5,
+  "inputs": [
+    {
+      "id": "session",
+      "label": "Beacon Session",
+      "type": "session",
+      "required": true
+    }
+  ],
+  "outputs": [],
+  "parameters": [
+    {
+      "id": "session",
+      "label": "Session",
+      "type": "string",
+      "required": true,
+      "placeholder": "${CURRENT_SESSION}",
+      "default": "${CURRENT_SESSION}"
+    }
+  ],
+  "requirements": {
+    "c2Server": true,
+    "listeners": [],
+    "payloads": [],
+    "libraries": [
+      "hunt_1.resource"
+    ]
+  },
+  "robotFramework": {
+    "keyword": "Kill Session",
+    "resources": [
+      "hunt_1.resource"
+    ],
+    "keywordArgs": [
+      {
+        "param": "session",
+        "position": 1,
+        "sessionVariable": "CURRENT_SESSION"
+      }
+    ],
+    "pythonCall": "Kill Session",
+    "documentation": "Terminate beacon session",
+    "tags": [
+      "c2",
+      "cleanup"
+    ]
+  }
+}

@@ -1,0 +1,62 @@
+{
+  "_key": "cs-getuid",
+  "name": "Get UID",
+  "description": "Get the current user identity from an active beacon session",
+  "executionType": "cobalt_strike",
+  "estimatedDuration": 5,
+  "inputs": [
+    {
+      "id": "session",
+      "label": "Beacon Session",
+      "type": "session",
+      "required": true
+    }
+  ],
+  "outputs": [
+    {
+      "id": "uid_result",
+      "label": "UID Result",
+      "type": "string",
+      "description": "Current user identity string"
+    }
+  ],
+  "parameters": [
+    {
+      "id": "session",
+      "label": "Session",
+      "type": "string",
+      "required": true,
+      "placeholder": "${CURRENT_SESSION}",
+      "default": "${CURRENT_SESSION}"
+    }
+  ],
+  "requirements": {
+    "c2Server": true,
+    "listeners": [],
+    "payloads": [],
+    "libraries": [
+      "hunt_1.resource"
+    ]
+  },
+  "robotFramework": {
+    "keyword": "GetUID",
+    "resources": [
+      "hunt_1.resource"
+    ],
+    "keywordArgs": [
+      {
+        "param": "session",
+        "position": 1,
+        "sessionVariable": "CURRENT_SESSION"
+      }
+    ],
+    "captureOutput": "UID_RESULT",
+    "pythonCall": "run Getuid",
+    "postKeywordLog": "=== UID: ${UID_RESULT} ===",
+    "documentation": "Get current user identity",
+    "tags": [
+      "discovery",
+      "identity"
+    ]
+  }
+}

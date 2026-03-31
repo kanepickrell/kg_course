@@ -1,0 +1,78 @@
+{
+  "_key": "cs-session-sleep",
+  "name": "Session Sleep",
+  "description": "Set beacon sleep timer and jitter percentage to control callback frequency and evade detection",
+  "executionType": "cobalt_strike",
+  "estimatedDuration": 5,
+  "inputs": [
+    {
+      "id": "session",
+      "label": "Beacon Session",
+      "type": "session",
+      "required": true
+    }
+  ],
+  "outputs": [
+    {
+      "id": "session",
+      "label": "Beacon Session",
+      "type": "session",
+      "description": "Session with updated sleep"
+    }
+  ],
+  "parameters": [
+    {
+      "id": "sleepTime",
+      "label": "Sleep Time (seconds)",
+      "type": "number",
+      "required": true,
+      "placeholder": "60",
+      "default": 60
+    },
+    {
+      "id": "jitter",
+      "label": "Jitter %",
+      "type": "number",
+      "required": false,
+      "placeholder": "20",
+      "default": 20
+    }
+  ],
+  "requirements": {
+    "c2Server": true,
+    "listeners": [],
+    "payloads": [],
+    "libraries": [
+      "hunt_1.resource"
+    ]
+  },
+  "robotFramework": {
+    "keyword": "Session Sleep",
+    "resources": [
+      "hunt_1.resource"
+    ],
+    "keywordArgs": [
+      {
+        "param": "session",
+        "position": 1,
+        "sessionVariable": "CURRENT_SESSION"
+      },
+      {
+        "param": "sleepTime",
+        "position": 2,
+        "variableRef": false
+      },
+      {
+        "param": "jitter",
+        "position": 3,
+        "variableRef": false
+      }
+    ],
+    "pythonCall": "Session Sleep",
+    "documentation": "Set beacon sleep and jitter",
+    "tags": [
+      "c2",
+      "evasion"
+    ]
+  }
+}

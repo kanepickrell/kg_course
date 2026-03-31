@@ -1,0 +1,111 @@
+{
+  "_key": "cs-persistence-registry",
+  "name": "Persistence via Registry",
+  "description": "Establish persistence by adding beacon path to HKCU Run registry key via reg add command",
+  "executionType": "cobalt_strike",
+  "estimatedDuration": 10,
+  "inputs": [
+    {
+      "id": "session",
+      "label": "Beacon Session",
+      "type": "session",
+      "required": true
+    }
+  ],
+  "outputs": [
+    {
+      "id": "persistence_set",
+      "label": "Persistence Set",
+      "type": "boolean",
+      "description": "Registry key written"
+    }
+  ],
+  "parameters": [
+    {
+      "id": "session",
+      "label": "Session",
+      "type": "string",
+      "required": true,
+      "placeholder": "${CURRENT_SESSION}",
+      "default": "${CURRENT_SESSION}"
+    },
+    {
+      "id": "regKeyName",
+      "label": "Key Name",
+      "type": "string",
+      "required": true,
+      "placeholder": "WindowsUpdate",
+      "default": "WindowsUpdate"
+    },
+    {
+      "id": "payloadPath",
+      "label": "Payload Path",
+      "type": "string",
+      "required": true,
+      "placeholder": "C:\\Users\\Public\\update.exe",
+      "default": "C:\\Users\\Public\\update.exe"
+    },
+    {
+      "id": "regHive",
+      "label": "Registry Hive",
+      "type": "select",
+      "required": false,
+      "options": [
+        "HKCU",
+        "HKLM"
+      ],
+      "default": "HKCU"
+    }
+  ],
+  "requirements": {
+    "c2Server": true,
+    "listeners": [],
+    "payloads": [],
+    "libraries": [
+      "hunt_1.resource"
+    ]
+  },
+  "robotFramework": {
+    "keyword": "Persistence (Registry)",
+    "resources": [
+      "hunt_1.resource"
+    ],
+    "keywordArgs": [
+      {
+        "param": "session",
+        "position": 1,
+        "sessionVariable": "CURRENT_SESSION"
+      },
+      {
+        "param": "regKeyName",
+        "position": 2,
+        "variableRef": false
+      },
+      {
+        "param": "payloadPath",
+        "position": 3,
+        "variableRef": false
+      },
+      {
+        "param": "regHive",
+        "position": 4,
+        "variableRef": false
+      }
+    ],
+    "variables": [
+      {
+        "name": "PERSISTENCE_KEY",
+        "fromParam": "regKeyName",
+        "scope": "local"
+      }
+    ],
+    "pythonCall": "Issue Shell Cmd",
+    "preKeywordLog": "=== Setting Registry Persistence: ${PERSISTENCE_KEY} ===",
+    "postKeywordLog": "=== Registry Persistence Set ===",
+    "documentation": "Registry Run key persistence",
+    "tags": [
+      "persistence",
+      "registry"
+    ]
+  }
+}

@@ -1,0 +1,99 @@
+{
+  "_key": "cs-elevate-spawnas",
+  "name": "Elevate With Spawnas",
+  "description": "Spawn a new beacon process running as a specified domain user to elevate privileges",
+  "executionType": "cobalt_strike",
+  "estimatedDuration": 15,
+  "inputs": [
+    {
+      "id": "session",
+      "label": "Beacon Session",
+      "type": "session",
+      "required": true
+    }
+  ],
+  "outputs": [
+    {
+      "id": "elevated_session",
+      "label": "Elevated Session",
+      "type": "session",
+      "description": "New beacon running as target user"
+    }
+  ],
+  "parameters": [
+    {
+      "id": "session",
+      "label": "Session",
+      "type": "string",
+      "required": true,
+      "placeholder": "${CURRENT_SESSION}",
+      "default": "${CURRENT_SESSION}"
+    },
+    {
+      "id": "domain",
+      "label": "Domain",
+      "type": "string",
+      "required": true,
+      "placeholder": "${DOMAIN1}",
+      "default": "${DOMAIN1}"
+    },
+    {
+      "id": "username",
+      "label": "Username",
+      "type": "string",
+      "required": true,
+      "placeholder": "${ADMIN_USER.username}",
+      "default": "${ADMIN_USER.username}"
+    },
+    {
+      "id": "password",
+      "label": "Password",
+      "type": "string",
+      "required": true,
+      "placeholder": "${ADMIN_USER.password}",
+      "default": "${ADMIN_USER.password}"
+    }
+  ],
+  "requirements": {
+    "c2Server": true,
+    "listeners": [],
+    "payloads": [],
+    "libraries": [
+      "hunt_1.resource"
+    ]
+  },
+  "robotFramework": {
+    "keyword": "Elevate With Spawnas",
+    "resources": [
+      "hunt_1.resource"
+    ],
+    "keywordArgs": [
+      {
+        "param": "session",
+        "position": 1,
+        "sessionVariable": "CURRENT_SESSION"
+      },
+      {
+        "param": "domain",
+        "position": 2,
+        "variableRef": false
+      },
+      {
+        "param": "username",
+        "position": 3,
+        "variableRef": false
+      },
+      {
+        "param": "password",
+        "position": 4,
+        "variableRef": false
+      }
+    ],
+    "pythonCall": "Run Bspawnas",
+    "documentation": "Elevate via spawnas with domain credentials",
+    "tags": [
+      "privilege-escalation",
+      "spawnas"
+    ]
+  }
+}

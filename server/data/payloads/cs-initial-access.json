@@ -1,0 +1,96 @@
+{
+  "_key": "cs-initial-access",
+  "name": "Initial Access via SCP/SSH",
+  "description": "Copy beacon payload to target via SCP then execute via SSH to establish initial foothold",
+  "executionType": "cobalt_strike",
+  "estimatedDuration": 30,
+  "inputs": [
+    {
+      "id": "payload_ready",
+      "label": "Payload Ready",
+      "type": "boolean",
+      "required": true
+    }
+  ],
+  "outputs": [
+    {
+      "id": "session",
+      "label": "Initial Beacon",
+      "type": "session",
+      "description": "First beacon from target"
+    }
+  ],
+  "parameters": [
+    {
+      "id": "targetIp",
+      "label": "Target IP",
+      "type": "string",
+      "required": true,
+      "placeholder": "172.16.2.5",
+      "default": "172.16.2.5"
+    },
+    {
+      "id": "targetUser",
+      "label": "Target User",
+      "type": "string",
+      "required": true,
+      "placeholder": "Administrator",
+      "default": "Administrator"
+    },
+    {
+      "id": "targetPass",
+      "label": "Target Pass",
+      "type": "string",
+      "required": true,
+      "placeholder": "P@ssw0rd",
+      "default": "P@ssw0rd"
+    }
+  ],
+  "requirements": {
+    "c2Server": true,
+    "listeners": ["HTTP"],
+    "payloads": ["update"],
+    "libraries": ["hunt_1.resource"]
+  },
+  "robotFramework": {
+    "keyword": "Initial Access",
+    "resources": ["hunt_1.resource"],
+    "keywordArgs": [
+      {
+        "param": "targetIp",
+        "position": 1,
+        "variableRef": true,
+        "variableName": "TARGET1"
+      },
+      {
+        "param": "targetUser",
+        "position": 2,
+        "variableRef": false
+      },
+      {
+        "param": "targetPass",
+        "position": 3,
+        "variableRef": false
+      },
+      {
+        "variableName": "LOCAL_INITIAL_BEACON",
+        "position": 4,
+        "variableRef": true
+      }
+    ],
+    "variables": [
+      {
+        "name": "TARGET1",
+        "fromParam": "targetIp",
+        "scope": "suite"
+      }
+    ],
+    "postKeywordStatements": [
+      "@{_sessions}=    Get Sessions By IP    ${TARGET1}",
+      "${CURRENT_SESSION}=    Set Variable    ${_sessions[0]}"
+    ],
+    "sessionVariable": "CURRENT_SESSION",
+    "documentation": "SCP payload to target and execute via SSH",
+    "tags": ["initial-access", "ssh"]
+  }
+}

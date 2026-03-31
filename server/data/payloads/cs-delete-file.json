@@ -1,0 +1,73 @@
+{
+  "_key": "cs-delete-file",
+  "name": "Delete File",
+  "description": "Delete a file on target via beacon to remove artifacts and cover tracks",
+  "executionType": "cobalt_strike",
+  "estimatedDuration": 5,
+  "inputs": [
+    {
+      "id": "session",
+      "label": "Beacon Session",
+      "type": "session",
+      "required": true
+    }
+  ],
+  "outputs": [
+    {
+      "id": "session",
+      "label": "Beacon Session",
+      "type": "session",
+      "description": "Session after delete"
+    }
+  ],
+  "parameters": [
+    {
+      "id": "session",
+      "label": "Session",
+      "type": "string",
+      "required": true,
+      "placeholder": "${CURRENT_SESSION}",
+      "default": "${CURRENT_SESSION}"
+    },
+    {
+      "id": "filePath",
+      "label": "File Path",
+      "type": "string",
+      "required": true,
+      "placeholder": "C:\\Windows\\Temp\\update.exe",
+      "default": "C:\\Windows\\Temp\\update.exe"
+    }
+  ],
+  "requirements": {
+    "c2Server": true,
+    "listeners": [],
+    "payloads": [],
+    "libraries": [
+      "hunt_1.resource"
+    ]
+  },
+  "robotFramework": {
+    "keyword": "Delete File",
+    "resources": [
+      "hunt_1.resource"
+    ],
+    "keywordArgs": [
+      {
+        "param": "session",
+        "position": 1,
+        "sessionVariable": "CURRENT_SESSION"
+      },
+      {
+        "param": "filePath",
+        "position": 2,
+        "variableRef": false
+      }
+    ],
+    "pythonCall": "Issue Shell Cmd",
+    "documentation": "Delete file to cover tracks",
+    "tags": [
+      "defense-evasion",
+      "cleanup"
+    ]
+  }
+}

@@ -1,0 +1,61 @@
+{
+  "_key": "cs-get-pwd",
+  "name": "Get Working Directory",
+  "description": "Get the current working directory path on target via beacon",
+  "executionType": "cobalt_strike",
+  "estimatedDuration": 5,
+  "inputs": [
+    {
+      "id": "session",
+      "label": "Beacon Session",
+      "type": "session",
+      "required": true
+    }
+  ],
+  "outputs": [
+    {
+      "id": "cwd",
+      "label": "Working Directory",
+      "type": "string",
+      "description": "Current working directory path"
+    }
+  ],
+  "parameters": [
+    {
+      "id": "session",
+      "label": "Session",
+      "type": "string",
+      "required": true,
+      "placeholder": "${CURRENT_SESSION}",
+      "default": "${CURRENT_SESSION}"
+    }
+  ],
+  "requirements": {
+    "c2Server": true,
+    "listeners": [],
+    "payloads": [],
+    "libraries": [
+      "hunt_1.resource"
+    ]
+  },
+  "robotFramework": {
+    "keyword": "Get Working Directory",
+    "resources": [
+      "hunt_1.resource"
+    ],
+    "keywordArgs": [
+      {
+        "param": "session",
+        "position": 1,
+        "sessionVariable": "CURRENT_SESSION"
+      }
+    ],
+    "captureOutput": "CWD",
+    "pythonCall": "Issue Shell Cmd",
+    "documentation": "Get current working directory",
+    "tags": [
+      "discovery",
+      "filesystem"
+    ]
+  }
+}

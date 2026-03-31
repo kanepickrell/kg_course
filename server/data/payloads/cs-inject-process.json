@@ -1,0 +1,87 @@
+{
+  "_key": "cs-inject-process",
+  "name": "Inject Process",
+  "description": "Inject beacon shellcode into a running process by PID to migrate or elevate context",
+  "executionType": "cobalt_strike",
+  "estimatedDuration": 10,
+  "inputs": [
+    {
+      "id": "session",
+      "label": "Beacon Session",
+      "type": "session",
+      "required": true
+    }
+  ],
+  "outputs": [
+    {
+      "id": "injected_session",
+      "label": "Injected Session",
+      "type": "session",
+      "description": "Session in new process context"
+    }
+  ],
+  "parameters": [
+    {
+      "id": "session",
+      "label": "Session",
+      "type": "string",
+      "required": true,
+      "placeholder": "${CURRENT_SESSION}",
+      "default": "${CURRENT_SESSION}"
+    },
+    {
+      "id": "pid",
+      "label": "Target PID",
+      "type": "number",
+      "required": true,
+      "placeholder": "1234",
+      "default": 1234
+    },
+    {
+      "id": "listener",
+      "label": "Listener",
+      "type": "string",
+      "required": true,
+      "placeholder": "${HTTP_LISTENER}",
+      "default": "${HTTP_LISTENER}"
+    }
+  ],
+  "requirements": {
+    "c2Server": true,
+    "listeners": [],
+    "payloads": [],
+    "libraries": [
+      "hunt_1.resource"
+    ]
+  },
+  "robotFramework": {
+    "keyword": "Inject Process",
+    "resources": [
+      "hunt_1.resource"
+    ],
+    "keywordArgs": [
+      {
+        "param": "session",
+        "position": 1,
+        "sessionVariable": "CURRENT_SESSION"
+      },
+      {
+        "param": "pid",
+        "position": 2,
+        "variableRef": false
+      },
+      {
+        "param": "listener",
+        "position": 3,
+        "variableRef": true,
+        "variableName": "HTTP_LISTENER"
+      }
+    ],
+    "pythonCall": "run Binject",
+    "documentation": "Inject beacon into process by PID",
+    "tags": [
+      "privilege-escalation",
+      "injection"
+    ]
+  }
+}

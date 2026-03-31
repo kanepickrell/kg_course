@@ -1,0 +1,68 @@
+{
+  "_key": "cs-get-session-by-ip",
+  "name": "Get Session By IP",
+  "description": "Retrieve active beacon sessions for a target IP from the teamserver",
+  "executionType": "cobalt_strike",
+  "estimatedDuration": 5,
+  "inputs": [
+    {
+      "id": "c2_ready",
+      "label": "C2 Ready",
+      "type": "boolean",
+      "required": true
+    }
+  ],
+  "outputs": [
+    {
+      "id": "session",
+      "label": "Beacon Session",
+      "type": "session",
+      "description": "Active beacon session object"
+    }
+  ],
+  "parameters": [
+    {
+      "id": "targetIp",
+      "label": "Target IP",
+      "type": "string",
+      "required": true,
+      "placeholder": "${TARGET1}",
+      "default": "${TARGET1}"
+    }
+  ],
+  "requirements": {
+    "c2Server": true,
+    "listeners": [],
+    "payloads": [],
+    "libraries": [
+      "hunt_1.resource"
+    ]
+  },
+  "robotFramework": {
+    "keyword": "Get Sessions By Ip",
+    "resources": [
+      "hunt_1.resource"
+    ],
+    "keywordArgs": [
+      {
+        "param": "targetIp",
+        "position": 1,
+        "variableRef": false
+      }
+    ],
+    "captureOutput": "CURRENT_SESSION",
+    "variables": [
+      {
+        "name": "CURRENT_SESSION",
+        "fromParam": "targetIp",
+        "scope": "local"
+      }
+    ],
+    "pythonCall": "Get Sessions By Ip",
+    "documentation": "Retrieve beacon sessions by target IP",
+    "tags": [
+      "c2",
+      "session"
+    ]
+  }
+}

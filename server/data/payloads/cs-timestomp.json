@@ -1,0 +1,86 @@
+{
+  "_key": "cs-timestomp",
+  "name": "Timestomp File",
+  "description": "Modify file timestamps to match a reference file to defeat forensic timeline analysis",
+  "executionType": "cobalt_strike",
+  "estimatedDuration": 5,
+  "inputs": [
+    {
+      "id": "session",
+      "label": "Beacon Session",
+      "type": "session",
+      "required": true
+    }
+  ],
+  "outputs": [
+    {
+      "id": "session",
+      "label": "Beacon Session",
+      "type": "session",
+      "description": "Session after timestomp"
+    }
+  ],
+  "parameters": [
+    {
+      "id": "session",
+      "label": "Session",
+      "type": "string",
+      "required": true,
+      "placeholder": "${CURRENT_SESSION}",
+      "default": "${CURRENT_SESSION}"
+    },
+    {
+      "id": "targetFile",
+      "label": "Target File",
+      "type": "string",
+      "required": true,
+      "placeholder": "C:\\Users\\Public\\update.exe",
+      "default": "C:\\Users\\Public\\update.exe"
+    },
+    {
+      "id": "referenceFile",
+      "label": "Reference File",
+      "type": "string",
+      "required": true,
+      "placeholder": "C:\\Windows\\System32\\cmd.exe",
+      "default": "C:\\Windows\\System32\\cmd.exe"
+    }
+  ],
+  "requirements": {
+    "c2Server": true,
+    "listeners": [],
+    "payloads": [],
+    "libraries": [
+      "hunt_1.resource"
+    ]
+  },
+  "robotFramework": {
+    "keyword": "Timestomp File",
+    "resources": [
+      "hunt_1.resource"
+    ],
+    "keywordArgs": [
+      {
+        "param": "session",
+        "position": 1,
+        "sessionVariable": "CURRENT_SESSION"
+      },
+      {
+        "param": "targetFile",
+        "position": 2,
+        "variableRef": false
+      },
+      {
+        "param": "referenceFile",
+        "position": 3,
+        "variableRef": false
+      }
+    ],
+    "pythonCall": "Run Btimestomp",
+    "documentation": "Modify file timestamps",
+    "tags": [
+      "defense-evasion",
+      "timestomp"
+    ]
+  }
+}

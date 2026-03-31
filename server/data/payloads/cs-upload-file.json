@@ -1,0 +1,78 @@
+{
+  "_key": "cs-upload-file",
+  "name": "Upload File",
+  "description": "Upload a file from operator machine to target via Cobalt Strike beacon channel",
+  "executionType": "cobalt_strike",
+  "estimatedDuration": 15,
+  "inputs": [
+    {
+      "id": "session",
+      "label": "Beacon Session",
+      "type": "session",
+      "required": true
+    }
+  ],
+  "outputs": [
+    {
+      "id": "session",
+      "label": "Beacon Session",
+      "type": "session",
+      "description": "Session after upload"
+    }
+  ],
+  "parameters": [
+    {
+      "id": "localPath",
+      "label": "Local File Path",
+      "type": "string",
+      "required": true,
+      "placeholder": "${WORKDIR}update.exe",
+      "default": "${WORKDIR}update.exe"
+    },
+    {
+      "id": "remotePath",
+      "label": "Remote Path",
+      "type": "string",
+      "required": true,
+      "placeholder": "C:\\Windows\\Temp\\",
+      "default": "C:\\Windows\\Temp\\"
+    }
+  ],
+  "requirements": {
+    "c2Server": true,
+    "listeners": [],
+    "payloads": [],
+    "libraries": [
+      "hunt_1.resource"
+    ]
+  },
+  "robotFramework": {
+    "keyword": "Upload File",
+    "resources": [
+      "hunt_1.resource"
+    ],
+    "keywordArgs": [
+      {
+        "param": "session",
+        "position": 1,
+        "sessionVariable": "CURRENT_SESSION"
+      },
+      {
+        "param": "localPath",
+        "position": 2,
+        "variableRef": false
+      },
+      {
+        "param": "remotePath",
+        "position": 3,
+        "variableRef": false
+      }
+    ],
+    "pythonCall": "cobaltstrike.Upload File",
+    "documentation": "Upload file via beacon",
+    "tags": [
+      "upload",
+      "file"
+    ]
+  }
+}

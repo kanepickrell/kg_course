@@ -1,0 +1,74 @@
+{
+  "_key": "cs-stop-service",
+  "name": "Stop Service",
+  "description": "Stop a named Windows service via net stop command through beacon",
+  "executionType": "cobalt_strike",
+  "estimatedDuration": 10,
+  "inputs": [
+    {
+      "id": "session",
+      "label": "Beacon Session",
+      "type": "session",
+      "required": true
+    }
+  ],
+  "outputs": [
+    {
+      "id": "service_stopped",
+      "label": "Service Stopped",
+      "type": "boolean",
+      "description": "Service has been stopped"
+    }
+  ],
+  "parameters": [
+    {
+      "id": "session",
+      "label": "Session",
+      "type": "string",
+      "required": true,
+      "placeholder": "${CURRENT_SESSION}",
+      "default": "${CURRENT_SESSION}"
+    },
+    {
+      "id": "serviceName",
+      "label": "Service Name",
+      "type": "string",
+      "required": true,
+      "placeholder": "WinDefend",
+      "default": "WinDefend"
+    }
+  ],
+  "requirements": {
+    "c2Server": true,
+    "listeners": [],
+    "payloads": [],
+    "elevated": true,
+    "libraries": [
+      "hunt_1.resource"
+    ]
+  },
+  "robotFramework": {
+    "keyword": "Stop Service",
+    "resources": [
+      "hunt_1.resource"
+    ],
+    "keywordArgs": [
+      {
+        "param": "session",
+        "position": 1,
+        "sessionVariable": "CURRENT_SESSION"
+      },
+      {
+        "param": "serviceName",
+        "position": 2,
+        "variableRef": false
+      }
+    ],
+    "pythonCall": "Issue Shell Cmd",
+    "documentation": "Stop Windows service",
+    "tags": [
+      "impact",
+      "service"
+    ]
+  }
+}

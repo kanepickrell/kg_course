@@ -1,0 +1,103 @@
+{
+  "_key": "cs-network-enumerate",
+  "name": "Network Enumerate",
+  "description": "Run Cobalt Strike port scan (bportscan) against target IP range to discover open services",
+  "executionType": "cobalt_strike",
+  "estimatedDuration": 60,
+  "inputs": [
+    {
+      "id": "session",
+      "label": "Beacon Session",
+      "type": "session",
+      "required": true
+    }
+  ],
+  "outputs": [
+    {
+      "id": "scan_results",
+      "label": "Scan Results",
+      "type": "string",
+      "description": "Open ports and services"
+    }
+  ],
+  "parameters": [
+    {
+      "id": "session",
+      "label": "Session",
+      "type": "string",
+      "required": true,
+      "placeholder": "${CURRENT_SESSION}",
+      "default": "${CURRENT_SESSION}"
+    },
+    {
+      "id": "ipRange",
+      "label": "IP Range",
+      "type": "string",
+      "required": true,
+      "placeholder": "10.0.0.0/24",
+      "default": "10.0.0.0/24"
+    },
+    {
+      "id": "ports",
+      "label": "Ports",
+      "type": "string",
+      "required": true,
+      "placeholder": "22,80,443,445,3389",
+      "default": "22,80,443,445,3389"
+    },
+    {
+      "id": "discovery",
+      "label": "Discovery Mode",
+      "type": "select",
+      "required": true,
+      "options": [
+        "arp",
+        "icmp",
+        "none"
+      ],
+      "default": "arp"
+    }
+  ],
+  "requirements": {
+    "c2Server": true,
+    "listeners": [],
+    "payloads": [],
+    "libraries": [
+      "hunt_1.resource"
+    ]
+  },
+  "robotFramework": {
+    "keyword": "Network Enumerate",
+    "resources": [
+      "hunt_1.resource"
+    ],
+    "keywordArgs": [
+      {
+        "param": "session",
+        "position": 1,
+        "sessionVariable": "CURRENT_SESSION"
+      },
+      {
+        "param": "ipRange",
+        "position": 2,
+        "variableRef": false
+      },
+      {
+        "param": "ports",
+        "position": 3,
+        "variableRef": false
+      },
+      {
+        "param": "discovery",
+        "position": 4,
+        "variableRef": false
+      }
+    ],
+    "pythonCall": "Run Bportscan",
+    "documentation": "Port scan target network range",
+    "tags": [
+      "discovery",
+      "network"
+    ]
+  }
+}

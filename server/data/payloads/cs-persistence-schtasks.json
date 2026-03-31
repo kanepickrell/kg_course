@@ -1,0 +1,103 @@
+{
+  "_key": "cs-persistence-schtasks",
+  "name": "Persistence via Schtasks",
+  "description": "Establish persistence by creating a scheduled task that runs beacon at system startup",
+  "executionType": "cobalt_strike",
+  "estimatedDuration": 10,
+  "inputs": [
+    {
+      "id": "session",
+      "label": "Beacon Session",
+      "type": "session",
+      "required": true
+    }
+  ],
+  "outputs": [
+    {
+      "id": "task_created",
+      "label": "Task Created",
+      "type": "boolean",
+      "description": "Scheduled task created"
+    }
+  ],
+  "parameters": [
+    {
+      "id": "session",
+      "label": "Session",
+      "type": "string",
+      "required": true,
+      "placeholder": "${CURRENT_SESSION}",
+      "default": "${CURRENT_SESSION}"
+    },
+    {
+      "id": "taskName",
+      "label": "Task Name",
+      "type": "string",
+      "required": true,
+      "placeholder": "WindowsDefenderUpdate",
+      "default": "WindowsDefenderUpdate"
+    },
+    {
+      "id": "payloadPath",
+      "label": "Payload Path",
+      "type": "string",
+      "required": true,
+      "placeholder": "C:\\Users\\Public\\update.exe",
+      "default": "C:\\Users\\Public\\update.exe"
+    },
+    {
+      "id": "schedule",
+      "label": "Schedule",
+      "type": "select",
+      "required": false,
+      "options": [
+        "ONSTART",
+        "ONLOGON",
+        "DAILY"
+      ],
+      "default": "ONSTART"
+    }
+  ],
+  "requirements": {
+    "c2Server": true,
+    "listeners": [],
+    "payloads": [],
+    "libraries": [
+      "hunt_1.resource"
+    ]
+  },
+  "robotFramework": {
+    "keyword": "Persistence (Schtasks)",
+    "resources": [
+      "hunt_1.resource"
+    ],
+    "keywordArgs": [
+      {
+        "param": "session",
+        "position": 1,
+        "sessionVariable": "CURRENT_SESSION"
+      },
+      {
+        "param": "taskName",
+        "position": 2,
+        "variableRef": false
+      },
+      {
+        "param": "payloadPath",
+        "position": 3,
+        "variableRef": false
+      },
+      {
+        "param": "schedule",
+        "position": 4,
+        "variableRef": false
+      }
+    ],
+    "pythonCall": "Issue Shell Cmd",
+    "documentation": "Scheduled task persistence",
+    "tags": [
+      "persistence",
+      "schtasks"
+    ]
+  }
+}
