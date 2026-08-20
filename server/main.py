@@ -6,14 +6,15 @@ ATLAS Unified API - GraphDB native backend for 318th RANS knowledge graph.
 import os
 import json
 import re
+import csv
 from datetime import datetime
 from typing import Optional, List, Dict, Any
 from pathlib import Path
+from io import StringIO
 
 import httpx
-import ollama
 from dotenv import load_dotenv
-from fastapi import FastAPI, HTTPException, Query, Request
+from fastapi import FastAPI, HTTPException, Query, Request, UploadFile, File
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
@@ -21,14 +22,13 @@ load_dotenv()
 
 GRAPHDB_ENDPOINT = os.getenv("GRAPHDB_ENDPOINT", "http://localhost:7200")
 GRAPHDB_REPO     = os.getenv("GRAPHDB_REPO", "atlas")
-OLLAMA_HOST      = os.getenv("OLLAMA_HOST", "http://10.10.80.99:4001")
-OLLAMA_MODEL     = os.getenv("OLLAMA_MODEL", "gpt-oss:120b")
 PAYLOAD_DIR      = os.getenv("PAYLOAD_STORAGE_DIR", "./data/payloads")
 JSON_PATH        = "llm_edge_suggestions.json"
 
 app = FastAPI(title="ProtoGraph Unified API", version="5.0.0")
 app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_credentials=True,
                    allow_methods=["*"], allow_headers=["*"])
+upload_sessions: Dict[str, Dict[str, Any]] = {}
 
 # ── GraphDB ──────────────────────────────────────────────────────────────────
 gdb = None
@@ -53,13 +53,23 @@ except Exception as _e:
     print(f"GraphDB init failed: {_e}")
     gdb = None
 
-# ── Ollama ───────────────────────────────────────────────────────────────────
-ollama_client = None
+# ── LLM backend (via llm_client) ─────────────────────────────────────────────
 try:
-    ollama_client = ollama.Client(host=OLLAMA_HOST)
-    print(f"Ollama connected: {OLLAMA_HOST}")
+    from llm_client import (
+        chat_completion_sync as llm_chat_sync,
+        health_check as llm_health_check,
+        backend_info as llm_backend_info,
+        active_backend as llm_active_backend,
+    )
+    _llm_info = llm_backend_info()
+    print(f"LLM backend: {_llm_info.get('backend')} @ {_llm_info.get('base_url')}")
+    print(f"LLM chat model: {_llm_info.get('chat_model')}")
 except Exception as _e:
-    print(f"Ollama not available: {_e}")
+    llm_chat_sync = None
+    llm_health_check = None
+    llm_backend_info = None
+    llm_active_backend = None
+    print(f"LLM client init failed: {_e}")
 
 # ── Models ───────────────────────────────────────────────────────────────────
 class ChatRequest(BaseModel):
@@ -135,19 +145,247 @@ def save_json(data):
 # ── Root / Health ─────────────────────────────────────────────────────────────
 @app.get("/")
 def root():
+    llm_ok = False
+    llm_backend = "unavailable"
+    if llm_health_check:
+        try:
+            h = llm_health_check()
+            llm_ok = bool(h.get("reachable"))
+            llm_backend = h.get("backend", "unknown")
+        except Exception:
+            pass
     return {"service": "ATLAS Unified API", "version": "5.0.0",
-            "graphdb_connected": gdb is not None, "ollama_connected": ollama_client is not None}
+            "graphdb_connected": gdb is not None,
+            "llm_connected": llm_ok,
+            "llm_backend": llm_backend}
 
 @app.get("/health")
 def health_check():
+    llm_ok = False
+    llm_backend = "unavailable"
+    llm_info = {}
+    if llm_health_check:
+        try:
+            llm_info = llm_health_check()
+            llm_ok = bool(llm_info.get("reachable"))
+            llm_backend = llm_info.get("backend", "unknown")
+        except Exception:
+            llm_info = {"status": "error"}
     info = {"status": "ok", "time": datetime.utcnow().isoformat(),
-            "graphdb_connected": gdb is not None, "ollama_connected": ollama_client is not None}
+            "graphdb_connected": gdb is not None,
+            "llm_connected": llm_ok,
+            "llm_backend": llm_backend}
     if gdb:
         try:
             info["graphdb"] = gdb.health()
         except Exception:
             info["graphdb"] = {"status": "error"}
+    if llm_info:
+        info["llm"] = llm_info
     return info
+
+@app.get("/api/health")
+def api_health_check():
+    return health_check()
+
+@app.get("/api/graph/stats")
+def graph_stats():
+    if not gdb:
+        return {"nodes": 0, "edges": 0}
+    graph = gdb.get_full_graph()
+    return {"nodes": graph.get("count", 0), "edges": len(graph.get("edges", []))}
+
+@app.get("/api/graph/recent")
+def graph_recent(limit: int = Query(5, ge=1, le=50)):
+    if not gdb:
+        return {"items": []}
+    graph = gdb.get_full_graph()
+    nodes = graph.get("nodes", [])[:limit]
+    items = [{"id": n.get("id"), "label": n.get("label"), "type": n.get("type")} for n in nodes]
+    return {"items": items}
+
+@app.get("/api/ontology/stats")
+def ontology_stats():
+    if not gdb:
+        return {"taxonomies": 0, "concepts": 0}
+    concept_rows = gdb.sparql_query("""
+        SELECT (COUNT(DISTINCT ?cls) AS ?count) WHERE {
+            ?cls a owl:Class .
+            FILTER(STRSTARTS(STR(?cls), "https://proto.atlas/ontology/"))
+        }
+    """)
+    tax_rows = gdb.sparql_query("""
+        SELECT (COUNT(DISTINCT ?s) AS ?count) WHERE { ?s a skos:ConceptScheme . }
+    """)
+    return {
+        "taxonomies": int(tax_rows[0]["count"]) if tax_rows else 0,
+        "concepts": int(concept_rows[0]["count"]) if concept_rows else 0,
+    }
+
+@app.get("/api/pipelines/stats")
+def pipeline_stats():
+    return {"pipelines": 0, "active": 0}
+
+@app.get("/api/upload/stats")
+def upload_stats():
+    pdir = Path(PAYLOAD_DIR)
+    ingested = len(list(pdir.glob("*.json"))) if pdir.exists() else 0
+    return {"ingested": ingested, "pending": 0}
+
+@app.get("/api/onboarding/schemas-latest")
+def latest_schema():
+    if not gdb:
+        return {"fields": {}, "relationships": [], "domain_name": "default"}
+    types = gdb.get_ontology_types()
+    preferred = next((t for t in types if t.get("label") == "Service"), types[0] if types else None)
+    if not preferred:
+        return {"fields": {}, "relationships": [], "domain_name": "default"}
+    fields = {}
+    for p in preferred.get("properties", []):
+        fields[p["name"]] = {
+            "data_type": p.get("type", "string"),
+            "description": p.get("description", ""),
+            "required": bool(p.get("required", False)),
+            "example_values": [],
+            "extraction_hint": "",
+        }
+    return {
+        "fields": fields,
+        "default_fields": {},
+        "relationships": [],
+        "session_id": f"schema_{int(datetime.utcnow().timestamp())}",
+        "domain_name": preferred.get("label", "default"),
+    }
+
+@app.post("/api/upload/files")
+async def upload_files(files: List[UploadFile] = File(...)):
+    parsed_files = []
+    all_rows: List[Dict[str, Any]] = []
+    warnings = []
+    for f in files:
+        raw = await f.read()
+        name = f.filename or "upload"
+        ext = Path(name).suffix.lower()
+        try:
+            text = raw.decode("utf-8", errors="replace")
+        except Exception:
+            text = ""
+        if ext in [".csv", ".tsv"]:
+            delim = "," if ext == ".csv" else "\t"
+            reader = csv.DictReader(StringIO(text))
+            rows = []
+            for idx, row in enumerate(reader, start=1):
+                r = {k: v for k, v in row.items()}
+                r["_source_row"] = idx
+                rows.append(r)
+            parsed_files.append({
+                "filename": name,
+                "extension": ext,
+                "row_count": len(rows),
+                "columns": [c for c in (reader.fieldnames or []) if c],
+                "is_structured": True,
+                "sample_rows": rows[:5],
+            })
+            for r in rows:
+                r["_source_file"] = name
+            all_rows.extend(rows)
+        elif ext == ".json":
+            obj = json.loads(text) if text.strip() else []
+            rows = obj if isinstance(obj, list) else [obj]
+            for idx, row in enumerate(rows, start=1):
+                row["_source_row"] = idx
+                row["_source_file"] = name
+            columns = list(rows[0].keys()) if rows and isinstance(rows[0], dict) else []
+            parsed_files.append({
+                "filename": name,
+                "extension": ext,
+                "row_count": len(rows),
+                "columns": columns,
+                "is_structured": True,
+                "sample_rows": rows[:5],
+            })
+            all_rows.extend(rows)
+        else:
+            parsed_files.append({
+                "filename": name,
+                "extension": ext,
+                "row_count": 1,
+                "columns": ["_full_text"],
+                "is_structured": False,
+                "sample_rows": [{"_full_text": text[:5000], "_source_row": 1}],
+            })
+            all_rows.append({"_full_text": text[:5000], "_source_row": 1, "_source_file": name})
+            warnings.append(f"{name}: treated as unstructured text")
+
+    session_id = f"upload_{int(datetime.utcnow().timestamp())}"
+    upload_sessions[session_id] = {"rows": all_rows, "files": parsed_files, "created_at": datetime.utcnow().isoformat()}
+    return {"upload_session_id": session_id, "files": parsed_files, "warnings": warnings}
+
+class UploadExtractRequest(BaseModel):
+    upload_session_id: str
+    schema_fields: Dict[str, Any] = {}
+    relationships: List[Dict[str, Any]] = []
+    collection_name: str = "artifacts"
+
+@app.post("/api/upload/extract")
+async def upload_extract(req: UploadExtractRequest):
+    sess = upload_sessions.get(req.upload_session_id)
+    if not sess:
+        raise HTTPException(status_code=404, detail="Upload session not found")
+    field_names = list(req.schema_fields.keys())
+    records = []
+    for i, row in enumerate(sess["rows"], start=1):
+        rec = {
+            "_id": f"rec_{i}",
+            "_source_file": row.get("_source_file", "upload"),
+            "_source_row": row.get("_source_row", i),
+            "_confidence": 0.9,
+            "_status": "pending",
+        }
+        if field_names:
+            for f in field_names:
+                rec[f] = row.get(f)
+        else:
+            for k, v in row.items():
+                if not k.startswith("_"):
+                    rec[k] = v
+        records.append(rec)
+    sess["records"] = records
+    return {"records": records, "extraction_method": "schema_projection", "warnings": []}
+
+class UploadCommitRequest(BaseModel):
+    upload_session_id: str
+    records: List[Dict[str, Any]]
+    collection_name: str = "artifacts"
+    domain_name: Optional[str] = None
+    create_edges: bool = True
+
+@app.post("/api/upload/commit")
+async def upload_commit(req: UploadCommitRequest):
+    if not gdb:
+        raise HTTPException(status_code=503, detail="GraphDB not connected")
+    created = 0
+    errors = []
+    valid_types = {t.get("collection") for t in gdb.get_ontology_types()}
+    for idx, r in enumerate(req.records, start=1):
+        if r.get("_status") not in ("approved", "edited"):
+            continue
+        artifact_type = str(r.get("type") or req.domain_name or req.collection_name or "Service")
+        artifact_type = artifact_type.replace(" ", "")
+        if artifact_type not in valid_types:
+            artifact_type = "Service" if "Service" in valid_types else next(iter(valid_types), None)
+        if not artifact_type:
+            errors.append(f"Record {idx}: no valid ontology type available")
+            continue
+        key = str(r.get("key") or r.get("name") or f"upload-{idx}").strip().lower()
+        key = re.sub(r"[^a-zA-Z0-9_-]", "-", key).strip("-") or f"upload-{idx}"
+        props = {k: v for k, v in r.items() if not k.startswith("_") and k not in ("key",)}
+        try:
+            gdb.create_node(key, artifact_type, props)
+            created += 1
+        except Exception as e:
+            errors.append(f"Record {idx}: {e}")
+    return {"nodes_created": created, "edges_created": 0, "collection": req.collection_name, "errors": errors}
 
 # ── Graph ─────────────────────────────────────────────────────────────────────
 @app.get("/graph")
@@ -224,20 +462,18 @@ def get_artifact_by_parts(collection: str, key: str):
 # ── Chat ──────────────────────────────────────────────────────────────────────
 @app.post("/chat")
 def chat(req: ChatRequest):
-    if not ollama_client:
-        raise HTTPException(status_code=503, detail="Ollama not available")
+    if not llm_chat_sync:
+        raise HTTPException(status_code=503, detail="LLM client unavailable")
     try:
         system = ("You are ATLAS, AI assistant for the 318th RANS knowledge graph. "
                   "Help analysts understand cyber ops artifacts, TTPs, and range configs. "
                   "No markdown. Match response length to question. Speak naturally.")
-        messages = [
-            {"role": "system", "content": system},
-            {"role": "user", "content": f"Graph context: {req.context or 'None'}\n\nQuestion: {req.message}"},
-        ]
-        response = ollama_client.chat(model=OLLAMA_MODEL, messages=messages)
-        return {"reply": response["message"]["content"]}
+        prompt = f"Graph context: {req.context or 'None'}\n\nQuestion: {req.message}"
+        response = llm_chat_sync(prompt=prompt, system=system, temperature=0.2)
+        return {"reply": response}
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Ollama chat failed: {str(e)}")
+        backend = llm_active_backend() if llm_active_backend else "unknown"
+        raise HTTPException(status_code=500, detail=f"LLM chat failed ({backend}): {str(e)}")
 
 # ── TTL ingest proxy ──────────────────────────────────────────────────────────
 @app.post("/api/ingest/ttl")

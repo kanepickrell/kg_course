@@ -62,6 +62,7 @@ const App = () => (
               /plugins/:id → individual agent dashboard (auto-selects that plugin)
           */}
           <Route path="/apps"         element={<RequireAuth><AppOnboarding /></RequireAuth>} />
+          <Route path="/onboarding"   element={<RequireAuth><AppOnboarding /></RequireAuth>} />
           <Route path="/plugins"      element={<RequireAuth><PluginDashboardRoute /></RequireAuth>} />
           <Route path="/plugins/:id"  element={<RequireAuth><PluginDashboardRoute /></RequireAuth>} />
 

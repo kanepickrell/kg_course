@@ -52,6 +52,10 @@ SCHEMA_INDEX_PATH = DATA_DIR / "schema_vector_index.json"
 # RAG tuning
 SCHEMA_TOP_K   = 8   # schema fragments to retrieve per query
 FEWSHOT_TOP_K  = 3   # few-shot examples to inject per query
+TAXONOMY_LABEL_CAP = 40  # max term labels per taxonomy RAG fragment
+RECON_PROP_CAP = 8       # lowest-cardinality props sampled per NL request
+RECON_VALUE_LIMIT = 40   # distinct values per property
+RECON_CHAR_BUDGET = 3000 # hard cap on the ACTUAL STORED VALUES block
 
 
 # ============================================================
@@ -104,6 +108,63 @@ def _require_gdb():
         raise HTTPException(status_code=503, detail="Query engine not initialized")
 
 
+def _normalize_taxonomy_ref(tax_ref: str) -> str:
+    """Normalize a proto:taxonomy annotation value to a bare scheme_id."""
+    ref = tax_ref.strip()
+    if ref.startswith("http://") or ref.startswith("https://"):
+        ref = ref.rsplit("/", 1)[-1]
+    if ref.startswith("scheme-"):
+        ref = ref[len("scheme-"):]
+    return ref
+
+
+def _scheme_to_property_names(types: List[Dict[str, Any]]) -> Dict[str, List[str]]:
+    """Reverse map: scheme_id → ontology property names that reference it."""
+    mapping: Dict[str, List[str]] = {}
+    for t in types:
+        for p in t.get("properties", []):
+            tax = p.get("taxonomy")
+            if not tax:
+                continue
+            scheme_id = _normalize_taxonomy_ref(str(tax))
+            names = mapping.setdefault(scheme_id, [])
+            if p["name"] not in names:
+                names.append(p["name"])
+    return mapping
+
+
+def _format_term_labels(labels: List[str], cap: int = TAXONOMY_LABEL_CAP) -> str:
+    if len(labels) <= cap:
+        return ", ".join(labels)
+    shown = labels[:cap]
+    return f"{', '.join(shown)} … and {len(labels) - cap} more"
+
+
+def _build_taxonomy_fragment_text(
+    scheme: Dict[str, Any],
+    terms: List[Dict[str, str]],
+    prop_names: List[str],
+) -> str:
+    """Build one RAG fragment for a taxonomy scheme with real property refs."""
+    scheme_id = scheme["scheme_id"]
+    label = scheme.get("label") or scheme_id
+    labels = [t["label"] for t in terms if t.get("label")]
+    lines = [
+        f"TAXONOMY {scheme_id} ({label}): {len(terms)} terms",
+        f"  Valid values: {_format_term_labels(labels)}",
+    ]
+    if prop_names:
+        refs = ", ".join(f"proto:{n}" for n in prop_names)
+        lines.append(f"  Referenced by: {refs}")
+        example = labels[0] if labels else "<value>"
+        for prop_name in prop_names:
+            lines.append(
+                f'  Use in FILTER: ?x proto:{prop_name} ?v . '
+                f'?v skos:prefLabel "{example}"'
+            )
+    return "\n".join(lines)
+
+
 # ============================================================
 # IMPROVEMENT 1 — SCHEMA VECTOR INDEX (RAG over ontology)
 # ============================================================
@@ -123,6 +184,8 @@ class SchemaVectorIndex:
         self._index: List[Dict] = []   # [{text, embedding, category, label}, ...]
         self._schema_hash: str = ""
         self._loaded = False
+        # Low-cardinality props for FILTER grounding — refreshed with the index
+        self._filterable_properties: List[Dict[str, Any]] = []
 
     def _cosine(self, a: List[float], b: List[float]) -> float:
         dot = sum(x * y for x, y in zip(a, b))
@@ -192,6 +255,7 @@ class SchemaVectorIndex:
         })
 
         # One fragment per OWL class + its properties
+        types: List[Dict[str, Any]] = []
         try:
             types = gdb.get_ontology_types()
             for t in types:
@@ -215,24 +279,33 @@ class SchemaVectorIndex:
         except Exception as e:
             print(f"⚠️  Schema index: could not load classes: {e}")
 
-        # One fragment per taxonomy scheme
-        for scheme_id in ["c2-frameworks", "mitre-tactics", "risk-levels", "teams"]:
+        # One fragment per live taxonomy scheme (discovered from GraphDB)
+        scheme_props = _scheme_to_property_names(types)
+        try:
+            schemes = gdb.get_taxonomy_schemes()
+        except Exception as e:
+            print(f"⚠️  Schema index: could not list taxonomies: {e}")
+            schemes = []
+
+        for scheme in schemes:
+            if scheme.get("term_count", 0) == 0:
+                continue
+            scheme_id = scheme["scheme_id"]
             try:
                 terms = gdb.get_taxonomy_terms(scheme_id)
-                if terms:
-                    labels = [t["label"] for t in terms]
-                    elements.append({
-                        "category": "taxonomy",
-                        "label": scheme_id,
-                        "text": (
-                            f"TAXONOMY {scheme_id}:\n"
-                            f"  Valid values: {', '.join(labels)}\n"
-                            f"  Use in FILTER: ?x proto:{scheme_id.replace('-','_')} ?v . "
-                            f"?v skos:prefLabel \"<value>\""
-                        ),
-                    })
-            except Exception:
-                pass
+                if not terms:
+                    print(f"⚠️  Schema index: scheme '{scheme_id}' reports "
+                          f"{scheme['term_count']} terms but query returned none")
+                    continue
+                elements.append({
+                    "category": "taxonomy",
+                    "label": scheme.get("label") or scheme_id,
+                    "text": _build_taxonomy_fragment_text(
+                        scheme, terms, scheme_props.get(scheme_id, []),
+                    ),
+                })
+            except Exception as e:
+                print(f"⚠️  Schema index: could not load taxonomy '{scheme_id}': {e}")
 
         # Relationship types as a single fragment
         elements.append({
@@ -275,6 +348,7 @@ class SchemaVectorIndex:
                     self._index = saved["entries"]
                     self._schema_hash = content_hash
                     self._loaded = True
+                    self._refresh_filterable_properties()
                     print(f"✓ Schema index loaded from disk ({len(self._index)} fragments)")
                     return
             except Exception:
@@ -300,6 +374,7 @@ class SchemaVectorIndex:
         self._index = entries
         self._schema_hash = content_hash
         self._loaded = True
+        self._refresh_filterable_properties()
 
         # Persist
         try:
@@ -310,6 +385,26 @@ class SchemaVectorIndex:
             print(f"✓ Schema index saved ({len(entries)} fragments)")
         except Exception as e:
             print(f"⚠️  Could not save schema index: {e}")
+
+    def _refresh_filterable_properties(self) -> None:
+        """Cache low-cardinality properties for recon (schema-level, not per-request)."""
+        if gdb is None:
+            self._filterable_properties = []
+            return
+        try:
+            self._filterable_properties = gdb.get_filterable_properties()
+            print(f"✓ Filterable properties cached ({len(self._filterable_properties)})")
+        except Exception as e:
+            print(f"⚠️  Could not discover filterable properties: {e}")
+            self._filterable_properties = []
+
+    def get_filterable_properties(self) -> List[Dict[str, Any]]:
+        """Return cached filterable properties, refreshing if needed."""
+        if not self._loaded:
+            self.build()
+        if not self._filterable_properties:
+            self._refresh_filterable_properties()
+        return self._filterable_properties
 
     def retrieve(self, question: str, top_k: int = SCHEMA_TOP_K) -> List[Dict[str, str]]:
         """
@@ -606,70 +701,118 @@ def _seed_fewshot_library():
 # ============================================================
 # IMPROVEMENT 1b — GRAPH-STATE RECONNAISSANCE
 # ============================================================
+# Low-cardinality ontology properties are discovered via
+# GraphDBAdapter.get_filterable_properties() and cached on SchemaVectorIndex.
+# Values are sampled live per request (once) and injected as ACTUAL STORED VALUES.
 
-# Properties whose actual stored values are sampled before SPARQL generation.
-# The LLM sees real values (e.g. "Initial Access", "initial-access") rather than
-# whatever label it guesses from training knowledge.
-_FILTERABLE_PROPERTIES = [
-    ("proto:tactic",     None),        # string literal
-    ("proto:riskLevel",  "skos"),      # SKOS concept → prefLabel
-    ("proto:category",   "skos"),
-    ("proto:owner",      "skos"),
-]
+def _prop_curie(prop_uri: str) -> str:
+    """Compact ontology property URI for prompt display."""
+    if prop_uri.startswith("https://proto.atlas/ontology/"):
+        return f"proto:{prop_uri[len('https://proto.atlas/ontology/'):]}"
+    return f"<{prop_uri}>"
 
-def _sample_graph_values() -> str:
+
+def _sample_property_values(prop_uri: str, kind: str) -> List[str]:
+    """Sample distinct values for one property; try the other shape on empty."""
+    prop_ref = f"<{prop_uri}>" if prop_uri.startswith("http") else prop_uri
+
+    def _skos() -> List[str]:
+        rows = gdb.sparql_query(f"""
+            SELECT DISTINCT ?label WHERE {{
+                ?x {prop_ref} ?v .
+                ?v skos:prefLabel ?label .
+            }} LIMIT {RECON_VALUE_LIMIT}
+        """)
+        return [str(r["label"]) for r in rows if r.get("label")]
+
+    def _literal() -> List[str]:
+        rows = gdb.sparql_query(f"""
+            SELECT DISTINCT ?val WHERE {{
+                ?x {prop_ref} ?val .
+                FILTER(isLiteral(?val))
+            }} LIMIT {RECON_VALUE_LIMIT}
+        """)
+        return [str(r["val"]) for r in rows if r.get("val") is not None]
+
+    primary, fallback = (_skos, _literal) if kind == "skos" else (_literal, _skos)
+    try:
+        values = primary()
+    except Exception:
+        values = []
+    if not values:
+        try:
+            values = fallback()
+        except Exception:
+            values = []
+    return values
+
+
+def _sample_graph_values(
+    filterable: Optional[List[Dict[str, Any]]] = None,
+) -> str:
     """
     Issue lightweight SPARQL against the live graph to discover actual stored
     values for filterable properties.  Returns a compact string block that is
     appended to the schema context so the LLM can use verbatim values in
     FILTER expressions.
 
-    This is the reconnaissance step described by Neptune/TigerGraph NL2SPARQL
-    pipelines: ground the query in graph reality, not schema assumptions.
-    Only runs if gdb is available; returns "" otherwise.
+    Property *set* comes from SchemaVectorIndex (cardinality discovery, cached
+    at index build).  Values are always sampled live.
     """
     if gdb is None:
         return ""
 
-    blocks = []
-    for prop, kind in _FILTERABLE_PROPERTIES:
+    if filterable is None:
+        filterable = _schema_index.get_filterable_properties()
+
+    # Already ordered by ascending cardinality from discovery
+    props = filterable[:RECON_PROP_CAP]
+
+    blocks: List[str] = []
+    for entry in props:
+        prop_uri = entry.get("property") or ""
+        if not prop_uri:
+            continue
+        kind = entry.get("kind") or "literal"
         try:
-            if kind == "skos":
-                rows = gdb.sparql_query(f"""
-                    SELECT DISTINCT ?label WHERE {{
-                        ?x {prop} ?v .
-                        ?v skos:prefLabel ?label .
-                    }} LIMIT 40
-                """)
-            else:
-                rows = gdb.sparql_query(f"""
-                    SELECT DISTINCT ?val WHERE {{
-                        ?x {prop} ?val .
-                        FILTER(isLiteral(?val))
-                    }} LIMIT 40
-                """)
-            values = [
-                str(r.get("label") or r.get("val") or "")
-                for r in rows if (r.get("label") or r.get("val"))
-            ]
-            if values:
-                blocks.append(f"  {prop}: {', '.join(sorted(values))}")
-        except Exception:
-            pass  # Graph unreachable or property absent — skip silently
+            values = _sample_property_values(prop_uri, kind)
+        except Exception as e:
+            print(f"⚠️  Recon: could not sample {prop_uri}: {e}")
+            continue
+        if values:
+            blocks.append(
+                f"  {_prop_curie(prop_uri)}: {', '.join(sorted(values))}"
+            )
 
     if not blocks:
         return ""
 
-    return (
+    header = (
         "\nACTUAL STORED VALUES (use these verbatim in FILTER clauses — "
         "do not guess alternative spellings):\n"
-        + "\n".join(blocks)
     )
+    body = "\n".join(blocks)
+    # Truncate by character budget without cutting mid-property line
+    if len(header) + len(body) > RECON_CHAR_BUDGET:
+        kept: List[str] = []
+        budget = RECON_CHAR_BUDGET - len(header) - 20
+        used = 0
+        for line in blocks:
+            if used + len(line) + 1 > budget:
+                break
+            kept.append(line)
+            used += len(line) + 1
+        body = "\n".join(kept)
+        if len(kept) < len(blocks):
+            body += "\n  … (truncated)"
+
+    return header + body
 
 
-
-
-def _build_schema_context(question: str = "") -> Tuple[str, List[Dict[str, str]]]:
+def _build_schema_context(
+    question: str = "",
+    recon: Optional[str] = None,
+) -> Tuple[str, List[Dict[str, str]]]:
     """
     Build the schema context string for the LLM prompt.
 
@@ -680,6 +823,12 @@ def _build_schema_context(question: str = "") -> Tuple[str, List[Dict[str, str]]
     properties sampled from the live graph.  This prevents the LLM from
     generating FILTER clauses with guessed values (e.g. "Initial Access")
     when the graph actually stores "initial-access".
+
+    Args:
+        question: NL question for RAG retrieval
+        recon: precomputed recon block; if None, samples once here
+               (standalone /schema callers). Pass from natural_language_query
+               to avoid a second round-trip.
 
     Returns:
         (context_string, retrieved_fragments)
@@ -695,8 +844,8 @@ def _build_schema_context(question: str = "") -> Tuple[str, List[Dict[str, str]]
     for frag in fragments:
         context += frag["text"] + "\n\n"
 
-    # Append live graph values — grounds the LLM in actual stored strings
-    recon = _sample_graph_values()
+    if recon is None:
+        recon = _sample_graph_values()
     if recon:
         context += recon + "\n"
 
@@ -716,6 +865,7 @@ def _build_full_schema_context() -> str:
     lines.append("  skos:  <http://www.w3.org/2004/02/skos/core#>")
     lines.append("")
     lines.append("CLASSES AND PROPERTIES:")
+    types: List[Dict[str, Any]] = []
     try:
         types = gdb.get_ontology_types()
         for t in types:
@@ -731,17 +881,39 @@ def _build_full_schema_context() -> str:
                 lines.append("    Properties:")
                 lines.extend(prop_strs)
             lines.append("")
-    except Exception:
-        pass
+    except Exception as e:
+        print(f"⚠️  Schema dump: could not load classes: {e}")
+
     lines.append("TAXONOMY VALUES:")
-    for scheme_id in ["c2-frameworks", "mitre-tactics", "risk-levels", "teams"]:
+    scheme_props = _scheme_to_property_names(types)
+    try:
+        schemes = gdb.get_taxonomy_schemes()
+    except Exception as e:
+        print(f"⚠️  Schema dump: could not list taxonomies: {e}")
+        schemes = []
+
+    for scheme in schemes:
+        if scheme.get("term_count", 0) == 0:
+            continue
+        scheme_id = scheme["scheme_id"]
         try:
             terms = gdb.get_taxonomy_terms(scheme_id)
-            if terms:
-                labels = [t["label"] for t in terms]
-                lines.append(f"  {scheme_id}: {', '.join(labels)}")
-        except Exception:
-            pass
+            if not terms:
+                print(f"⚠️  Schema dump: scheme '{scheme_id}' reports "
+                      f"{scheme['term_count']} terms but query returned none")
+                continue
+            labels = [t["label"] for t in terms if t.get("label")]
+            prop_names = scheme_props.get(scheme_id, [])
+            refs = (
+                f" [via {', '.join(f'proto:{n}' for n in prop_names)}]"
+                if prop_names else ""
+            )
+            lines.append(
+                f"  {scheme_id} ({scheme.get('label') or scheme_id}): "
+                f"{_format_term_labels(labels)}{refs}"
+            )
+        except Exception as e:
+            print(f"⚠️  Schema dump: could not load taxonomy '{scheme_id}': {e}")
     lines.append("")
     lines.append("RELATIONSHIP TYPES (edge predicates):")
     lines.append("  rel:LEADS_TO  rel:MAPS_TO_TECHNIQUE  rel:SUPPORTS_TECHNIQUE")
@@ -909,7 +1081,7 @@ async def natural_language_query(request: NaturalQueryRequest):
         # FILTER mismatches on the first pass is equally important when
         # repairing a failed query.
         recon_block   = _sample_graph_values()
-        schema, rag_fragments = _build_schema_context(question)
+        schema, rag_fragments = _build_schema_context(question, recon=recon_block)
 
         # ── Step 2: Few-shot retrieval ────────────────────────────────
         few_shot_used = _fewshot_library.retrieve(question)

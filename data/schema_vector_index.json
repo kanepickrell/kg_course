@@ -1,0 +1,75 @@
+{
+  "hash": "c835000321df28c6caffe7843a870553",
+  "entries": [
+    {
+      "category": "namespaces",
+      "label": "SPARQL namespace prefixes",
+      "text": "NAMESPACE PREFIXES:\n  proto: <https://proto.atlas/ontology/>\n  data:  <https://proto.atlas/data/>\n  tax:   <https://proto.atlas/taxonomy/>\n  rel:   <https://proto.atlas/relationship/>\n  skos:  <http://www.w3.org/2004/02/skos/core#>\nSPARQL NOTES:\n  - Taxonomy fields (tactic, category, riskLevel, owner) store URI values, NOT strings\n  - To filter by tactic label use: FILTER(CONTAINS(STR(?t), \"TA0006\"))\n  - MITRE tactic URIs: TA0001=InitialAccess TA0002=Execution TA0003=Persistence\n    TA0004=PrivilegeEscalation TA0005=DefenseEvasion TA0006=CredentialAccess\n    TA0007=Discovery TA0008=LateralMovement TA0009=Collection\n    TA0010=Exfiltration TA0011=CommandAndControl TA0040=Impact\n  - To get tactic label: ?m proto:tactic ?t . ?t skos:prefLabel ?tacticLabel\n  - Use OPTIONAL for non-required fields\n  - Filter by class: ?x a proto:LibraryModule\n  - Instances: data:{key} e.g. data:cs-start-c2\n\nWORKING SPARQL PATTERNS (use these exact structures):\n  # Filter by tactic:\n  ?m proto:tactic ?t . FILTER(CONTAINS(STR(?t), \"TA0006\"))\n\n  # Get tactic label:\n  ?m proto:tactic ?t . ?t skos:prefLabel ?tacticLabel .\n\n  # Count modules per tactic (GROUP BY):\n  SELECT ?tacticLabel (COUNT(?m) AS ?count) WHERE {\n    ?m a proto:LibraryModule ; proto:tactic ?t .\n    ?t skos:prefLabel ?tacticLabel .\n  } GROUP BY ?tacticLabel ORDER BY DESC(?count)\n\n  # Gap analysis - MITRE tactics with no modules:\n  # Use CONTAINS(STR(?t), \"mitre-TA\") to match only MITRE tactic URIs\n  SELECT DISTINCT ?tacticLabel WHERE {\n    ?t skos:prefLabel ?tacticLabel .\n    FILTER(CONTAINS(STR(?t), \"mitre-TA\"))\n    FILTER(NOT EXISTS { ?m a proto:LibraryModule ; proto:tactic ?t . })\n  }\n\nGRAPHDB RESTRICTIONS:\n  - tax:mitre-tactics scheme does NOT exist in the graph \u2014 never use skos:inScheme tax:mitre-tactics\n  - To find all tactics derive them from modules: ?m proto:tactic ?t . ?t skos:prefLabel ?label\n  - NEVER use: FILTER(?x NOT IN (SELECT ...)) \u2014 use FILTER(NOT EXISTS {...}) instead\n  - NEVER hardcode tactic URIs like proto:TA0006 \u2014 use FILTER(CONTAINS(STR(?t),\"TA00XX\"))\n  - GROUP BY requires all SELECT vars to be either aggregated or in GROUP BY\n  - Subqueries must use { SELECT ... } syntax inside the WHERE block\n",
+      "embedding": null,
+      "label_embedding": null
+    },
+    {
+      "category": "class",
+      "label": "Codebase",
+      "text": "CLASS proto:Codebase (Codebase)\n  Definition: A source repository or codebase tracked in ProtoGraph.\n  Properties:\n  - proto:category : reference [taxonomy: c2-frameworks]\n  - proto:defaultBranch : string\n  - proto:description : string\n  - proto:language : string\n  - proto:name : string (REQUIRED)\n  - proto:owner : reference [taxonomy: teams]\n  - proto:repoUrl : string\n  - proto:riskLevel : reference [taxonomy: risk-levels]\n  - proto:status : string",
+      "embedding": null,
+      "label_embedding": null
+    },
+    {
+      "category": "class",
+      "label": "Dependency",
+      "text": "CLASS proto:Dependency (Dependency)\n  Definition: An external package or library consumed by code.\n  Properties:\n  - proto:description : string\n  - proto:name : string (REQUIRED)\n  - proto:owner : reference [taxonomy: teams]\n  - proto:riskLevel : reference [taxonomy: risk-levels]\n  - proto:status : string",
+      "embedding": null,
+      "label_embedding": null
+    },
+    {
+      "category": "class",
+      "label": "Service",
+      "text": "CLASS proto:Service (Service)\n  Definition: A deployable service within a codebase.\n  Properties:\n  - proto:description : string\n  - proto:name : string (REQUIRED)\n  - proto:owner : reference [taxonomy: teams]\n  - proto:riskLevel : reference [taxonomy: risk-levels]\n  - proto:status : string",
+      "embedding": null,
+      "label_embedding": null
+    },
+    {
+      "category": "class",
+      "label": "Source File",
+      "text": "CLASS proto:SourceFile (Source File)\n  Definition: A source file or package-level unit in a repository.\n  Properties:\n  - proto:description : string\n  - proto:kind : string\n  - proto:name : string (REQUIRED)\n  - proto:owner : reference [taxonomy: teams]\n  - proto:path : string\n  - proto:riskLevel : reference [taxonomy: risk-levels]\n  - proto:status : string",
+      "embedding": null,
+      "label_embedding": null
+    },
+    {
+      "category": "class",
+      "label": "Team",
+      "text": "CLASS proto:Team (Team)\n  Definition: \n  Properties:\n  - proto:description : string\n  - proto:name : string (REQUIRED)\n  - proto:owner : reference [taxonomy: teams]\n  - proto:riskLevel : reference [taxonomy: risk-levels]\n  - proto:status : string",
+      "embedding": null,
+      "label_embedding": null
+    },
+    {
+      "category": "taxonomy",
+      "label": "Codebase Categories",
+      "text": "TAXONOMY c2-frameworks (Codebase Categories): 3 terms\n  Valid values: Automation Platform, C2 Framework, Observability\n  Referenced by: proto:category\n  Use in FILTER: ?x proto:category ?v . ?v skos:prefLabel \"Automation Platform\"",
+      "embedding": null,
+      "label_embedding": null
+    },
+    {
+      "category": "taxonomy",
+      "label": "Risk Levels",
+      "text": "TAXONOMY risk-levels (Risk Levels): 3 terms\n  Valid values: High, Low, Medium\n  Referenced by: proto:riskLevel\n  Use in FILTER: ?x proto:riskLevel ?v . ?v skos:prefLabel \"High\"",
+      "embedding": null,
+      "label_embedding": null
+    },
+    {
+      "category": "taxonomy",
+      "label": "Teams",
+      "text": "TAXONOMY teams (Teams): 2 terms\n  Valid values: Platform Engineering, Security Engineering\n  Referenced by: proto:owner\n  Use in FILTER: ?x proto:owner ?v . ?v skos:prefLabel \"Platform Engineering\"",
+      "embedding": null,
+      "label_embedding": null
+    },
+    {
+      "category": "relationships",
+      "label": "edge relationship types",
+      "text": "RELATIONSHIP TYPES (edge predicates):\n  rel:LEADS_TO \u2014 sequential dependency (transitive)\n  rel:MAPS_TO_TECHNIQUE \u2014 module implements a MITRE technique\n  rel:SUPPORTS_TECHNIQUE \u2014 range env supports a technique\n  rel:REQUIRES_TECHNIQUE \u2014 scenario requires a technique\n  rel:OWNED_BY \u2014 artifact is owned by a team (inverse: rel:OWNS)\n  rel:OWNS \u2014 team owns an artifact\n  rel:BELONGS_TO \u2014 person belongs to a team\n  rel:RELATED_TO \u2014 general semantic relationship (symmetric)",
+      "embedding": null,
+      "label_embedding": null
+    }
+  ]
+}

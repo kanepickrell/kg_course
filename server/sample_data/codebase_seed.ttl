@@ -1,0 +1,265 @@
+@prefix rdf:   <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs:  <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix owl:   <http://www.w3.org/2002/07/owl#> .
+@prefix xsd:   <http://www.w3.org/2001/XMLSchema#> .
+@prefix skos:  <http://www.w3.org/2004/02/skos/core#> .
+@prefix proto: <https://proto.atlas/ontology/> .
+@prefix data:  <https://proto.atlas/data/> .
+@prefix tax:   <https://proto.atlas/taxonomy/> .
+@prefix rel:   <https://proto.atlas/relationship/> .
+
+#################################################################
+# Minimal ontology for codebase-focused ProtoGraph sample data
+#################################################################
+
+proto:Thing a owl:Class ;
+    rdfs:label "Thing" .
+
+proto:Artifact a owl:Class ;
+    rdfs:label "Artifact" ;
+    rdfs:subClassOf proto:Thing .
+
+proto:Team a owl:Class ;
+    rdfs:label "Team" ;
+    rdfs:subClassOf proto:Artifact .
+
+proto:Codebase a owl:Class ;
+    rdfs:label "Codebase" ;
+    rdfs:comment "A source repository or codebase tracked in ProtoGraph." ;
+    rdfs:subClassOf proto:Artifact .
+
+proto:Service a owl:Class ;
+    rdfs:label "Service" ;
+    rdfs:comment "A deployable service within a codebase." ;
+    rdfs:subClassOf proto:Artifact .
+
+proto:SourceFile a owl:Class ;
+    rdfs:label "Source File" ;
+    rdfs:comment "A source file or package-level unit in a repository." ;
+    rdfs:subClassOf proto:Artifact .
+
+proto:Dependency a owl:Class ;
+    rdfs:label "Dependency" ;
+    rdfs:comment "An external package or library consumed by code." ;
+    rdfs:subClassOf proto:Artifact .
+
+#################################################################
+# Core properties (proto:definedOn is required by this codebase)
+#################################################################
+
+proto:name a owl:DatatypeProperty ;
+    rdfs:label "name" ;
+    rdfs:range xsd:string ;
+    proto:definedOn proto:Artifact .
+
+proto:description a owl:DatatypeProperty ;
+    rdfs:label "description" ;
+    rdfs:range xsd:string ;
+    proto:definedOn proto:Artifact .
+
+proto:repoUrl a owl:DatatypeProperty ;
+    rdfs:label "repoUrl" ;
+    rdfs:range xsd:string ;
+    proto:definedOn proto:Codebase .
+
+proto:defaultBranch a owl:DatatypeProperty ;
+    rdfs:label "defaultBranch" ;
+    rdfs:range xsd:string ;
+    proto:definedOn proto:Codebase .
+
+proto:language a owl:DatatypeProperty ;
+    rdfs:label "language" ;
+    rdfs:range xsd:string ;
+    proto:definedOn proto:Codebase .
+
+proto:path a owl:DatatypeProperty ;
+    rdfs:label "path" ;
+    rdfs:range xsd:string ;
+    proto:definedOn proto:SourceFile .
+
+proto:kind a owl:DatatypeProperty ;
+    rdfs:label "kind" ;
+    rdfs:range xsd:string ;
+    proto:definedOn proto:SourceFile .
+
+proto:status a owl:DatatypeProperty ;
+    rdfs:label "status" ;
+    rdfs:range xsd:string ;
+    proto:definedOn proto:Artifact .
+
+proto:owner a owl:ObjectProperty ;
+    rdfs:label "owner" ;
+    rdfs:range skos:Concept ;
+    proto:definedOn proto:Artifact ;
+    proto:taxonomy "teams" .
+
+proto:riskLevel a owl:ObjectProperty ;
+    rdfs:label "riskLevel" ;
+    rdfs:range skos:Concept ;
+    proto:definedOn proto:Artifact ;
+    proto:taxonomy "risk-levels" .
+
+proto:category a owl:ObjectProperty ;
+    rdfs:label "category" ;
+    rdfs:range skos:Concept ;
+    proto:definedOn proto:Codebase ;
+    proto:taxonomy "c2-frameworks" .
+
+#################################################################
+# Relationship predicates used by GraphExplorer
+#################################################################
+
+rel:CONTAINS a owl:ObjectProperty ;
+    rdfs:label "CONTAINS" .
+
+rel:DEPENDS_ON a owl:ObjectProperty ;
+    rdfs:label "DEPENDS_ON" .
+
+rel:BELONGS_TO a owl:ObjectProperty ;
+    rdfs:label "BELONGS_TO" .
+
+rel:REFERENCES a owl:ObjectProperty ;
+    rdfs:label "REFERENCES" .
+
+#################################################################
+# Taxonomy schemes + terms (needed for ingestion/normalization)
+#################################################################
+
+tax:teams a skos:ConceptScheme ;
+    rdfs:label "Teams" .
+
+tax:risk-levels a skos:ConceptScheme ;
+    rdfs:label "Risk Levels" .
+
+tax:c2-frameworks a skos:ConceptScheme ;
+    rdfs:label "Codebase Categories" .
+
+tax:team-platform a skos:Concept ;
+    skos:inScheme tax:teams ;
+    skos:prefLabel "Platform Engineering" .
+
+tax:team-security a skos:Concept ;
+    skos:inScheme tax:teams ;
+    skos:prefLabel "Security Engineering" .
+
+tax:risk-low a skos:Concept ;
+    skos:inScheme tax:risk-levels ;
+    skos:prefLabel "Low" .
+
+tax:risk-medium a skos:Concept ;
+    skos:inScheme tax:risk-levels ;
+    skos:prefLabel "Medium" .
+
+tax:risk-high a skos:Concept ;
+    skos:inScheme tax:risk-levels ;
+    skos:prefLabel "High" .
+
+tax:cat-c2-framework a skos:Concept ;
+    skos:inScheme tax:c2-frameworks ;
+    skos:prefLabel "C2 Framework" .
+
+tax:cat-automation-platform a skos:Concept ;
+    skos:inScheme tax:c2-frameworks ;
+    skos:prefLabel "Automation Platform" .
+
+tax:cat-observability a skos:Concept ;
+    skos:inScheme tax:c2-frameworks ;
+    skos:prefLabel "Observability" .
+
+#################################################################
+# Sample instances: teams, codebases, services, files, deps
+#################################################################
+
+data:platform-engineering a proto:Team ;
+    proto:name "Platform Engineering" ;
+    proto:description "Maintains CI, infra, and shared backend services." ;
+    proto:status "active" ;
+    proto:riskLevel tax:risk-low .
+
+data:security-engineering a proto:Team ;
+    proto:name "Security Engineering" ;
+    proto:description "Maintains detection and hardening services." ;
+    proto:status "active" ;
+    proto:riskLevel tax:risk-medium .
+
+data:protograph-app a proto:Codebase ;
+    proto:name "ProtoGraph Application" ;
+    proto:description "React + FastAPI graph operations platform." ;
+    proto:repoUrl "https://example.local/protograph" ;
+    proto:defaultBranch "main" ;
+    proto:language "TypeScript/Python" ;
+    proto:status "active" ;
+    proto:owner tax:team-platform ;
+    proto:riskLevel tax:risk-medium ;
+    proto:category tax:cat-automation-platform .
+
+data:graphdb-adapter-service a proto:Service ;
+    proto:name "GraphDB Adapter Service" ;
+    proto:description "SPARQL adapter and graph API integration layer." ;
+    proto:status "active" ;
+    proto:owner tax:team-platform ;
+    proto:riskLevel tax:risk-medium .
+
+data:nl-query-service a proto:Service ;
+    proto:name "NL Query Service" ;
+    proto:description "Natural-language to SPARQL query generation and execution." ;
+    proto:status "active" ;
+    proto:owner tax:team-security ;
+    proto:riskLevel tax:risk-high .
+
+data:server-main-py a proto:SourceFile ;
+    proto:name "server/main.py" ;
+    proto:path "server/main.py" ;
+    proto:kind "entrypoint" ;
+    proto:status "active" ;
+    proto:owner tax:team-platform ;
+    proto:riskLevel tax:risk-medium .
+
+data:server-graph-db-py a proto:SourceFile ;
+    proto:name "server/graph_db.py" ;
+    proto:path "server/graph_db.py" ;
+    proto:kind "adapter" ;
+    proto:status "active" ;
+    proto:owner tax:team-platform ;
+    proto:riskLevel tax:risk-medium .
+
+data:server-nl-query-py a proto:SourceFile ;
+    proto:name "server/nl_query_engine.py" ;
+    proto:path "server/nl_query_engine.py" ;
+    proto:kind "query-engine" ;
+    proto:status "active" ;
+    proto:owner tax:team-security ;
+    proto:riskLevel tax:risk-high .
+
+data:fastapi-dependency a proto:Dependency ;
+    proto:name "fastapi" ;
+    proto:description "Python web framework used by backend APIs." ;
+    proto:status "active" ;
+    proto:riskLevel tax:risk-low .
+
+data:httpx-dependency a proto:Dependency ;
+    proto:name "httpx" ;
+    proto:description "HTTP client used for GraphDB and external requests." ;
+    proto:status "active" ;
+    proto:riskLevel tax:risk-medium .
+
+#################################################################
+# Sample graph edges
+#################################################################
+
+data:protograph-app rel:CONTAINS data:graphdb-adapter-service .
+data:protograph-app rel:CONTAINS data:nl-query-service .
+data:protograph-app rel:CONTAINS data:server-main-py .
+data:protograph-app rel:CONTAINS data:server-graph-db-py .
+data:protograph-app rel:CONTAINS data:server-nl-query-py .
+
+data:graphdb-adapter-service rel:BELONGS_TO data:platform-engineering .
+data:nl-query-service rel:BELONGS_TO data:security-engineering .
+
+data:server-main-py rel:DEPENDS_ON data:fastapi-dependency .
+data:server-main-py rel:DEPENDS_ON data:httpx-dependency .
+data:server-graph-db-py rel:DEPENDS_ON data:httpx-dependency .
+data:server-nl-query-py rel:DEPENDS_ON data:httpx-dependency .
+
+data:nl-query-service rel:REFERENCES data:server-nl-query-py .
+data:graphdb-adapter-service rel:REFERENCES data:server-graph-db-py .

@@ -521,30 +521,7 @@ async def remove_property(label: str, prop_name: str):
 async def list_taxonomies():
     """List all SKOS concept schemes."""
     _require_gdb()
-
-    rows = gdb.sparql_query("""
-        SELECT ?scheme ?label ?description (COUNT(?term) AS ?termCount) WHERE {
-            ?scheme a skos:ConceptScheme .
-            OPTIONAL { ?scheme rdfs:label ?label }
-            OPTIONAL { ?scheme rdfs:comment ?description }
-            OPTIONAL { ?term skos:inScheme ?scheme }
-        }
-        GROUP BY ?scheme ?label ?description
-        ORDER BY ?label
-    """)
-
-    schemes = []
-    for row in rows:
-        uri = row["scheme"]
-        scheme_id = uri.replace(TAXONOMY_NS, "").replace("scheme-", "")
-        schemes.append({
-            "scheme_id": scheme_id,
-            "uri": uri,
-            "label": row.get("label", scheme_id),
-            "description": row.get("description", ""),
-            "term_count": row.get("termCount", 0),
-        })
-
+    schemes = gdb.get_taxonomy_schemes()
     return {"taxonomies": schemes, "count": len(schemes)}
 
 
@@ -553,14 +530,9 @@ async def get_taxonomy(scheme_id: str, include_terms: bool = True):
     """Get a taxonomy with its terms."""
     _require_gdb()
 
-    scheme_uri = f"{TAXONOMY_NS}scheme-{scheme_id}"
-    # Also try without "scheme-" prefix for backward compat
-    exists = gdb.sparql_ask(f"ASK {{ <{scheme_uri}> a skos:ConceptScheme }}")
-    if not exists:
-        scheme_uri = f"{TAXONOMY_NS}{scheme_id}"
-        exists = gdb.sparql_ask(f"ASK {{ <{scheme_uri}> a skos:ConceptScheme }}")
-        if not exists:
-            raise HTTPException(status_code=404, detail=f"Taxonomy '{scheme_id}' not found")
+    scheme_uri = gdb.resolve_scheme_uri(scheme_id)
+    if not scheme_uri:
+        raise HTTPException(status_code=404, detail=f"Taxonomy '{scheme_id}' not found")
 
     # Get metadata
     meta_rows = gdb.sparql_query(f"""
@@ -580,9 +552,6 @@ async def get_taxonomy(scheme_id: str, include_terms: bool = True):
 
     if include_terms:
         terms = gdb.get_taxonomy_terms(scheme_id)
-        # Also try with different URI patterns
-        if not terms:
-            terms = gdb.get_taxonomy_terms(f"scheme-{scheme_id}")
         result["terms"] = terms
         result["term_count"] = len(terms)
 
@@ -608,6 +577,7 @@ async def create_taxonomy(taxonomy: TaxonomyCreate):
         triples.append(f'<{scheme_uri}> rdfs:comment "{_escape(taxonomy.description)}" .')
 
     gdb.sparql_update("INSERT DATA {\n" + "\n".join(triples) + "\n}")
+    gdb.invalidate_scheme_uri_cache(taxonomy.scheme_id)
 
     print(f"✓ Created taxonomy: {taxonomy.scheme_id}")
     return {"success": True, "scheme_id": taxonomy.scheme_id, "uri": scheme_uri}
@@ -617,10 +587,8 @@ async def create_taxonomy(taxonomy: TaxonomyCreate):
 async def update_taxonomy(scheme_id: str, updates: TaxonomyUpdate):
     """Update taxonomy metadata."""
     _require_gdb()
-    scheme_uri = f"{TAXONOMY_NS}scheme-{scheme_id}"
-
-    exists = gdb.sparql_ask(f"ASK {{ <{scheme_uri}> a skos:ConceptScheme }}")
-    if not exists:
+    scheme_uri = gdb.resolve_scheme_uri(scheme_id)
+    if not scheme_uri:
         raise HTTPException(status_code=404, detail=f"Taxonomy '{scheme_id}' not found")
 
     deletes = []
@@ -648,10 +616,8 @@ async def update_taxonomy(scheme_id: str, updates: TaxonomyUpdate):
 async def delete_taxonomy(scheme_id: str, force: bool = False):
     """Delete a taxonomy and all its terms."""
     _require_gdb()
-    scheme_uri = f"{TAXONOMY_NS}scheme-{scheme_id}"
-
-    exists = gdb.sparql_ask(f"ASK {{ <{scheme_uri}> a skos:ConceptScheme }}")
-    if not exists:
+    scheme_uri = gdb.resolve_scheme_uri(scheme_id)
+    if not scheme_uri:
         raise HTTPException(status_code=404, detail=f"Taxonomy '{scheme_id}' not found")
 
     if not force:
@@ -678,6 +644,7 @@ async def delete_taxonomy(scheme_id: str, force: bool = False):
     """)
     # Delete the scheme itself
     gdb.sparql_update(f"DELETE WHERE {{ <{scheme_uri}> ?p ?o }}")
+    gdb.invalidate_scheme_uri_cache(scheme_id)
 
     return {"success": True, "deleted": scheme_id}
 
@@ -691,8 +658,6 @@ async def list_terms(scheme_id: str):
     """List all terms in a taxonomy."""
     _require_gdb()
     terms = gdb.get_taxonomy_terms(scheme_id)
-    if not terms:
-        terms = gdb.get_taxonomy_terms(f"scheme-{scheme_id}")
     return {"terms": terms, "count": len(terms)}
 
 
@@ -701,14 +666,9 @@ async def create_term(scheme_id: str, term: TermCreate):
     """Add a term to a taxonomy."""
     _require_gdb()
 
-    # Find the scheme URI
-    scheme_uri = f"{TAXONOMY_NS}scheme-{scheme_id}"
-    exists = gdb.sparql_ask(f"ASK {{ <{scheme_uri}> a skos:ConceptScheme }}")
-    if not exists:
-        scheme_uri = f"{TAXONOMY_NS}{scheme_id}"
-        exists = gdb.sparql_ask(f"ASK {{ <{scheme_uri}> a skos:ConceptScheme }}")
-        if not exists:
-            raise HTTPException(status_code=404, detail=f"Taxonomy '{scheme_id}' not found")
+    scheme_uri = gdb.resolve_scheme_uri(scheme_id)
+    if not scheme_uri:
+        raise HTTPException(status_code=404, detail=f"Taxonomy '{scheme_id}' not found")
 
     term_uri = f"{TAXONOMY_NS}{term.term_id}"
 
@@ -741,13 +701,9 @@ async def bulk_create_terms(scheme_id: str, bulk: BulkTermsCreate):
     """Bulk add terms to a taxonomy."""
     _require_gdb()
 
-    scheme_uri = f"{TAXONOMY_NS}scheme-{scheme_id}"
-    exists = gdb.sparql_ask(f"ASK {{ <{scheme_uri}> a skos:ConceptScheme }}")
-    if not exists:
-        scheme_uri = f"{TAXONOMY_NS}{scheme_id}"
-        exists = gdb.sparql_ask(f"ASK {{ <{scheme_uri}> a skos:ConceptScheme }}")
-        if not exists:
-            raise HTTPException(status_code=404, detail=f"Taxonomy '{scheme_id}' not found")
+    scheme_uri = gdb.resolve_scheme_uri(scheme_id)
+    if not scheme_uri:
+        raise HTTPException(status_code=404, detail=f"Taxonomy '{scheme_id}' not found")
 
     triples = []
     for term in bulk.terms:
@@ -1067,6 +1023,8 @@ async def commit_ttl(request: TTLCommitRequest):
             sparql = f"INSERT DATA {{\n{nt}\n}}"
 
         gdb.sparql_update(sparql)
+        # TTL may insert ConceptSchemes directly — drop any stale URI lookups
+        gdb.invalidate_scheme_uri_cache()
 
         print(f"✓ TTL commit: {triple_count} triples inserted")
         return {

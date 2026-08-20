@@ -91,6 +91,9 @@ class GraphDBAdapter:
         self.query_url = f"{self.endpoint}/repositories/{self.repo}"
         self.update_url = f"{self.endpoint}/repositories/{self.repo}/statements"
         self.client = httpx.Client(timeout=30.0)
+        # scheme_id → resolved URI. Only successful lookups are cached so a
+        # later TTL commit that inserts a ConceptScheme is still discoverable.
+        self._scheme_uri_cache: Dict[str, str] = {}
         print(f"✓ GraphDB adapter initialized: {self.query_url}")
 
     # ============================================================
@@ -714,12 +717,120 @@ class GraphDBAdapter:
         """)
 
     # ============================================================
-    # UTILITY: Get taxonomy terms
+    # UTILITY: Taxonomy scheme / terms
     # ============================================================
+
+    @staticmethod
+    def _bare_scheme_id(scheme_id: str) -> str:
+        """Normalize scheme_id, stripping a leading 'scheme-' if present."""
+        return scheme_id[len("scheme-"):] if scheme_id.startswith("scheme-") else scheme_id
+
+    def invalidate_scheme_uri_cache(self, scheme_id: Optional[str] = None) -> None:
+        """Drop cached scheme URI lookups. Pass scheme_id to clear one entry, or None for all."""
+        if scheme_id is None:
+            self._scheme_uri_cache.clear()
+        else:
+            self._scheme_uri_cache.pop(self._bare_scheme_id(scheme_id), None)
+
+    def resolve_scheme_uri(self, scheme_id: str) -> Optional[str]:
+        """Resolve a scheme_id to its actual URI.
+
+        Handles both conventions:
+          - tax:scheme-{id}  — minted by Ontology Manager create_taxonomy
+          - tax:{id}         — used by seeded / hand-loaded TTL
+
+        Successful lookups are cached; misses are not (so TTL-inserted schemes
+        remain discoverable). Call invalidate_scheme_uri_cache after
+        create_taxonomy / delete_taxonomy / ttl commit.
+        """
+        bare_id = self._bare_scheme_id(scheme_id)
+        if bare_id in self._scheme_uri_cache:
+            return self._scheme_uri_cache[bare_id]
+
+        for candidate in (f"{TAX_NS}scheme-{bare_id}", f"{TAX_NS}{bare_id}"):
+            if self.sparql_ask(f"ASK {{ <{candidate}> a skos:ConceptScheme }}"):
+                self._scheme_uri_cache[bare_id] = candidate
+                return candidate
+        return None
+
+    def get_filterable_properties(
+        self,
+        max_cardinality: int = 50,
+        limit: int = 25,
+    ) -> List[Dict[str, Any]]:
+        """Low-cardinality ontology properties worth sampling for FILTER grounding."""
+        rows = self.sparql_query(f"""
+            SELECT ?p (COUNT(DISTINCT ?v) AS ?card)
+                   (SAMPLE(?v) AS ?sample) WHERE {{
+                ?s ?p ?v .
+                FILTER(STRSTARTS(STR(?p), "{ONTOLOGY_NS}"))
+            }}
+            GROUP BY ?p
+            HAVING (COUNT(DISTINCT ?v) > 1 && COUNT(DISTINCT ?v) <= {int(max_cardinality)})
+            ORDER BY ?card
+            LIMIT {int(limit)}
+        """)
+
+        deny = {
+            "name", "description", "id", "key", "comment", "definition",
+            "label", "prefLabel", "altLabel",
+        }
+        out: List[Dict[str, Any]] = []
+        for row in rows:
+            prop_uri = str(row.get("p") or "")
+            if not prop_uri:
+                continue
+            local = prop_uri.rsplit("/", 1)[-1]
+            if local in deny:
+                continue
+            sample = str(row.get("sample", "") or "")
+            # Free-text values are long even at low cardinality on small graphs
+            if len(sample) > 60:
+                continue
+            out.append({
+                "property": prop_uri,
+                "cardinality": int(row.get("card", 0) or 0),
+                "kind": "skos" if sample.startswith("http") else "literal",
+            })
+        return out
+
+    def get_taxonomy_schemes(self) -> List[Dict[str, Any]]:
+        """All SKOS concept schemes in the graph, with term counts."""
+        rows = self.sparql_query("""
+            SELECT ?scheme ?label ?description (COUNT(?term) AS ?termCount) WHERE {
+                ?scheme a skos:ConceptScheme .
+                OPTIONAL { ?scheme rdfs:label ?label }
+                OPTIONAL { ?scheme rdfs:comment ?description }
+                OPTIONAL { ?term skos:inScheme ?scheme }
+            }
+            GROUP BY ?scheme ?label ?description
+            ORDER BY ?label
+        """)
+
+        out: List[Dict[str, Any]] = []
+        for row in rows:
+            uri = row["scheme"]
+            if uri.startswith(TAX_NS):
+                local = uri[len(TAX_NS):]
+            else:
+                local = uri.rsplit("/", 1)[-1]
+            # removeprefix semantics — do not use unanchored .replace("scheme-", "")
+            scheme_id = local[len("scheme-"):] if local.startswith("scheme-") else local
+            out.append({
+                "scheme_id": scheme_id,
+                "uri": uri,
+                "label": row.get("label", scheme_id),
+                "description": row.get("description", ""),
+                "term_count": int(row.get("termCount", 0) or 0),
+            })
+        return out
 
     def get_taxonomy_terms(self, scheme_id: str) -> List[Dict[str, str]]:
         """Get all terms in a taxonomy scheme."""
-        scheme_uri = f"{TAX_NS}{scheme_id}"
+        scheme_uri = self.resolve_scheme_uri(scheme_id)
+        if not scheme_uri:
+            return []
+
         rows = self.sparql_query(f"""
             SELECT ?term ?label ?alias WHERE {{
                 ?term skos:inScheme <{scheme_uri}> ;
@@ -753,7 +864,10 @@ class GraphDBAdapter:
         Matches against prefLabel and altLabel (case-insensitive).
         Returns {"uri": ..., "label": ...} or None.
         """
-        scheme_uri = f"{TAX_NS}{scheme_id}"
+        scheme_uri = self.resolve_scheme_uri(scheme_id)
+        if not scheme_uri:
+            return None
+
         safe_val = value.replace('"', '\\"')
         rows = self.sparql_query(f"""
             SELECT ?term ?label WHERE {{

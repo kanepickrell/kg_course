@@ -1,0 +1,3 @@
+type,key,name,description,status,owner,riskLevel
+Service,code-intel-parser,Code Intel Parser,Parses repos and extracts symbols for graph enrichment.,active,Platform Engineering,Medium
+Codebase,protograph-labs,ProtoGraph Labs,Sandbox repo for graph testing.,active,Platform Engineering,Medium
