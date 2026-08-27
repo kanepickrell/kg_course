@@ -1,0 +1,11 @@
+{
+  "_payload_version": "2.0",
+  "_saved_at": "2026-08-26T19:22:52.081011+00:00",
+  "_artifact_key": "web_app_js",
+  "_artifact_type": "SourceFile",
+  "name": "app.js",
+  "path": "web/app.js",
+  "language": "javascript",
+  "partOf": "Codebase/razor-svcmgr",
+  "analysis": "{\"content\":\"// Frontend controller for the RAZOR Service Manager.\\n// Polls /api/services and wires the start/stop buttons.\\n\\nconst API = \\\"/api/services\\\";\\n\\nasync function loadServices() {\\n  const res = await fetch(API);\\n  const services = await res.json();\\n  renderTable(Array.isArray(services) ? services : [services]);\\n}\\n\\nfunction renderTable(services) {\\n  const tbody = document.querySelector(\\\"#services tbody\\\");\\n  tbody.innerHTML = \\\"\\\";\\n  for (const svc of services) {\\n    const row = document.createElement(\\\"tr\\\");\\n    row.innerHTML = `\\n      <td>${svc.Display || svc.Name}</td>\\n      <td class=\\\"status ${svc.Status}\\\">${svc.Status}</td>\\n      <td>\\n        <button onclick=\\\"controlService('${svc.Name}','start')\\\">Start</button>\\n        <button onclick=\\\"controlService('${svc.Name}','stop')\\\">Stop</button>\\n      </td>`;\\n    tbody.appendChild(row);\\n  }\\n}\\n\\nasync function controlService(name, action) {\\n  await fetch(`${API}/${name}/${action}`, { method: \\\"POST\\\" });\\n  await loadServices();\\n}\\n\\nsetInterval(loadServices, 5000);\\nloadServices();\\n\",\"signals\":{\"functions\":[\"loadServices\",\"renderTable\",\"controlService\"],\"imports\":[],\"references\":[]},\"size\":1027,\"line_count\":35}"
+}

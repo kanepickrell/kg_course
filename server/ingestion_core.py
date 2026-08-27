@@ -1,4 +1,4 @@
-"""
+﻿"""
 Ingestion Core - GraphDB Native
 ================================
 Triplestore-native ingestion service for ProtoGraph ATLAS.
@@ -12,14 +12,14 @@ Architecture:
 
 Core Flow (no LLM required):
   1. POST /api/ingest/commit  { type, attributes }
-  2. Map type → OWL class, resolve taxonomy fields → SKOS URIs
-  3. SPARQL INSERT DATA → GraphDB (SHACL validates on commit)
+  2. Map type â†’ OWL class, resolve taxonomy fields â†’ SKOS URIs
+  3. SPARQL INSERT DATA â†’ GraphDB (SHACL validates on commit)
   4. Save full payload to ./data/payloads/{key}.json
 
 Optional LLM Flow:
   1. POST /api/ingest/analyze  { raw_data }
-  2. LLM classifies against ontology types → returns suggested type + attributes
-  3. User reviews/edits → calls /commit
+  2. LLM classifies against ontology types â†’ returns suggested type + attributes
+  3. User reviews/edits â†’ calls /commit
 """
 
 import os
@@ -42,7 +42,7 @@ PAYLOAD_STORAGE_DIR = os.getenv("PAYLOAD_STORAGE_DIR", "./data/payloads")
 
 router = APIRouter(prefix="/api/ingest", tags=["ingestion"])
 
-# GraphDB adapter — injected via init_ingestion_core()
+# GraphDB adapter â€” injected via init_ingestion_core()
 gdb = None
 rules_engine = None
 
@@ -109,9 +109,9 @@ def init_ingestion_core(graphdb_adapter):
 
     types = gdb.get_ontology_types()
     type_labels = [t["label"] for t in types]
-    print(f"✓ Ingestion core initialized — {len(types)} types: {', '.join(type_labels)}")
-    print(f"✓ Relationship rules engine loaded")
-    print(f"✓ Payload storage: {PAYLOAD_STORAGE_DIR}")
+    print(f"âœ“ Ingestion core initialized â€” {len(types)} types: {', '.join(type_labels)}")
+    print(f"âœ“ Relationship rules engine loaded")
+    print(f"âœ“ Payload storage: {PAYLOAD_STORAGE_DIR}")
 
 
 def _require_gdb():
@@ -123,7 +123,7 @@ def _require_gdb():
 # TAXONOMY RESOLUTION
 # ============================================================================
 
-# Map of property names → SKOS scheme IDs
+# Map of property names â†’ SKOS scheme IDs
 TAXONOMY_FIELDS = {
     "category": "c2-frameworks",
     "riskLevel": "risk-levels",
@@ -158,7 +158,7 @@ def resolve_taxonomies(
 
         match = gdb.resolve_taxonomy_value(scheme_id, str(value))
         if match:
-            # Store the URI — the adapter's create_node handles URI→triple mapping
+            # Store the URI â€” the adapter's create_node handles URIâ†’triple mapping
             resolved[field] = match["label"]  # Keep canonical label for the node
             if match["label"] != str(value):
                 normalizations.append({
@@ -204,10 +204,10 @@ def _sanitize_key(raw: str) -> str:
 
 
 # ============================================================================
-# REFERENCE PROPERTY → EDGE CREATION
+# REFERENCE PROPERTY â†’ EDGE CREATION
 # ============================================================================
 
-# Map: property name → relationship type in the rel: namespace
+# Map: property name â†’ relationship type in the rel: namespace
 # This connects the concept reference properties to the relationship edge types
 REFERENCE_TO_RELATIONSHIP = {
     "mapsToTechnique": "MAPS_TO_TECHNIQUE",
@@ -218,7 +218,7 @@ REFERENCE_TO_RELATIONSHIP = {
     "owner": "OWNED_BY",
 }
 
-# Map: property name → target collection (for resolving node keys)
+# Map: property name â†’ target collection (for resolving node keys)
 REFERENCE_TARGET_COLLECTION = {
     "mapsToTechnique": "TTP",
     "supportsTechnique": "TTP",
@@ -289,12 +289,12 @@ def _create_reference_edges(
                         "property": field,
                     }
                     edges.append(edge_info)
-                    print(f"  🔗 Edge: {from_coll}/{from_key} --{rel_type}--> {to_coll}/{to_key}")
+                    print(f"  ðŸ”— Edge: {from_coll}/{from_key} --{rel_type}--> {to_coll}/{to_key}")
                     
                 except Exception as e:
-                    print(f"  ⚠️ Edge creation failed for {field}={val}: {e}")
+                    print(f"  âš ï¸ Edge creation failed for {field}={val}: {e}")
             else:
-                print(f"  ⚠️ Could not resolve {field}='{val}' to a {target_collection} node")
+                print(f"  âš ï¸ Could not resolve {field}='{val}' to a {target_collection} node")
     
     return edges
 
@@ -304,30 +304,30 @@ def _resolve_reference_target(value: str, target_collection: str) -> Optional[st
     Resolve a reference value to a node key in the target collection.
     
     Tries:
-    1. Sanitized key (convert name to key format — most common case)
-    2. Exact key match (if value looks like a key already — no spaces)
+    1. Sanitized key (convert name to key format â€” most common case)
+    2. Exact key match (if value looks like a key already â€” no spaces)
     3. Name lookup via SPARQL
     """
     # 1. Strip URI prefix if present
     if value.startswith("https://proto.atlas/data/"):
         value = value.replace("https://proto.atlas/data/", "")
     
-    # 2. Try sanitized key first (e.g. "Service Execution" → "service-execution")
+    # 2. Try sanitized key first (e.g. "Service Execution" â†’ "service-execution")
     sanitized = _sanitize_key(value)
     if sanitized and gdb.has_artifact(sanitized):
-        print(f"  ✓ Resolved '{value}' → key '{sanitized}'")
+        print(f"  âœ“ Resolved '{value}' â†’ key '{sanitized}'")
         return sanitized
     
     # 3. Try exact key match only if value looks like a key (no spaces)
     if " " not in value:
         try:
             if gdb.has_artifact(value):
-                print(f"  ✓ Resolved '{value}' → exact key '{value}'")
+                print(f"  âœ“ Resolved '{value}' â†’ exact key '{value}'")
                 return value
         except Exception:
             pass
     
-    # 4. Try name lookup via SPARQL — search for nodes with matching name
+    # 4. Try name lookup via SPARQL â€” search for nodes with matching name
     try:
         escaped_value = value.replace('"', '\\"')
         rows = gdb.sparql_query(f"""
@@ -340,10 +340,10 @@ def _resolve_reference_target(value: str, target_collection: str) -> Optional[st
         """)
         if rows and rows[0].get("key"):
             resolved_key = rows[0]["key"]
-            print(f"  ✓ Resolved '{value}' → SPARQL lookup '{resolved_key}'")
+            print(f"  âœ“ Resolved '{value}' â†’ SPARQL lookup '{resolved_key}'")
             return resolved_key
     except Exception as e:
-        print(f"  ⚠️ SPARQL name lookup failed for '{value}': {e}")
+        print(f"  âš ï¸ SPARQL name lookup failed for '{value}': {e}")
     
     return None
 
@@ -369,7 +369,7 @@ def save_payload(key: str, full_data: Dict[str, Any]) -> str:
     with open(filepath, "w", encoding="utf-8") as f:
         json.dump(payload, f, indent=2, default=str)
 
-    print(f"  📄 Payload saved: {filepath}")
+    print(f"  ðŸ“„ Payload saved: {filepath}")
     return f"/api/ingest/payloads/{filename}"
 
 
@@ -424,7 +424,7 @@ async def get_taxonomy_values(scheme_id: str):
 async def validate_attributes(request: ValidateRequest):
     """
     Validate and normalize attributes against the ontology.
-    Does NOT write anything — use /commit to persist.
+    Does NOT write anything â€” use /commit to persist.
     """
     _require_gdb()
 
@@ -462,13 +462,121 @@ async def validate_attributes(request: ValidateRequest):
     )
 
 
+# ============================================================================
+# RAW FILE SCAN  â€” deterministic signal extraction (no LLM)
+# Paste this block into ingestion_core.py, just above the "/commit" route.
+# Adds POST /api/ingest/scan-file.
+# ============================================================================
+import re as _re
+from pathlib import Path as _Path
+
+
+class ScanRequest(BaseModel):
+    """Scan raw file content for cheap structural signals (no interpretation)."""
+    filename: str                       # e.g. "ServiceManager.ps1"
+    content: str                        # full file text
+    path: Optional[str] = None          # repo-relative path, echoed back
+
+
+class ScanResponse(BaseModel):
+    success: bool
+    filename: str
+    path: Optional[str] = None
+    language: str
+    size: int
+    line_count: int
+    functions: List[str] = []
+    imports: List[str] = []
+    references: List[str] = []
+
+
+# Language by extension â€” cheap, deterministic.
+_EXT_LANG = {
+    ".ps1": "powershell", ".psm1": "powershell", ".psd1": "powershell",
+    ".py": "python", ".js": "javascript", ".ts": "typescript",
+    ".jsx": "javascript", ".tsx": "typescript",
+    ".html": "html", ".htm": "html", ".css": "css",
+    ".json": "json", ".md": "markdown", ".sh": "bash",
+    ".yml": "yaml", ".yaml": "yaml",
+}
+
+# Per-language signal patterns. Each is (functions, imports, references).
+# Kept intentionally shallow: these are OBSERVATIONS the refine phase interprets,
+# not a parse tree. False positives are acceptable; the human filters them.
+_PATTERNS = {
+    "powershell": {
+        "functions": _re.compile(r"^\s*function\s+([A-Za-z][\w-]*)", _re.M),
+        "imports":   _re.compile(r"(?:Import-Module|^\s*\.)\s+[\"']?[^\"'\s]*?([\w.-]+\.ps[m]?1)", _re.I | _re.M),
+        "references": _re.compile(r"[\"']([\w./-]+\.(?:json|xml|csv|txt|log))[\"']", _re.I),
+    },
+    "python": {
+        "functions": _re.compile(r"^\s*def\s+(\w+)", _re.M),
+        "imports":   _re.compile(r"^\s*(?:from\s+([\w.]+)\s+import|import\s+([\w.]+))", _re.M),
+        "references": _re.compile(r"[\"']([\w./-]+\.(?:json|yaml|yml|txt|csv))[\"']"),
+    },
+    "javascript": {
+        "functions": _re.compile(r"(?:function\s+(\w+)|(?:const|let)\s+(\w+)\s*=\s*(?:async\s*)?\()", _re.M),
+        "imports":   _re.compile(r"(?:import\s+.*?from\s+[\"']([^\"']+)[\"']|require\([\"']([^\"']+)[\"']\))"),
+        "references": _re.compile(r"[\"']([\w./-]+\.(?:js|css|json|html))[\"']"),
+    },
+    "html": {
+        "functions": _re.compile(r"(?!x)x"),  # none
+        "imports":   _re.compile(r"(?!x)x"),   # none
+        "references": _re.compile(r"(?:src|href)\s*=\s*[\"']([^\"']+)[\"']", _re.I),
+    },
+}
+_PATTERNS["typescript"] = _PATTERNS["javascript"]
+
+
+def _dedupe(matches) -> List[str]:
+    """Flatten regex groups, drop empties, de-dupe, keep order."""
+    out, seen = [], set()
+    for m in matches:
+        val = m if isinstance(m, str) else next((g for g in m if g), "")
+        val = val.strip()
+        if val and val not in seen:
+            seen.add(val)
+            out.append(val)
+    return out
+
+
+@router.post("/scan-file", response_model=ScanResponse)
+async def scan_file(req: ScanRequest):
+    """
+    Extract cheap structural signals from raw file content â€” deterministic,
+    regex-only, no LLM. Returns functions, imports, and file references so the
+    ingest step can store them raw for the ontology manager to interpret later.
+    """
+    ext = _Path(req.filename).suffix.lower()
+    language = _EXT_LANG.get(ext, "unknown")
+    pats = _PATTERNS.get(language)
+
+    functions = imports = references = []
+    if pats:
+        functions = _dedupe(pats["functions"].findall(req.content))
+        imports = _dedupe(pats["imports"].findall(req.content))
+        references = _dedupe(pats["references"].findall(req.content))
+
+    return ScanResponse(
+        success=True,
+        filename=req.filename,
+        path=req.path,
+        language=language,
+        size=len(req.content),
+        line_count=req.content.count("\n") + 1,
+        functions=functions,
+        imports=imports,
+        references=references,
+    )
+
+
 @router.post("/commit", response_model=CommitResponse)
 async def commit_artifact(request: CommitRequest):
     """
     Commit an artifact to GraphDB.
 
-    1. Resolve type → OWL class
-    2. Resolve taxonomy fields → canonical labels
+    1. Resolve type â†’ OWL class
+    2. Resolve taxonomy fields â†’ canonical labels
     3. Generate _key
     4. SPARQL INSERT DATA (SHACL validates)
     5. Save full payload to disk
@@ -536,7 +644,7 @@ async def commit_artifact(request: CommitRequest):
     try:
         result = gdb.create_node(key, collection, node_props)
         doc_id = result["_id"]
-        print(f"✅ Ingested: {doc_id}")
+        print(f"âœ… Ingested: {doc_id}")
     except Exception as e:
         error_str = str(e)
         if "SHACL" in error_str or "ValidationException" in error_str:
@@ -550,7 +658,7 @@ async def commit_artifact(request: CommitRequest):
                     },
                 )
             doc_id = f"{collection}/{key}"
-            print(f"⚠️ SHACL error (skipped): {error_str[:200]}")
+            print(f"âš ï¸ SHACL error (skipped): {error_str[:200]}")
         else:
             raise HTTPException(status_code=500, detail=f"GraphDB insert failed: {error_str}")
 
@@ -562,7 +670,7 @@ async def commit_artifact(request: CommitRequest):
             edges_created.extend(ref_edges)
         except Exception as e:
             import traceback
-            print(f"⚠️ Reference edge creation error (non-fatal): {e}")
+            print(f"âš ï¸ Reference edge creation error (non-fatal): {e}")
             traceback.print_exc()
 
     # === POST-COMMIT: Run relationship rules ===
@@ -571,7 +679,7 @@ async def commit_artifact(request: CommitRequest):
             rule_edges = rules_engine.run_rules_for(key, collection, resolved)
             edges_created.extend(rule_edges)
         except Exception as e:
-            print(f"⚠️ Rules engine error (non-fatal): {e}")
+            print(f"âš ï¸ Rules engine error (non-fatal): {e}")
 
     return CommitResponse(
         success=True,

@@ -1,0 +1,11 @@
+{
+  "_payload_version": "2.0",
+  "_saved_at": "2026-08-26T19:22:51.586469+00:00",
+  "_artifact_key": "start_svcmgr_ps1",
+  "_artifact_type": "SourceFile",
+  "name": "Start-SvcMgr.ps1",
+  "path": "Start-SvcMgr.ps1",
+  "language": "powershell",
+  "partOf": "Codebase/razor-svcmgr",
+  "analysis": "{\"content\":\"<#\\n.SYNOPSIS\\n    Entry point. Boots the RAZOR Service Manager API + web UI.\\n.EXAMPLE\\n    ./Start-SvcMgr.ps1 -Port 8080\\n#>\\nparam([int]$Port = 8080)\\n\\nImport-Module \\\"$PSScriptRoot/src/ApiServer.ps1\\\" -Force\\nStart-ApiServer -Port $Port\\n\",\"signals\":{\"functions\":[],\"imports\":[\"ApiServer.ps1\"],\"references\":[]},\"size\":231,\"line_count\":11}"
+}

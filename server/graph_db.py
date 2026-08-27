@@ -1,4 +1,4 @@
-"""
+﻿"""
 GraphDB Adapter for ProtoGraph ATLAS
 =====================================
 Provides the same data shapes as the ArangoDB queries in main.py,
@@ -56,6 +56,8 @@ CLASS_TO_COLLECTION = {
     "https://proto.atlas/ontology/Team": "Team",
     "https://proto.atlas/ontology/DevelopmentStory": "DevelopmentStory",
     "https://proto.atlas/ontology/TTP": "TTP",
+    "https://proto.atlas/ontology/Codebase": "Codebase",
+    "https://proto.atlas/ontology/SourceFile": "SourceFile",
 }
 
 COLLECTION_TO_CLASS = {v: k for k, v in CLASS_TO_COLLECTION.items()}
@@ -91,10 +93,10 @@ class GraphDBAdapter:
         self.query_url = f"{self.endpoint}/repositories/{self.repo}"
         self.update_url = f"{self.endpoint}/repositories/{self.repo}/statements"
         self.client = httpx.Client(timeout=30.0)
-        # scheme_id → resolved URI. Only successful lookups are cached so a
+        # scheme_id â†’ resolved URI. Only successful lookups are cached so a
         # later TTL commit that inserts a ConceptScheme is still discoverable.
         self._scheme_uri_cache: Dict[str, str] = {}
-        print(f"✓ GraphDB adapter initialized: {self.query_url}")
+        print(f"âœ“ GraphDB adapter initialized: {self.query_url}")
 
     # ============================================================
     # LOW-LEVEL SPARQL EXECUTION
@@ -385,7 +387,7 @@ class GraphDBAdapter:
                     "confidence": 0,
                 })
 
-        print(f"✅ GraphDB: Returning {len(nodes)} nodes and {len(edges)} edges")
+        print(f"âœ… GraphDB: Returning {len(nodes)} nodes and {len(edges)} edges")
         return {"nodes": nodes, "edges": edges, "count": len(nodes)}
 
     # ============================================================
@@ -556,7 +558,7 @@ class GraphDBAdapter:
         insert_query = "INSERT DATA {\n" + "\n".join(triples) + "\n}"
         self.sparql_update(insert_query)
 
-        print(f"✓ GraphDB: Created {artifact_type}/{key}")
+        print(f"âœ“ GraphDB: Created {artifact_type}/{key}")
         return {
             "success": True,
             "_id": f"{artifact_type}/{key}",
@@ -581,9 +583,9 @@ class GraphDBAdapter:
         """
         Insert a relationship edge between two artifacts.
 
-        source: provenance tag — "ontology_rule", "operator_authored",
+        source: provenance tag â€” "ontology_rule", "operator_authored",
                 "manual", "execution_log", "llm_suggested"
-        confidence: 0.0–1.0 (1.0 for deterministic rules)
+        confidence: 0.0â€“1.0 (1.0 for deterministic rules)
         """
         from_uri = self.key_to_uri(from_key)
         to_uri = self.key_to_uri(to_key)
@@ -611,7 +613,7 @@ class GraphDBAdapter:
 
         from_id = f"{from_collection}/{from_key}"
         to_id = f"{to_collection}/{to_key}"
-        print(f"✓ GraphDB: Edge {from_id} --{relationship_type}--> {to_id} [source={source}]")
+        print(f"âœ“ GraphDB: Edge {from_id} --{relationship_type}--> {to_id} [source={source}]")
 
         return {
             "success": True,
@@ -639,7 +641,7 @@ class GraphDBAdapter:
             DELETE WHERE {{ ?s ?p <{uri}> . }}
         """)
 
-        print(f"✓ GraphDB: Deleted {collection}/{key}")
+        print(f"âœ“ GraphDB: Deleted {collection}/{key}")
         return True
 
     # ============================================================
@@ -658,7 +660,7 @@ class GraphDBAdapter:
             }}
         """)
 
-        print(f"✓ GraphDB: Deleted edge {from_key} --{relationship_type}--> {to_key}")
+        print(f"âœ“ GraphDB: Deleted edge {from_key} --{relationship_type}--> {to_key}")
         return True
 
     # ============================================================
@@ -736,8 +738,8 @@ class GraphDBAdapter:
         """Resolve a scheme_id to its actual URI.
 
         Handles both conventions:
-          - tax:scheme-{id}  — minted by Ontology Manager create_taxonomy
-          - tax:{id}         — used by seeded / hand-loaded TTL
+          - tax:scheme-{id}  â€” minted by Ontology Manager create_taxonomy
+          - tax:{id}         â€” used by seeded / hand-loaded TTL
 
         Successful lookups are cached; misses are not (so TTL-inserted schemes
         remain discoverable). Call invalidate_scheme_uri_cache after
@@ -814,7 +816,7 @@ class GraphDBAdapter:
                 local = uri[len(TAX_NS):]
             else:
                 local = uri.rsplit("/", 1)[-1]
-            # removeprefix semantics — do not use unanchored .replace("scheme-", "")
+            # removeprefix semantics â€” do not use unanchored .replace("scheme-", "")
             scheme_id = local[len("scheme-"):] if local.startswith("scheme-") else local
             out.append({
                 "scheme_id": scheme_id,
@@ -1058,7 +1060,7 @@ class GraphDBAdapter:
         # Build FILTER clauses
         filters = []
         if category:
-            # Category is a SKOS concept — match by prefLabel
+            # Category is a SKOS concept â€” match by prefLabel
             filters.append(f'?catLabel = "{category}"')
         if tactic:
             filters.append(f'?tactic = "{tactic}"')
@@ -1135,7 +1137,7 @@ class GraphDBAdapter:
                 "_artifact_type": "Library Module",
                 "name": row.get("name", key),
                 "description": row.get("description", ""),
-                "icon": row.get("icon", "⚡"),
+                "icon": row.get("icon", "âš¡"),
                 "tactic": strip_uri(row.get("tactic", "")),
                 "category": strip_uri(row.get("catLabel", "")),
                 "subcategory": row.get("subcategory", ""),
@@ -1189,7 +1191,7 @@ class GraphDBAdapter:
         return [{"value": r["tactic"], "count": r["count"]} for r in rows]
 
     def get_library_module_stats(self) -> Dict[str, Any]:
-        """Get module statistics — total, by category, by tactic, by risk level."""
+        """Get module statistics â€” total, by category, by tactic, by risk level."""
         total_rows = self.sparql_query("""
             SELECT (COUNT(DISTINCT ?e) AS ?total) WHERE { ?e a proto:LibraryModule }
         """)

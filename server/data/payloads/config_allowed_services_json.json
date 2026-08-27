@@ -1,0 +1,11 @@
+{
+  "_payload_version": "2.0",
+  "_saved_at": "2026-08-26T19:22:50.132631+00:00",
+  "_artifact_key": "config_allowed_services_json",
+  "_artifact_type": "SourceFile",
+  "name": "allowed-services.json",
+  "path": "config/allowed-services.json",
+  "language": "json",
+  "partOf": "Codebase/razor-svcmgr",
+  "analysis": "{\"content\":\"{ \\\"services\\\": [\\\"Spooler\\\", \\\"W32Time\\\", \\\"Dnscache\\\", \\\"wuauserv\\\"] }\\n\",\"signals\":{\"functions\":[],\"imports\":[],\"references\":[]},\"size\":63,\"line_count\":2}"
+}

@@ -1,0 +1,11 @@
+{
+  "_payload_version": "2.0",
+  "_saved_at": "2026-08-26T19:22:52.345633+00:00",
+  "_artifact_key": "web_index_html",
+  "_artifact_type": "SourceFile",
+  "name": "index.html",
+  "path": "web/index.html",
+  "language": "html",
+  "partOf": "Codebase/razor-svcmgr",
+  "analysis": "{\"content\":\"<!DOCTYPE html>\\n<html lang=\\\"en\\\">\\n<head>\\n  <meta charset=\\\"utf-8\\\">\\n  <title>RAZOR Service Manager</title>\\n  <link rel=\\\"stylesheet\\\" href=\\\"app.css\\\">\\n</head>\\n<body>\\n  <header><h1>RAZOR Service Manager</h1></header>\\n  <main>\\n    <table id=\\\"services\\\"><thead>\\n      <tr><th>Service</th><th>Status</th><th>Actions</th></tr>\\n    </thead><tbody></tbody></table>\\n  </main>\\n  <script src=\\\"app.js\\\"></script>\\n</body>\\n</html>\\n\",\"signals\":{\"functions\":[],\"imports\":[],\"references\":[\"app.css\",\"app.js\"]},\"size\":410,\"line_count\":18}"
+}

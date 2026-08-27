@@ -1,0 +1,11 @@
+{
+  "_payload_version": "2.0",
+  "_saved_at": "2026-08-26T19:22:50.902074+00:00",
+  "_artifact_key": "src_logger_ps1",
+  "_artifact_type": "SourceFile",
+  "name": "Logger.ps1",
+  "path": "src/Logger.ps1",
+  "language": "powershell",
+  "partOf": "Codebase/razor-svcmgr",
+  "analysis": "{\"content\":\"<#\\n.SYNOPSIS\\n    Minimal structured file logger shared by all RAZOR Service Manager modules.\\n#>\\n\\n$script:LogPath = \\\"$PSScriptRoot/../svcmgr.log\\\"\\n\\nfunction Write-Log {\\n    param(\\n        [ValidateSet(\\\"INFO\\\",\\\"WARN\\\",\\\"ERROR\\\",\\\"DEBUG\\\")][string]$Level = \\\"INFO\\\",\\n        [Parameter(Mandatory)][string]$Message\\n    )\\n    $line = \\\"{0} [{1}] {2}\\\" -f (Get-Date -Format \\\"s\\\"), $Level, $Message\\n    Add-Content -Path $script:LogPath -Value $line -Encoding UTF8\\n    if ($Level -in @(\\\"ERROR\\\",\\\"WARN\\\")) { Write-Host $line }\\n}\\n\\nfunction Get-RecentLogs {\\n    param([int]$Count = 50)\\n    if (-not (Test-Path $script:LogPath)) { return @() }\\n    return Get-Content $script:LogPath -Tail $Count\\n}\\n\\nExport-ModuleMember -Function Write-Log, Get-RecentLogs\\n\",\"signals\":{\"functions\":[\"Write-Log\",\"Get-RecentLogs\"],\"imports\":[],\"references\":[]},\"size\":730,\"line_count\":25}"
+}

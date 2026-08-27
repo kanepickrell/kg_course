@@ -1,0 +1,11 @@
+{
+  "_payload_version": "2.0",
+  "_saved_at": "2026-08-26T19:22:50.408947+00:00",
+  "_artifact_key": "readme_md",
+  "_artifact_type": "SourceFile",
+  "name": "README.md",
+  "path": "README.md",
+  "language": "markdown",
+  "partOf": "Codebase/razor-svcmgr",
+  "analysis": "{\"content\":\"# RAZOR Service Manager\\n\\nA small PowerShell service-manager with a web UI. Lists Windows services from an\\nallow-list, shows status, and exposes start/stop/restart over a local REST API.\\n\\n## Run\\n```powershell\\n./Start-SvcMgr.ps1 -Port 8080\\n```\\nThen open http://localhost:8080.\\n\\n## Layout\\n- `src/ServiceManager.ps1` \u2014 core service control + allow-list\\n- `src/ApiServer.ps1` \u2014 HttpListener REST API + static file serving\\n- `src/Logger.ps1` \u2014 shared structured logging\\n- `web/` \u2014 frontend (index.html, app.js, app.css)\\n- `config/allowed-services.json` \u2014 which services the UI may touch\\n- `Start-SvcMgr.ps1` \u2014 entry point\\n\",\"signals\":{\"functions\":[],\"imports\":[],\"references\":[]},\"size\":616,\"line_count\":19}"
+}

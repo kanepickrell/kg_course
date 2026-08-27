@@ -1,0 +1,9 @@
+{
+  "_payload_version": "2.0",
+  "_saved_at": "2026-08-26T19:01:17.704198+00:00",
+  "_artifact_key": "razor-svcmgr",
+  "_artifact_type": "Codebase",
+  "description": "PowerShell service-manager with web UI",
+  "name": "razor-svcmgr",
+  "language": "PowerShell"
+}
