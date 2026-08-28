@@ -7,16 +7,16 @@ but sources data from GraphDB via SPARQL.
 Usage:
     from graph_db import GraphDBAdapter
     
-    gdb = GraphDBAdapter("http://localhost:7200", "atlas")
+    gdb = GraphDBAdapter("http://localhost:7200", "my-repo")
     
-    # Same shape as: db.collection("LibraryModule").get("cs-start-c2")
-    doc = gdb.get_artifact("LibraryModule", "cs-start-c2")
+    # Same shape as: db.collection("SourceFile").get("src_logger_ps1")
+    doc = gdb.get_artifact("SourceFile", "src_logger_ps1")
     
     # Same shape as: /graph endpoint returns
     graph = gdb.get_full_graph()
     
     # Same shape as: /neighbors endpoint returns
-    neighbors = gdb.get_neighbors("LibraryModule/cs-start-c2", depth=2)
+    neighbors = gdb.get_neighbors("SourceFile/src_logger_ps1", depth=2)
 
 All responses match the JSON shapes your React frontend expects.
 No frontend changes needed.
@@ -45,35 +45,24 @@ PREFIX tax:   <https://proto.atlas/taxonomy/>
 PREFIX rel:   <https://proto.atlas/relationship/>
 """
 
-# Map RDF class URIs to ArangoDB-style collection names (for frontend compat)
-CLASS_TO_COLLECTION = {
-    "https://proto.atlas/ontology/LibraryModule": "LibraryModule",
-    "https://proto.atlas/ontology/ExecutionPlan": "ExecutionPlan",
-    "https://proto.atlas/ontology/Scenario": "Scenario",
-    "https://proto.atlas/ontology/RangeEnvironment": "RangeEnvironment",
-    "https://proto.atlas/ontology/RobotLog": "RobotLog",
-    "https://proto.atlas/ontology/Person": "Person",
-    "https://proto.atlas/ontology/Team": "Team",
-    "https://proto.atlas/ontology/DevelopmentStory": "DevelopmentStory",
-    "https://proto.atlas/ontology/TTP": "TTP",
-    "https://proto.atlas/ontology/Codebase": "Codebase",
-    "https://proto.atlas/ontology/SourceFile": "SourceFile",
-}
+# NOTE: there is deliberately no CLASS_TO_COLLECTION / COLLECTION_TO_CLASS map
+# here any more.
+#
+# The old dict mapped each class URI to its own local name \u2014 an identity
+# mapping. It translated nothing. Its only real effect was acting as a hidden
+# allowlist: create_node raised ValueError for any class not listed, so every
+# class declared through the ontology manager ALSO had to be added to this file
+# and the server restarted before it could be written.
+#
+# Class names now come from the ontology in GraphDB. See:
+#   GraphDBAdapter.live_class_uris()       \u2014 declared owl:Class URIs, cached
+#   GraphDBAdapter.uri_to_collection()     \u2014 URI  -> collection name (reads)
+#   GraphDBAdapter.collection_to_class_uri() \u2014 name -> URI, validated (writes)
 
-COLLECTION_TO_CLASS = {v: k for k, v in CLASS_TO_COLLECTION.items()}
-
-# Map relationship URIs to edge labels
-REL_URI_TO_LABEL = {
-    "https://proto.atlas/relationship/CONTAINS": "CONTAINS",
-    "https://proto.atlas/relationship/PRODUCES": "PRODUCES",
-    "https://proto.atlas/relationship/REFERENCES": "REFERENCES",
-    "https://proto.atlas/relationship/LEADS_TO": "LEADS_TO",
-    "https://proto.atlas/relationship/ASSIGNED_TO": "ASSIGNED_TO",
-    "https://proto.atlas/relationship/BELONGS_TO": "BELONGS_TO",
-    "https://proto.atlas/relationship/DEPENDS_ON": "DEPENDS_ON",
-    "https://proto.atlas/relationship/TESTS": "TESTS",
-    "https://proto.atlas/relationship/RELATED_TO": "RELATED_TO",
-}
+# NOTE: there is deliberately no REL_URI_TO_LABEL map here either.
+#
+# Like the class map, it was an identity mapping \u2014 every relationship URI to its
+# own local name. See GraphDBAdapter._rel_label() and live_relationship_uris().
 
 DATA_NS = "https://proto.atlas/data/"
 ONTOLOGY_NS = "https://proto.atlas/ontology/"
@@ -87,8 +76,13 @@ class GraphDBAdapter:
     Returns JSON shapes identical to what main.py currently returns.
     """
 
-    def __init__(self, endpoint: str = "http://localhost:7200", repo: str = "atlas"):
+    def __init__(self, endpoint: str = "http://localhost:7200", repo: str = ""):
         self.endpoint = endpoint.rstrip("/")
+        if not repo:
+            raise ValueError(
+                "GraphDBAdapter requires an explicit repo name. There is no default "
+                "repository \u2014 set GRAPHDB_REPO."
+            )
         self.repo = repo
         self.query_url = f"{self.endpoint}/repositories/{self.repo}"
         self.update_url = f"{self.endpoint}/repositories/{self.repo}/statements"
@@ -96,6 +90,15 @@ class GraphDBAdapter:
         # scheme_id â†’ resolved URI. Only successful lookups are cached so a
         # later TTL commit that inserts a ConceptScheme is still discoverable.
         self._scheme_uri_cache: Dict[str, str] = {}
+        # Relationship types declared in THIS repo's ontology. Cached because
+        # edge traversal needs them on every call; invalidated by
+        # invalidate_relationship_cache() after an ontology change.
+        self._rel_uri_cache: Optional[List[str]] = None
+        # Declared owl:Class URIs for this repo. Same lifecycle as the
+        # relationship cache; invalidate_ontology_cache() clears both.
+        self._class_uri_cache: Optional[List[str]] = None
+        # Property name -> taxonomy scheme, from proto:taxonomy.
+        self._tax_prop_cache: Optional[Dict[str, str]] = None
         print(f"âœ“ GraphDB adapter initialized: {self.query_url}")
 
     # ============================================================
@@ -172,11 +175,141 @@ class GraphDBAdapter:
         return uri.rsplit("/", 1)[-1]
 
     def uri_to_collection(self, class_uri: str) -> str:
-        """Convert a class URI to an ArangoDB-style collection name."""
-        return CLASS_TO_COLLECTION.get(class_uri, class_uri.rsplit("/", 1)[-1])
+        """
+        Convert a class URI to an ArangoDB-style collection name.
+
+        The collection name IS the URI's local name. The old lookup table mapped
+        each URI to exactly that string, so this is the same result with no list
+        to keep in sync.
+        """
+        return class_uri.rsplit("/", 1)[-1]
+
+    # ============================================================
+    # LIVE ONTOLOGY (classes + relationship types)
+    # ============================================================
+    # Nothing below hardcodes a class or relationship name. The ontology in
+    # GraphDB is the single source of truth, so a type declared through the
+    # ontology manager is usable immediately \u2014 no code edit, no restart.
+
+    def live_class_uris(self, refresh: bool = False) -> List[str]:
+        """Concrete owl:Class URIs declared in this repository's ontology."""
+        if self._class_uri_cache is not None and not refresh:
+            return self._class_uri_cache
+        try:
+            rows = self.sparql_query(f"""
+                SELECT DISTINCT ?cls WHERE {{
+                    ?cls a owl:Class .
+                    FILTER(STRSTARTS(STR(?cls), "{ONTOLOGY_NS}"))
+                    FILTER(?cls NOT IN (proto:Thing, proto:Artifact, proto:Agent, proto:WorkItem))
+                }}
+                ORDER BY ?cls
+            """)
+            self._class_uri_cache = [r["cls"] for r in rows]
+        except Exception as e:
+            print(f"\u26a0\ufe0f  Could not read ontology classes: {e}")
+            self._class_uri_cache = []
+        return self._class_uri_cache
+
+    def live_collections(self, refresh: bool = False) -> List[str]:
+        """Declared class names (collection names), e.g. ['Codebase', 'SourceFile']."""
+        return [u.rsplit("/", 1)[-1] for u in self.live_class_uris(refresh=refresh)]
+
+    def collection_to_class_uri(self, collection: str) -> Optional[str]:
+        """
+        Resolve a collection name to its declared class URI, or None if the
+        ontology does not declare it.
+
+        Case-insensitive, because callers arrive with 'sourcefile', 'SourceFile'
+        and 'source_file' depending on which layer they came through.
+        """
+        want = collection.replace("_", "").lower()
+        for uri in self.live_class_uris():
+            if uri.rsplit("/", 1)[-1].replace("_", "").lower() == want:
+                return uri
+        return None
+
+    def taxonomy_properties(self, refresh: bool = False) -> Dict[str, str]:
+        """
+        Property name -> taxonomy scheme, for every property the ontology marks
+        as taxonomy-valued via proto:taxonomy.
+        """
+        if self._tax_prop_cache is not None and not refresh:
+            return self._tax_prop_cache
+        try:
+            rows = self.sparql_query(f"""
+                SELECT DISTINCT ?prop ?taxonomy WHERE {{
+                    ?prop proto:taxonomy ?taxonomy .
+                    FILTER(STRSTARTS(STR(?prop), "{ONTOLOGY_NS}"))
+                }}
+            """)
+            self._tax_prop_cache = {
+                r["prop"].rsplit("/", 1)[-1]: r["taxonomy"] for r in rows
+            }
+        except Exception as e:
+            print(f"\u26a0\ufe0f  Could not read taxonomy properties: {e}")
+            self._tax_prop_cache = {}
+        return self._tax_prop_cache
+
+    def _is_taxonomy_property(self, field: str) -> bool:
+        """True if the ontology declares this property as taxonomy-valued."""
+        return field in self.taxonomy_properties()
+
+    def invalidate_ontology_cache(self) -> None:
+        """
+        Clear both ontology caches.
+
+        Call after the ontology manager declares or removes a class or
+        relationship type, otherwise this process keeps serving the shape the
+        ontology had at first use.
+        """
+        self._class_uri_cache = None
+        self._rel_uri_cache = None
+        self._tax_prop_cache = None
+
+    # ============================================================
+    # LIVE RELATIONSHIP TYPES
+    # ============================================================
+
+    def live_relationship_uris(self, refresh: bool = False) -> List[str]:
+        """
+        Relationship type URIs declared in this repository's ontology.
+
+        Read from GraphDB rather than a fixed list: a hardcoded set silently
+        stops traversing any relationship type the ontology manager adds later,
+        and returns an empty result that looks like a finding rather than a bug.
+        """
+        if self._rel_uri_cache is not None and not refresh:
+            return self._rel_uri_cache
+        try:
+            rows = self.sparql_query(f"""
+                SELECT DISTINCT ?rel WHERE {{
+                    ?rel a owl:ObjectProperty .
+                    FILTER(STRSTARTS(STR(?rel), "{REL_NS}"))
+                }}
+                ORDER BY ?rel
+            """)
+            self._rel_uri_cache = [r["rel"] for r in rows]
+        except Exception as e:
+            print(f"\u26a0\ufe0f  Could not read relationship types: {e}")
+            self._rel_uri_cache = []
+        return self._rel_uri_cache
+
+    def invalidate_relationship_cache(self) -> None:
+        """Call after the ontology manager declares or removes a relationship type."""
+        self._rel_uri_cache = None
+
+    def _rel_label(self, rel_uri: str) -> str:
+        """
+        Display label for an edge predicate.
+
+        This is the URI's local name. The ontology manager creates relationship
+        types whose rdfs:label already equals that local name, so there is
+        nothing to translate and no list to maintain.
+        """
+        return rel_uri.rsplit("/", 1)[-1]
 
     def arango_id(self, class_uri: str, entity_uri: str) -> str:
-        """Build an ArangoDB-style _id like 'LibraryModule/cs-start-c2'."""
+        """Build an ArangoDB-style _id like 'SourceFile/src_logger_ps1'."""
         collection = self.uri_to_collection(class_uri)
         key = self.uri_to_key(entity_uri)
         return f"{collection}/{key}"
@@ -272,86 +405,72 @@ class GraphDBAdapter:
         Fetch all nodes and edges. Returns same shape as /graph endpoint:
         { "nodes": [...], "edges": [...], "count": N }
         """
-        # Fetch all artifact instances with their key properties
-        node_rows = self.sparql_query("""
-            SELECT ?entity ?type ?name ?description ?owner ?status ?icon
-                   ?riskLevel ?category ?tactic ?subcategory ?estimatedDuration
-                   ?color ?mitreId
-            WHERE {
+        # Fetch all artifact instances with every literal property they carry.
+        #
+        # This used to SELECT a fixed column list (riskLevel, tactic, mitreId,
+        # category, subcategory, estimatedDuration, color \u2026) \u2014 atlas property
+        # names baked into the query. In any other repository those OPTIONALs
+        # bound nothing and every node came back padded with empty strings for
+        # properties that do not exist, while properties that DO exist were
+        # dropped because they were not in the column list.
+        #
+        # Now: one row per (entity, predicate, value), assembled per entity.
+        node_rows = self.sparql_query(f"""
+            SELECT ?entity ?type ?prop ?value ?label WHERE {{
                 ?entity a ?type .
-                FILTER(STRSTARTS(STR(?entity), "https://proto.atlas/data/"))
-                FILTER(STRSTARTS(STR(?type), "https://proto.atlas/ontology/"))
-
-                # Skip abstract parent types (we want the most specific)
+                FILTER(STRSTARTS(STR(?entity), "{DATA_NS}"))
+                FILTER(STRSTARTS(STR(?type), "{ONTOLOGY_NS}"))
                 FILTER(?type NOT IN (proto:Thing, proto:Artifact, proto:Agent, proto:WorkItem))
 
-                OPTIONAL { ?entity proto:name ?name }
-                OPTIONAL { ?entity proto:description ?description }
-                OPTIONAL { 
-                    ?entity proto:owner ?ownerConcept .
-                    ?ownerConcept skos:prefLabel ?owner .
-                }
-                OPTIONAL { ?entity proto:status ?status }
-                OPTIONAL { ?entity proto:icon ?icon }
-                OPTIONAL {
-                    ?entity proto:riskLevel ?riskConcept .
-                    ?riskConcept skos:prefLabel ?riskLevel .
-                }
-                OPTIONAL {
-                    ?entity proto:category ?catConcept .
-                    ?catConcept skos:prefLabel ?category .
-                }
-                OPTIONAL { ?entity proto:tactic ?tactic }
-                OPTIONAL { ?entity proto:subcategory ?subcategory }
-                OPTIONAL { ?entity proto:estimatedDuration ?estimatedDuration }
-                OPTIONAL { ?entity proto:color ?color }
-                OPTIONAL { ?entity proto:mitreId ?mitreId }
-            }
+                OPTIONAL {{
+                    ?entity ?prop ?value .
+                    FILTER(STRSTARTS(STR(?prop), "{ONTOLOGY_NS}"))
+                    # Resolve taxonomy/concept references to their label
+                    OPTIONAL {{ ?value skos:prefLabel ?label }}
+                }}
+            }}
         """)
 
-        nodes = []
-        seen_entities = set()
+        # Assemble: entity URI -> {type, properties}
+        by_entity: Dict[str, Dict[str, Any]] = {}
         for row in node_rows:
             entity_uri = row["entity"]
-            if entity_uri in seen_entities:
+            rec = by_entity.setdefault(
+                entity_uri, {"type": row["type"], "props": {}}
+            )
+            prop_uri = row.get("prop")
+            if not prop_uri:
                 continue
-            seen_entities.add(entity_uri)
+            field = prop_uri.rsplit("/", 1)[-1]
+            # Prefer a resolved concept label over a raw URI
+            rec["props"][field] = row.get("label") or row.get("value", "")
 
-            type_uri = row["type"]
+        nodes = []
+        for entity_uri, rec in by_entity.items():
+            type_uri = rec["type"]
+            props = rec["props"]
             key = self.uri_to_key(entity_uri)
             collection = self.uri_to_collection(type_uri)
             artifact_type = collection.replace("_", " ")
 
-            # Cluster inference from owner
-            owner = row.get("owner", "")
-            cluster = self._infer_cluster(owner, collection)
-
-            name = row.get("name", key)
-            desc = row.get("description", "")
-            if desc and len(desc) > 200:
+            desc = str(props.get("description", ""))
+            if len(desc) > 200:
                 desc = desc[:200]
 
-            nodes.append({
+            node = {
                 "id": f"{collection}/{key}",
-                "label": name,
-                "cluster": cluster,
+                "label": props.get("name", key),
                 "type": artifact_type,
                 "_artifact_type": artifact_type,
-                "owner": owner,
-                "scenario_id": "unknown",
-                "status": row.get("status", ""),
-                "importance": 0.5,
                 "description": desc,
-                # Operator-critical fields
-                "icon": row.get("icon", ""),
-                "tactic": row.get("tactic", ""),
-                "category": row.get("category", ""),
-                "subcategory": row.get("subcategory", ""),
-                "riskLevel": row.get("riskLevel", ""),
-                "estimatedDuration": row.get("estimatedDuration", ""),
-                "color": row.get("color", ""),
-                "mitre_id": row.get("mitreId", ""),
-            })
+                "importance": 0.5,
+            }
+            # Everything else the ontology actually defines for this artifact,
+            # passed through under its own name rather than a fixed column set.
+            for field, value in props.items():
+                if field not in ("name", "description"):
+                    node[field] = value
+            nodes.append(node)
 
         # Fetch all relationship edges
         edge_rows = self.sparql_query("""
@@ -370,7 +489,7 @@ class GraphDBAdapter:
         for row in edge_rows:
             from_key = self.uri_to_key(row["from"])
             to_key = self.uri_to_key(row["to"])
-            rel_label = REL_URI_TO_LABEL.get(row["rel"], row["rel"].rsplit("/", 1)[-1])
+            rel_label = self._rel_label(row["rel"])
 
             # Need to find the collection for from/to to build ArangoDB-style IDs
             from_id = self._find_node_id(from_key, node_ids)
@@ -444,7 +563,7 @@ class GraphDBAdapter:
             n_type = row["type"]
             n_collection = self.uri_to_collection(n_type)
             n_id = f"{n_collection}/{n_key}"
-            rel_label = REL_URI_TO_LABEL.get(row["rel"], row["rel"].rsplit("/", 1)[-1])
+            rel_label = self._rel_label(row["rel"])
 
             if n_uri not in seen_nodes:
                 seen_nodes.add(n_uri)
@@ -540,12 +659,26 @@ class GraphDBAdapter:
         """
         Insert a new artifact. Returns ArangoDB-style response.
         
-        artifact_type: "LibraryModule", "TTP", etc.
+        artifact_type: a class name the ontology declares, e.g. "SourceFile".
         """
         uri = self.key_to_uri(key)
-        class_uri = COLLECTION_TO_CLASS.get(artifact_type)
+
+        # Validate against the ontology, not a list in this file. A class
+        # declared through the ontology manager is writable immediately.
+        class_uri = self.collection_to_class_uri(artifact_type)
         if not class_uri:
-            raise ValueError(f"Unknown artifact type: {artifact_type}")
+            declared = self.live_collections()
+            if declared:
+                raise ValueError(
+                    f"Unknown artifact type: {artifact_type!r}. "
+                    f"Declared classes in this repository: {', '.join(declared)}. "
+                    f"Declare it in the ontology manager first."
+                )
+            raise ValueError(
+                f"Unknown artifact type: {artifact_type!r}. This repository has no "
+                f"owl:Class declarations at all \u2014 load a bootstrap ontology before "
+                f"writing artifacts."
+            )
 
         # Build INSERT DATA triples
         triples = [f"    <{uri}> a <{class_uri}> ."]
@@ -953,21 +1086,36 @@ class GraphDBAdapter:
                 OPTIONAL {{ ?prop proto:multiple ?multiple }}
                 OPTIONAL {{ ?prop proto:taxonomy ?taxonomy }}
                 OPTIONAL {{ ?prop rdfs:comment ?description }}
+                OPTIONAL {{ ?prop proto:required ?required }}
+                OPTIONAL {{
+                    ?shape sh:targetClass ?domain ;
+                           sh:property ?pshape .
+                    ?pshape sh:path ?prop ;
+                            sh:minCount ?minCount .
+                }}
                 FILTER(STRSTARTS(STR(?prop), "https://proto.atlas/ontology/"))
             }}
             ORDER BY ?propLabel
         """)
 
-        # Known required fields per class (matches SHACL shapes)
-        REQUIRED_BY_CLASS = {
-            f"{ONTOLOGY_NS}LibraryModule": {"name", "category", "tactic"},
-            f"{ONTOLOGY_NS}TTP": {"name", "mitreId"},
-            f"{ONTOLOGY_NS}ExecutionPlan": {"name"},
-            f"{ONTOLOGY_NS}DevelopmentStory": {"name"},
-            f"{ONTOLOGY_NS}Person": {"name"},
-            f"{ONTOLOGY_NS}Team": {"name"},
-        }
-        required_for_this_class = REQUIRED_BY_CLASS.get(class_uri, {"name"})
+        # Required fields come from the ontology, per property:
+        #   proto:required true       \u2014 set by the ontology manager, or
+        #   sh:minCount >= 1          \u2014 set by a SHACL node shape
+        # This used to be a dict of atlas class names in this file, which meant a
+        # class declared through the ontology manager silently got "name" as its
+        # only required field no matter what its shape said.
+        required_for_this_class = set()
+        for row in rows:
+            prop_name = row["prop"].rsplit("/", 1)[-1]
+            if row.get("required") in (True, "true"):
+                required_for_this_class.add(prop_name)
+            min_count = row.get("minCount")
+            if min_count is not None:
+                try:
+                    if int(min_count) >= 1:
+                        required_for_this_class.add(prop_name)
+                except (TypeError, ValueError):
+                    pass
 
         props = []
         seen = set()
@@ -1015,13 +1163,9 @@ class GraphDBAdapter:
             if target_class:
                 prop_entry["target_class"] = target_class
 
-            # Use taxonomy from graph triple if available, fall back to detection
+            # Taxonomy comes from the graph (proto:taxonomy) or not at all.
             if taxonomy_value:
                 prop_entry["taxonomy"] = taxonomy_value
-            elif prop_type != "reference":
-                scheme = self._detect_taxonomy_scheme(name)
-                if scheme:
-                    prop_entry["taxonomy"] = scheme
 
             if desc:
                 prop_entry["description"] = desc
@@ -1030,215 +1174,159 @@ class GraphDBAdapter:
 
         return props
 
-    def _detect_taxonomy_scheme(self, property_name: str) -> Optional[str]:
-        """Map a property name to its taxonomy scheme ID."""
-        mapping = {
-            "category": "c2-frameworks",
-            "riskLevel": "risk-levels",
-            "team": "teams",
-            "tactic": "mitre-tactics",
-        }
-        return mapping.get(property_name)
+    # _detect_taxonomy_scheme() was removed.
+    #
+    # It guessed a property's taxonomy scheme from a hardcoded map of four atlas
+    # property names (category, riskLevel, team, tactic). The ontology already
+    # states this per property via proto:taxonomy, which the property query above
+    # reads directly \u2014 so the guess only ever fired for properties whose scheme
+    # was NOT declared, silently attaching an atlas scheme to a same-named
+    # property in an unrelated repository.
+    #
+    # A property with no proto:taxonomy now simply has no taxonomy. Declare it in
+    # the ontology manager if it should have one.
 
     # ============================================================
-    # OPERATOR: Library Module Queries
+    # GENERIC ARTIFACT QUERIES
     # ============================================================
+    # These replace get_library_modules / get_library_module /
+    # get_library_module_categories / get_library_module_tactics /
+    # get_library_module_stats, which hardcoded `?entity a proto:LibraryModule`
+    # plus filters on `tactic` and `riskLevel` \u2014 atlas properties that do not
+    # exist in an arbitrary repository.
+    #
+    # BREAKING: plugins/operator_plugin.py and any Lumen/Operator endpoint that
+    # called the old methods must be updated to pass the collection explicitly:
+    #     gdb.get_library_modules(tactic="TA0006")
+    #  -> gdb.get_artifacts_by_type("LibraryModule", filters={"tactic": "TA0006"})
+    #     gdb.get_library_module_tactics()
+    #  -> gdb.get_property_value_counts("LibraryModule", "tactic")
 
-    def get_library_modules(
+    def get_artifacts_by_type(
         self,
-        category: Optional[str] = None,
-        tactic: Optional[str] = None,
-        search: Optional[str] = None,
-        risk_level: Optional[str] = None,
-        limit: int = 100,
-        offset: int = 0,
-    ) -> Dict[str, Any]:
+        collection: str,
+        filters: Optional[Dict[str, str]] = None,
+        limit: int = 200,
+    ) -> List[Dict[str, Any]]:
         """
-        Query LibraryModules with optional filters.
-        Returns same shape as plugin_router's /operator/modules.
+        List artifacts of a declared class, optionally filtered by property value.
+
+        collection: a class name the ontology declares, e.g. "SourceFile".
+        filters:    {property_name: value}. Values are matched against the
+                    literal or, for taxonomy-valued properties, the concept's
+                    skos:prefLabel.
         """
-        # Build FILTER clauses
-        filters = []
-        if category:
-            # Category is a SKOS concept â€” match by prefLabel
-            filters.append(f'?catLabel = "{category}"')
-        if tactic:
-            filters.append(f'?tactic = "{tactic}"')
-        if risk_level:
-            filters.append(f'?riskLabel = "{risk_level}"')
-        if search:
-            safe = search.replace("\\", "\\\\").replace('"', '\\"')
-            filters.append(
-                f'(REGEX(?name, "{safe}", "i") || REGEX(COALESCE(?description, ""), "{safe}", "i"))'
+        class_uri = self.collection_to_class_uri(collection)
+        if not class_uri:
+            declared = self.live_collections()
+            raise ValueError(
+                f"Unknown artifact type: {collection!r}. "
+                f"Declared classes: {', '.join(declared) if declared else '(none)'}."
             )
 
-        filter_clause = "\n                ".join(f"FILTER({f})" for f in filters)
+        clauses = []
+        for i, (field, value) in enumerate((filters or {}).items()):
+            safe = str(value).replace('"', '\\"')
+            var = f"?f{i}"
+            clauses.append(f"""
+                ?entity <{ONTOLOGY_NS}{field}> {var} .
+                OPTIONAL {{ {var} skos:prefLabel {var}Label }}
+                FILTER(STR(COALESCE({var}Label, {var})) = "{safe}")
+            """)
 
-        query = f"""
-            SELECT ?entity ?name ?description ?icon ?tactic ?subcategory
-                   ?estimatedDuration ?catLabel ?riskLabel ?ownerLabel
-            WHERE {{
-                ?entity a proto:LibraryModule .
-                OPTIONAL {{ ?entity proto:name ?name }}
-                OPTIONAL {{ ?entity proto:description ?description }}
-                OPTIONAL {{ ?entity proto:icon ?icon }}
-                OPTIONAL {{ ?entity proto:tactic ?tactic }}
-                OPTIONAL {{ ?entity proto:subcategory ?subcategory }}
-                OPTIONAL {{ ?entity proto:estimatedDuration ?estimatedDuration }}
-                OPTIONAL {{ ?entity proto:category ?catLabel . }}
-                OPTIONAL {{ ?entity proto:riskLevel ?riskLabel . }}
-                OPTIONAL {{ ?entity proto:owner ?ownerLabel . }}
-                {filter_clause}
+        rows = self.sparql_query(f"""
+            SELECT ?entity ?prop ?value ?label WHERE {{
+                ?entity a <{class_uri}> .
+                {''.join(clauses)}
+                OPTIONAL {{
+                    ?entity ?prop ?value .
+                    FILTER(STRSTARTS(STR(?prop), "{ONTOLOGY_NS}"))
+                    OPTIONAL {{ ?value skos:prefLabel ?label }}
+                }}
             }}
-            ORDER BY ?name
-            LIMIT {limit}
-            OFFSET {offset}
-        """
+            LIMIT {limit * 50}
+        """)
 
-        rows = self.sparql_query(query)
-
-        modules = []
-        seen = set()
+        by_entity: Dict[str, Dict[str, Any]] = {}
         for row in rows:
-            uri = row["entity"]
-            if uri in seen:
+            rec = by_entity.setdefault(row["entity"], {})
+            prop_uri = row.get("prop")
+            if not prop_uri:
                 continue
-            seen.add(uri)
+            field = prop_uri.rsplit("/", 1)[-1]
+            rec[field] = row.get("label") or row.get("value", "")
 
-            key = self.uri_to_key(uri)
+        out = []
+        for entity_uri, props in list(by_entity.items())[:limit]:
+            key = self.uri_to_key(entity_uri)
+            doc = {"_id": f"{collection}/{key}", "_key": key,
+                   "_artifact_type": collection}
+            doc.update(props)
+            out.append(doc)
+        return out
 
-            def strip_uri(val):
-                """Extract plain value from taxonomy URI or return as-is."""
-                if not val:
-                    return ""
-                if val.startswith("https://proto.atlas/taxonomy/"):
-                    slug = val.split("/")[-1]
-                    # mitre-TA0005 -> TA0005
-                    if slug.startswith("mitre-"):
-                        return slug[6:]
-                    # risk-medium -> Medium
-                    if slug.startswith("risk-"):
-                        return slug[5:].capitalize()
-                    # c2-cobalt-strike -> Cobalt Strike
-                    if slug.startswith("c2-"):
-                        return slug[3:].replace("-", " ").title()
-                    # status-active -> active
-                    if slug.startswith("status-"):
-                        return slug[7:]
-                    # team-automation -> Automation
-                    if slug.startswith("team-"):
-                        return slug[5:].title()
-                    return slug
-                return val
+    def get_property_value_counts(
+        self, collection: str, property_name: str,
+    ) -> List[Dict[str, Any]]:
+        """
+        Distinct values of one property across a class, with counts.
 
-            modules.append({
-                "_id": f"LibraryModule/{key}",
-                "_key": key,
-                "_artifact_type": "Library Module",
-                "name": row.get("name", key),
-                "description": row.get("description", ""),
-                "icon": row.get("icon", "âš¡"),
-                "tactic": strip_uri(row.get("tactic", "")),
-                "category": strip_uri(row.get("catLabel", "")),
-                "subcategory": row.get("subcategory", ""),
-                "riskLevel": strip_uri(row.get("riskLabel", "")),
-                "estimatedDuration": row.get("estimatedDuration", ""),
-                "owner": strip_uri(row.get("ownerLabel", "")),
-            })
+        Replaces the old per-property helpers. Works for
+        any property the ontology defines on any declared class.
+        """
+        class_uri = self.collection_to_class_uri(collection)
+        if not class_uri:
+            raise ValueError(f"Unknown artifact type: {collection!r}")
 
-        # Total count (separate query for pagination)
-        count_rows = self.sparql_query("""
-            SELECT (COUNT(DISTINCT ?entity) AS ?total) WHERE {
-                ?entity a proto:LibraryModule .
-            }
+        rows = self.sparql_query(f"""
+            SELECT ?value ?label (COUNT(DISTINCT ?entity) AS ?count) WHERE {{
+                ?entity a <{class_uri}> ;
+                        <{ONTOLOGY_NS}{property_name}> ?value .
+                OPTIONAL {{ ?value skos:prefLabel ?label }}
+            }}
+            GROUP BY ?value ?label
+            ORDER BY DESC(?count)
         """)
-        total = count_rows[0]["total"] if count_rows else len(modules)
+        return [
+            {"value": r.get("label") or r.get("value", ""), "count": r["count"]}
+            for r in rows
+        ]
 
-        return {
-            "modules": modules,
-            "count": len(modules),
-            "total": total,
+    def get_type_stats(self, collection: str) -> Dict[str, Any]:
+        """Total count for a class, plus value breakdowns for its taxonomy properties."""
+        class_uri = self.collection_to_class_uri(collection)
+        if not class_uri:
+            raise ValueError(f"Unknown artifact type: {collection!r}")
+
+        total_rows = self.sparql_query(f"""
+            SELECT (COUNT(DISTINCT ?e) AS ?total) WHERE {{ ?e a <{class_uri}> }}
+        """)
+        stats: Dict[str, Any] = {
+            "collection": collection,
+            "total": total_rows[0]["total"] if total_rows else 0,
         }
 
-    def get_library_module(self, key: str) -> Optional[Dict[str, Any]]:
-        """Get a single LibraryModule by key. Returns full doc or None."""
-        return self.get_artifact("LibraryModule", key)
+        # Break down by whichever properties the ontology marks taxonomy-valued.
+        for prop_name in self.taxonomy_properties():
+            counts = self.get_property_value_counts(collection, prop_name)
+            if counts:
+                stats[f"by{prop_name[0].upper()}{prop_name[1:]}"] = counts
+        return stats
 
-    def get_library_module_categories(self) -> List[Dict[str, Any]]:
-        """Get distinct categories with counts."""
-        rows = self.sparql_query("""
-            SELECT ?catLabel (COUNT(DISTINCT ?entity) AS ?count) WHERE {
-                ?entity a proto:LibraryModule ;
-                        proto:category ?cat .
-                ?cat skos:prefLabel ?catLabel .
-            }
-            GROUP BY ?catLabel
-            ORDER BY ?catLabel
-        """)
-        return [{"value": r["catLabel"], "count": r["count"]} for r in rows]
-
-    def get_library_module_tactics(self) -> List[Dict[str, Any]]:
-        """Get distinct tactics with counts."""
-        rows = self.sparql_query("""
-            SELECT ?tactic (COUNT(DISTINCT ?entity) AS ?count) WHERE {
-                ?entity a proto:LibraryModule ;
-                        proto:tactic ?tactic .
-                FILTER(?tactic != "")
-            }
-            GROUP BY ?tactic
-            ORDER BY ?tactic
-        """)
-        return [{"value": r["tactic"], "count": r["count"]} for r in rows]
-
-    def get_library_module_stats(self) -> Dict[str, Any]:
-        """Get module statistics â€” total, by category, by tactic, by risk level."""
-        total_rows = self.sparql_query("""
-            SELECT (COUNT(DISTINCT ?e) AS ?total) WHERE { ?e a proto:LibraryModule }
-        """)
-        total = total_rows[0]["total"] if total_rows else 0
-
-        by_category = self.get_library_module_categories()
-
-        by_tactic = self.get_library_module_tactics()
-
-        risk_rows = self.sparql_query("""
-            SELECT ?riskLabel (COUNT(DISTINCT ?entity) AS ?count) WHERE {
-                ?entity a proto:LibraryModule ;
-                        proto:riskLevel ?risk .
-                ?risk skos:prefLabel ?riskLabel .
-            }
-            GROUP BY ?riskLabel
-            ORDER BY ?riskLabel
-        """)
-        by_risk = [{"riskLevel": r["riskLabel"], "count": r["count"]} for r in risk_rows]
-
-        return {
-            "total": total,
-            "byCategory": [{"category": c["value"], "count": c["count"]} for c in by_category],
-            "byTactic": [{"tactic": t["value"], "count": t["count"]} for t in by_tactic],
-            "byRiskLevel": by_risk,
-        }
-
-    # ============================================================
-    # PRIVATE HELPERS
-    # ============================================================
+    # ------------------------------------------------------------
+    # Field name <-> predicate URI
+    # ------------------------------------------------------------
+    # Both directions used to consult an alias table of eight atlas property
+    # names (mitreId->mitre_id, storyPoints->story_points, payloadUrl->
+    # payload_url, ...). Any property outside that list passed through
+    # unchanged, so the snake_case convention was applied only to atlas fields
+    # and inconsistently everywhere else. The field name is now simply the
+    # ontology property's local name, in both directions.
 
     def _pred_to_field(self, pred_uri: str) -> Optional[str]:
         """Convert a predicate URI to a document field name."""
         if pred_uri.startswith(ONTOLOGY_NS):
-            field = pred_uri[len(ONTOLOGY_NS):]
-            # Convert camelCase ontology names to snake_case where needed
-            field_map = {
-                "payloadUrl": "payload_url",
-                "estimatedDuration": "estimatedDuration",
-                "targetNetwork": "target_network",
-                "exerciseType": "exercise_type",
-                "networkTopology": "network_topology",
-                "executionTime": "execution_time",
-                "storyPoints": "story_points",
-                "mitreId": "mitre_id",
-            }
-            return field_map.get(field, field)
+            return pred_uri[len(ONTOLOGY_NS):]
 
         # Skip RDF/OWL/RDFS predicates
         if any(pred_uri.startswith(ns) for ns in [
@@ -1252,23 +1340,10 @@ class GraphDBAdapter:
 
     def _field_to_pred_uri(self, field: str) -> Optional[str]:
         """Convert a field name to a predicate URI."""
-        # Reverse map
-        reverse_map = {
-            "payload_url": "payloadUrl",
-            "target_network": "targetNetwork",
-            "exercise_type": "exerciseType",
-            "network_topology": "networkTopology",
-            "execution_time": "executionTime",
-            "story_points": "storyPoints",
-            "mitre_id": "mitreId",
-        }
-        onto_field = reverse_map.get(field, field)
-
-        # Skip internal ArangoDB fields
+        # Skip internal ArangoDB-style fields
         if field.startswith("_"):
             return None
-
-        return f"{ONTOLOGY_NS}{onto_field}"
+        return f"{ONTOLOGY_NS}{field}"
 
     def _field_to_triple(self, uri: str, field: str, value: Any) -> Optional[str]:
         """Convert a field/value pair to a SPARQL triple string."""
@@ -1276,9 +1351,12 @@ class GraphDBAdapter:
         if not pred_uri:
             return None
 
-        # Handle taxonomy references
-        if field in ("category", "riskLevel", "owner", "team") and isinstance(value, str):
-            # Try to resolve as taxonomy term
+        # Handle taxonomy references.
+        #
+        # Which fields are taxonomy-valued used to be a fixed list of four atlas
+        # property names. It now comes from the ontology: a property is
+        # taxonomy-valued if it declares proto:taxonomy.
+        if isinstance(value, str) and self._is_taxonomy_property(field):
             tax_uri = self._resolve_term_by_label(value)
             if tax_uri:
                 return f"    <{uri}> <{pred_uri}> <{tax_uri}> ."
@@ -1332,30 +1410,15 @@ class GraphDBAdapter:
             return next(iter(concrete))
         return next(iter(onto_types)) if onto_types else None
 
-    def _infer_cluster(self, owner: str, collection: str) -> str:
-        """Infer cluster/team from owner or collection name (matches main.py logic)."""
-        if owner:
-            ol = owner.lower()
-            if "automation" in ol:
-                return "Automation"
-            elif "range" in ol:
-                return "Range"
-            elif "content" in ol:
-                return "Content Development"
-            elif "opfor" in ol:
-                return "OPFOR"
-            return owner
-
-        if "Execution" in collection or "Orchestration" in collection:
-            return "Automation"
-        elif "Range" in collection or "Network" in collection:
-            return "Range"
-        elif "Content" in collection or "Intel" in collection:
-            return "Content Development"
-        elif "OPFOR" in collection or "Red" in collection:
-            return "OPFOR"
-
-        return "Unassigned"
+    # _infer_cluster() was removed.
+    #
+    # It bucketed artifacts into "Automation" / "Range" / "Content Development" /
+    # "OPFOR" by substring-matching the owner or collection name \u2014 the 318th
+    # RANS team structure hardcoded into the adapter. In any other repository
+    # every node fell through to "Unassigned", and the value was invented by
+    # string matching rather than read from the graph either way.
+    #
+    # If clustering is wanted, derive it from a property the ontology declares.
 
     def _find_node_id(self, key: str, node_ids: set) -> Optional[str]:
         """Find the full ArangoDB-style ID for a key from the node set."""
@@ -1368,16 +1431,33 @@ class GraphDBAdapter:
         self, center_uri: str, center_id: str,
         nodes: List, edges: List, seen: set, depth: int,
     ) -> Tuple[List, List]:
-        """Expand neighbors beyond depth 1 using property paths."""
-        # For depth > 1, use transitive property paths
+        """
+        Expand neighbors beyond depth 1 using property paths.
+
+        The alternation is built from the ontology's declared relationship types.
+        It used to be a fixed list of nine predicates, which meant any type added
+        through the ontology manager was silently not traversed \u2014 producing an
+        empty result indistinguishable from a genuine absence of neighbours.
+
+        SPARQL property paths cannot take a variable predicate, so an explicit
+        alternation is unavoidable here; the fix is to generate it rather than
+        freeze it.
+        """
+        rel_uris = self.live_relationship_uris()
+        if not rel_uris:
+            # No declared relationship types: there is nothing to traverse and an
+            # empty alternation is a syntax error. Return what depth 1 found.
+            print("\u26a0\ufe0f  _expand_depth: no relationship types declared; skipping expansion")
+            return nodes, edges
+
+        # Forward and inverse for each declared type.
+        alternation = "|".join(
+            [f"<{u}>" for u in rel_uris] + [f"^<{u}>" for u in rel_uris]
+        )
+
         rows = self.sparql_query(f"""
             SELECT DISTINCT ?from ?rel ?to ?toType ?toName WHERE {{
-                <{center_uri}> (rel:LEADS_TO|rel:CONTAINS|rel:PRODUCES|rel:REFERENCES|
-                                rel:DEPENDS_ON|rel:TESTS|rel:ASSIGNED_TO|rel:BELONGS_TO|
-                                rel:RELATED_TO|
-                                ^rel:LEADS_TO|^rel:CONTAINS|^rel:PRODUCES|^rel:REFERENCES|
-                                ^rel:DEPENDS_ON|^rel:TESTS|^rel:ASSIGNED_TO|^rel:BELONGS_TO|
-                                ^rel:RELATED_TO){{1,{depth}}} ?to .
+                <{center_uri}> ({alternation}){{1,{depth}}} ?to .
 
                 ?to a ?toType .
                 FILTER(STRSTARTS(STR(?toType), "{ONTOLOGY_NS}"))

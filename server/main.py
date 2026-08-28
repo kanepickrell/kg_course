@@ -102,14 +102,9 @@ class CreateEdgeRequest(BaseModel):
     description: Optional[str] = None
     metadata: Optional[Dict[str, Any]] = {}
 
-class ExecutionEnvironment(BaseModel):
-    has_c2_server: bool = False
-    active_listeners: List[str] = []
-    active_beacons: List[str] = []
-    ssh_connections: List[str] = []
-    available_payloads: List[str] = []
-    external_tools: List[str] = []
-    installed_libraries: List[str] = []
+# ExecutionEnvironment was removed with the /api/library-modules routes. It
+# modelled a Cobalt Strike range (C2 server, listeners, beacons, SSH sessions)
+# \u2014 atlas domain vocabulary, and used by nothing else.
 
 class JSONUserReview(BaseModel):
     connectionId: str
@@ -502,141 +497,55 @@ async def save_payload_file(key: str, request: Request):
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(json.dumps(payload, indent=2, ensure_ascii=False))
     return {"saved": str(path), "key": key}
-
-# ── Library modules ───────────────────────────────────────────────────────────
-def _enrich_module(module: dict) -> dict:
-    key = module.get("_key", "")
-    payload_path = os.path.join(PAYLOAD_DIR, f"{key}.json")
-    enriched = dict(module)
-    if os.path.exists(payload_path):
-        try:
-            with open(payload_path, "r", encoding="utf-8") as f:
-                payload = json.load(f)
-            for field in ["inputs","outputs","parameters","requirements","robotKeyword",
-                          "robotTemplate","robotFramework","executionType","estimatedDuration",
-                          "subcategory","icon"]:
-                if payload.get(field) is not None:
-                    enriched[field] = payload[field]
-        except Exception as e:
-            print(f"Payload load failed for {key}: {e}")
-    enriched.setdefault("inputs", [])
-    enriched.setdefault("outputs", [])
-    enriched.setdefault("parameters", [])
-    return enriched
-
-@app.get("/api/library-modules")
-async def get_library_modules(category: Optional[str]=None, tactic: Optional[str]=None,
-                               execution_type: Optional[str]=None, risk_level: Optional[str]=None,
-                               search: Optional[str]=Query(None), limit: int=100):
-    if not gdb:
-        raise HTTPException(status_code=503, detail="GraphDB not connected")
-    try:
-        result = gdb.get_library_modules(category=category, tactic=tactic,
-                                          search=search, risk_level=risk_level, limit=limit)
-        modules = []
-        for m in result.get("modules", []):
-            m = _enrich_module(m)
-            if execution_type and m.get("executionType") != execution_type:
-                continue
-            modules.append(m)
-        return {"success": True, "count": len(modules),
-                "total": result.get("total", len(modules)), "modules": modules}
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
-
-@app.get("/api/library-modules/categories")
-async def get_lib_module_categories():
-    if not gdb:
-        raise HTTPException(status_code=503, detail="GraphDB not connected")
-    try:
-        return {"success": True, "categories": gdb.get_library_module_categories()}
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
-
-@app.get("/api/library-modules/tactics")
-async def get_lib_module_tactics():
-    if not gdb:
-        raise HTTPException(status_code=503, detail="GraphDB not connected")
-    try:
-        return {"success": True, "tactics": gdb.get_library_module_tactics()}
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
-
-@app.get("/api/library-modules/stats")
-async def get_lib_module_stats():
-    if not gdb:
-        raise HTTPException(status_code=503, detail="GraphDB not connected")
-    try:
-        return {"success": True, "stats": gdb.get_library_module_stats()}
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
-
-@app.get("/api/library-modules/{module_key}")
-async def get_library_module(module_key: str):
-    if not gdb:
-        raise HTTPException(status_code=503, detail="GraphDB not connected")
-    try:
-        module = gdb.get_library_module(module_key)
-        if not module:
-            raise HTTPException(status_code=404, detail=f"Module '{module_key}' not found")
-        return {"success": True, "module": _enrich_module(module)}
-    except HTTPException:
-        raise
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
-
-@app.post("/api/library-modules/validate-requirements")
-async def validate_module_requirements(module_key: str, environment: ExecutionEnvironment):
-    if not gdb:
-        raise HTTPException(status_code=503, detail="GraphDB not connected")
-    try:
-        module = gdb.get_library_module(module_key)
-        if not module:
-            raise HTTPException(status_code=404, detail=f"Module '{module_key}' not found")
-        module = _enrich_module(module)
-        req = module.get("requirements", {})
-        out = {"can_execute": True, "missing_requirements": [], "warnings": []}
-        if req.get("c2Server") and not environment.has_c2_server:
-            out["can_execute"] = False
-            out["missing_requirements"].append({"type": "c2_server", "message": "C2 server not connected"})
-        miss_l = set(req.get("listeners",[])) - set(environment.active_listeners)
-        if miss_l:
-            out["can_execute"] = False
-            out["missing_requirements"].append({"type":"listeners","message":f"Missing: {', '.join(miss_l)}"})
-        miss_ssh = set(req.get("sshConnections",[])) - set(environment.ssh_connections)
-        if miss_ssh:
-            out["can_execute"] = False
-            out["missing_requirements"].append({"type":"ssh","message":f"Missing: {', '.join(miss_ssh)}"})
-        miss_t = set(req.get("externalTools",[])) - set(environment.external_tools)
-        if miss_t:
-            out["can_execute"] = False
-            out["missing_requirements"].append({"type":"tools","message":f"Missing: {', '.join(miss_t)}"})
-        miss_lib = set(req.get("libraries",[])) - set(environment.installed_libraries)
-        if miss_lib:
-            out["warnings"].append({"type":"libraries","message":f"Missing Robot libs: {', '.join(miss_lib)}"})
-        if module.get("executionType") == "cobalt_strike" and not environment.active_beacons:
-            out["warnings"].append({"type":"beacons","message":"No active beacons available"})
-        return {"success": True, "module_key": module_key,
-                "module_name": module.get("name"), "validation": out}
-    except HTTPException:
-        raise
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+# The /api/library-modules/* endpoints were removed (6 routes), along with
+# _enrich_module() and the ExecutionEnvironment model that only they used:
+#
+#   GET  /api/library-modules
+#   GET  /api/library-modules/categories
+#   GET  /api/library-modules/tactics
+#   GET  /api/library-modules/stats
+#   GET  /api/library-modules/{module_key}
+#   POST /api/library-modules/validate-requirements
+#
+# Every one hardcoded proto:LibraryModule plus atlas properties (tactic,
+# riskLevel, executionType, c2Server, listeners, beacons). They served the
+# Operator/Lumen UI, which is retired. They also called five adapter methods
+# that no longer exist, so each returned 500.
+#
+# Generic replacements live on the adapter and work for any declared class:
+#   gdb.get_artifacts_by_type(collection, filters=..., limit=...)
+#   gdb.get_property_value_counts(collection, property_name)
+#   gdb.get_type_stats(collection)
+#   gdb.get_artifact(collection, key)
 
 # ── Prospector ────────────────────────────────────────────────────────────────
-_TYPE_MAP = {
-    "library_module":"LibraryModule","librarymodule":"LibraryModule",
-    "ttp":"TTP","person":"Person","team":"Team","execution_plan":"ExecutionPlan",
-    "scenario":"Scenario","development_story":"DevelopmentStory",
-    "range_environment":"RangeEnvironment","robot_log":"RobotLog",
-}
+# _TYPE_MAP was removed. It mapped ten atlas type strings to class names and
+# fell back to "LibraryModule" for anything unrecognised \u2014 so a typo, or any
+# class declared after this file was written, was silently stored as a
+# LibraryModule instead of being rejected.
+#
+# Type resolution now goes through the adapter, which validates against the
+# classes the ontology actually declares in the connected repository.
 
 @app.post("/prospector/node")
 async def prospector_create_node(request: CreateNodeRequest):
     if not gdb:
         raise HTTPException(status_code=503, detail="GraphDB not connected")
     try:
-        artifact_type = _TYPE_MAP.get(request.type.lower(), "LibraryModule")
+        # Resolve against the live ontology. collection_to_class_uri() is
+        # case- and underscore-insensitive, so "source_file", "sourcefile" and
+        # "SourceFile" all match a declared SourceFile class.
+        if not gdb.collection_to_class_uri(request.type):
+            declared = gdb.live_collections()
+            raise HTTPException(
+                status_code=400,
+                detail=(
+                    f"Unknown artifact type: {request.type!r}. "
+                    f"Declared classes: {', '.join(declared) if declared else '(none)'}. "
+                    f"Declare it in the ontology manager first."
+                ),
+            )
+        artifact_type = gdb.collection_to_class_uri(request.type).rsplit("/", 1)[-1]
         key = re.sub(r"[^a-zA-Z0-9_-]", "_", request.label.lower()).strip("_")
         props = {"name": request.label, "description": request.description or ""}
         if request.custom_fields:
@@ -744,12 +653,11 @@ def get_pending_connections():
         src_type = src.get("_id","").split("/")[0] if "/" in src.get("_id","") else "Unknown"
         tgt_type = tgt.get("_id","").split("/")[0] if "/" in tgt.get("_id","") else "Unknown"
         def _cluster(node, _nt):
-            if node.get("cluster"): return node["cluster"]
-            if node.get("team"): return node["team"]
-            ow = node.get("owner","").lower()
-            for k,v in [("automation","Automation"),("range","Range"),("opfor","OPFOR")]:
-                if k in ow: return v
-            return "Unknown"
+            # Read what the node actually carries. This used to substring-match
+            # the owner against "automation"/"range"/"opfor" \u2014 318th RANS team
+            # names hardcoded here \u2014 which invented a cluster for atlas data and
+            # returned "Unknown" for everything else.
+            return node.get("cluster") or node.get("team") or "Unknown"
         excl = {"_id","_key","_rev","name","description","label"}
         formatted.append({
             "id": f"json_{idx}",
@@ -763,7 +671,10 @@ def get_pending_connections():
                            "type": tgt_type, "cluster": _cluster(tgt, tgt_type),
                            "description": tgt.get("description",""),
                            "metadata": {k:v for k,v in tgt.items() if k not in excl}},
-            "proposedRelationship": item.get("type","RELATED_TO"),
+            # No default relationship type: RELATED_TO is not declared in every
+            # repository, and defaulting to it would surface a proposal that
+            # cannot legally be written.
+            "proposedRelationship": item.get("type") or None,
             "confidence": item.get("conn_strength",5) / 10.0,
             "reasoning": item.get("explanation","No explanation provided"),
             "llmModel": item.get("model","unknown"),
@@ -787,9 +698,25 @@ async def review_connection(review: JSONUserReview):
     save_json(data)
     if review.decision in ("approve","modify") and gdb:
         try:
-            rel = (review.correctedRelationship.upper()
+            rel = (review.correctedRelationship
                    if review.decision == "modify" and review.correctedRelationship
-                   else entry.get("type","RELATED_TO").upper())
+                   else entry.get("type"))
+            if not rel:
+                return {"success": True, "review_saved": True, "edge_created": False,
+                        "error": "No relationship type on this proposal, and none "
+                                 "supplied. Re-review with correctedRelationship set."}
+            rel = rel.upper()
+
+            # Refuse to write an edge whose predicate the ontology does not
+            # declare. Without this the approval step could mint an undeclared
+            # predicate that nothing downstream will traverse or explain.
+            declared = {u.rsplit("/", 1)[-1] for u in gdb.live_relationship_uris()}
+            if rel not in declared:
+                return {"success": True, "review_saved": True, "edge_created": False,
+                        "error": (f"Relationship type {rel!r} is not declared in this "
+                                  f"repository. Declared: "
+                                  f"{', '.join(sorted(declared)) if declared else '(none)'}. "
+                                  f"Declare it in the ontology manager first.")}
             si = entry["src_node"]["_id"]
             ti = entry["pair_node"]["_id"]
             sp = si.split("/",1) if "/" in si else ("Unknown", si)

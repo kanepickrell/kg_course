@@ -1,0 +1,11 @@
+{
+  "_payload_version": "2.0",
+  "_saved_at": "2026-08-28T14:35:44.828174+00:00",
+  "_artifact_key": "config_config_ps1",
+  "_artifact_type": "SourceFile",
+  "name": "Config.ps1",
+  "path": "config/Config.ps1",
+  "language": "powershell",
+  "partOf": "Codebase/razor-svcmgr",
+  "analysis": "{\"content\":\"param()\\n# placeholder Config.ps1\\n\",\"signals\":{\"functions\":[],\"imports\":[],\"references\":[]},\"size\":33,\"line_count\":3}"
+}

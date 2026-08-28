@@ -168,6 +168,104 @@ def _build_taxonomy_fragment_text(
 # ============================================================
 # IMPROVEMENT 1 — SCHEMA VECTOR INDEX (RAG over ontology)
 # ============================================================
+# LIVE RELATIONSHIP TYPES
+# ============================================================
+# Relationship types are whatever the ontology manager has declared in the
+# CONNECTED repository. Never hardcode them: a fixed list silently describes a
+# different graph the moment the server is pointed at another repo, and the LLM
+# will faithfully generate SPARQL against predicates that do not exist.
+# Mirrors list_relationships() in ontology_graphdb.py.
+
+REL_NS = "https://proto.atlas/relationship/"
+ONTOLOGY_NS = "https://proto.atlas/ontology/"
+
+
+def _live_relationship_types() -> List[Dict[str, Any]]:
+    """Read declared relationship types (owl:ObjectProperty under rel:) from GraphDB."""
+    if gdb is None:
+        return []
+    try:
+        rows = gdb.sparql_query(f"""
+            SELECT DISTINCT ?rel ?label ?definition ?transitive ?symmetric ?domain ?range WHERE {{
+                ?rel a owl:ObjectProperty .
+                FILTER(STRSTARTS(STR(?rel), "{REL_NS}"))
+                OPTIONAL {{ ?rel rdfs:label ?label }}
+                OPTIONAL {{ ?rel rdfs:comment ?definition }}
+                OPTIONAL {{ ?rel a owl:TransitiveProperty . BIND(true AS ?transitive) }}
+                OPTIONAL {{ ?rel a owl:SymmetricProperty . BIND(true AS ?symmetric) }}
+                OPTIONAL {{ ?rel rdfs:domain ?domain . FILTER(STRSTARTS(STR(?domain), "{ONTOLOGY_NS}")) }}
+                OPTIONAL {{ ?rel rdfs:range ?range . FILTER(STRSTARTS(STR(?range), "{ONTOLOGY_NS}")) }}
+            }}
+            ORDER BY ?rel
+        """)
+    except Exception as e:
+        print(f"\u26a0\ufe0f  Could not read relationship types from GraphDB: {e}")
+        return []
+
+    rels: Dict[str, Dict[str, Any]] = {}
+    for row in rows:
+        uri = row["rel"]
+        local = uri.rsplit("/", 1)[-1]
+        r = rels.setdefault(uri, {
+            "uri": uri,
+            "local": local,
+            "label": row.get("label") or local,
+            "definition": row.get("definition", ""),
+            "transitive": False,
+            "symmetric": False,
+            "domain": [],
+            "range": [],
+        })
+        # Flags must be MERGED across rows, not read once. The OPTIONAL clauses
+        # produce one row per binding combination; a flag unbound in whichever
+        # row happens to arrive first would otherwise be lost permanently.
+        if row.get("transitive") == "true":
+            r["transitive"] = True
+        if row.get("symmetric") == "true":
+            r["symmetric"] = True
+        for key in ("domain", "range"):
+            v = row.get(key)
+            if v:
+                short = v.rsplit("/", 1)[-1]
+                if short not in r[key]:
+                    r[key].append(short)
+    return list(rels.values())
+
+
+def _format_relationship_block() -> str:
+    """Render declared relationship types for the SPARQL-generation prompt."""
+    rels = _live_relationship_types()
+    if not rels:
+        return (
+            "RELATIONSHIP TYPES (edge predicates):\n"
+            "  NONE declared in this repository. Do not write any query that\n"
+            "  traverses an edge predicate \u2014 there are none. Only class\n"
+            "  membership and literal properties can be queried here."
+        )
+
+    lines = ["RELATIONSHIP TYPES (edge predicates):"]
+    for r in rels:
+        flags = []
+        if r["transitive"]:
+            flags.append("transitive")
+        if r["symmetric"]:
+            flags.append("symmetric")
+        suffix = f" ({', '.join(flags)})" if flags else ""
+
+        sig = ""
+        if r["domain"] and r["range"]:
+            sig = f"  [{' | '.join(r['domain'])} -> {' | '.join(r['range'])}]"
+
+        desc = f" \u2014 {r['definition']}" if r["definition"] else ""
+        lines.append(f"  rel:{r['local']}{desc}{suffix}{sig}")
+
+    lines.append("")
+    lines.append("These are the ONLY edge predicates that exist in this graph.")
+    lines.append("Never invent others. Usage: ?from rel:PREDICATE ?to .")
+    return "\n".join(lines)
+
+
+# ============================================================
 
 class SchemaVectorIndex:
     """
@@ -200,7 +298,10 @@ class SchemaVectorIndex:
         """Decompose the ontology into individual indexable fragments."""
         elements = []
 
-        # Fixed namespace block — always included
+        # Namespace + SPARQL-dialect block \u2014 repo-independent, always included.
+        # Nothing here may name a class, property or taxonomy: those come from
+        # the live ontology fragments below. Anything schema-specific written
+        # here becomes a permanent lie the moment the repo changes.
         elements.append({
             "category": "namespaces",
             "label": "SPARQL namespace prefixes",
@@ -211,46 +312,52 @@ class SchemaVectorIndex:
                 "  tax:   <https://proto.atlas/taxonomy/>\n"
                 "  rel:   <https://proto.atlas/relationship/>\n"
                 "  skos:  <http://www.w3.org/2004/02/skos/core#>\n"
+                "\n"
                 "SPARQL NOTES:\n"
-                "  - Taxonomy fields (tactic, category, riskLevel, owner) store URI values, NOT strings\n"
-                "  - To filter by tactic label use: FILTER(CONTAINS(STR(?t), \"TA0006\"))\n"
-                "  - MITRE tactic URIs: TA0001=InitialAccess TA0002=Execution TA0003=Persistence\n"
-                "    TA0004=PrivilegeEscalation TA0005=DefenseEvasion TA0006=CredentialAccess\n"
-                "    TA0007=Discovery TA0008=LateralMovement TA0009=Collection\n"
-                "    TA0010=Exfiltration TA0011=CommandAndControl TA0040=Impact\n"
-                "  - To get tactic label: ?m proto:tactic ?t . ?t skos:prefLabel ?tacticLabel\n"
-                "  - Use OPTIONAL for non-required fields\n"
-                "  - Filter by class: ?x a proto:LibraryModule\n"
-                "  - Instances: data:{key} e.g. data:cs-start-c2\n"
+                "  - Instances live under data:{key}\n"
+                "  - Filter by class: ?x a proto:ClassName\n"
+                "  - Taxonomy-valued properties store URIs, not strings. To compare\n"
+                "    against a label, join through skos:prefLabel:\n"
+                "      ?x proto:someProp ?v . ?v skos:prefLabel ?label\n"
+                "  - Use OPTIONAL for anything not marked REQUIRED\n"
+                "  - Only use classes, properties and relationship types that appear\n"
+                "    in this context. If the question needs something absent from it,\n"
+                "    the graph does not model it \u2014 do not invent a predicate.\n"
                 "\n"
-                "WORKING SPARQL PATTERNS (use these exact structures):\n"
-                "  # Filter by tactic:\n"
-                "  ?m proto:tactic ?t . FILTER(CONTAINS(STR(?t), \"TA0006\"))\n"
+                "GENERAL PATTERNS (substitute real names from the context below):\n"
+                "  # Count instances of a class:\n"
+                "  SELECT (COUNT(?x) AS ?count) WHERE { ?x a proto:ClassName }\n"
                 "\n"
-                "  # Get tactic label:\n"
-                "  ?m proto:tactic ?t . ?t skos:prefLabel ?tacticLabel .\n"
+                "  # List with optional fields:\n"
+                "  SELECT ?name ?extra WHERE {\n"
+                "    ?x a proto:ClassName ; proto:name ?name .\n"
+                "    OPTIONAL { ?x proto:extra ?extra }\n"
+                "  } ORDER BY ?name\n"
                 "\n"
-                "  # Count modules per tactic (GROUP BY):\n"
-                "  SELECT ?tacticLabel (COUNT(?m) AS ?count) WHERE {\n"
-                "    ?m a proto:LibraryModule ; proto:tactic ?t .\n"
-                "    ?t skos:prefLabel ?tacticLabel .\n"
-                "  } GROUP BY ?tacticLabel ORDER BY DESC(?count)\n"
+                "  # Traverse an edge (only with a declared relationship type):\n"
+                "  SELECT ?fromName ?toName WHERE {\n"
+                "    ?from rel:PREDICATE ?to .\n"
+                "    ?from proto:name ?fromName .\n"
+                "    ?to   proto:name ?toName .\n"
+                "  }\n"
                 "\n"
-                "  # Gap analysis - MITRE tactics with no modules:\n"
-                "  # Use CONTAINS(STR(?t), \"mitre-TA\") to match only MITRE tactic URIs\n"
-                "  SELECT DISTINCT ?tacticLabel WHERE {\n"
-                "    ?t skos:prefLabel ?tacticLabel .\n"
-                "    FILTER(CONTAINS(STR(?t), \"mitre-TA\"))\n"
-                "    FILTER(NOT EXISTS { ?m a proto:LibraryModule ; proto:tactic ?t . })\n"
+                "  # Group and count:\n"
+                "  SELECT ?key (COUNT(?x) AS ?count) WHERE {\n"
+                "    ?x a proto:ClassName ; proto:someProp ?key .\n"
+                "  } GROUP BY ?key ORDER BY DESC(?count)\n"
+                "\n"
+                "  # Instances lacking an edge:\n"
+                "  SELECT ?name WHERE {\n"
+                "    ?x a proto:ClassName ; proto:name ?name .\n"
+                "    FILTER(NOT EXISTS { ?x rel:PREDICATE ?any })\n"
                 "  }\n"
                 "\n"
                 "GRAPHDB RESTRICTIONS:\n"
-                "  - tax:mitre-tactics scheme does NOT exist in the graph — never use skos:inScheme tax:mitre-tactics\n"
-                "  - To find all tactics derive them from modules: ?m proto:tactic ?t . ?t skos:prefLabel ?label\n"
-                "  - NEVER use: FILTER(?x NOT IN (SELECT ...)) — use FILTER(NOT EXISTS {...}) instead\n"
-                "  - NEVER hardcode tactic URIs like proto:TA0006 — use FILTER(CONTAINS(STR(?t),\"TA00XX\"))\n"
-                "  - GROUP BY requires all SELECT vars to be either aggregated or in GROUP BY\n"
-                "  - Subqueries must use { SELECT ... } syntax inside the WHERE block\n"
+                "  - NEVER use FILTER(?x NOT IN (SELECT ...)) \u2014 use FILTER(NOT EXISTS {...})\n"
+                "  - GROUP BY requires every SELECT var to be aggregated or grouped\n"
+                "  - Subqueries must be wrapped: { SELECT ... } inside WHERE\n"
+                "  - Reasoning is enabled: transitive properties return inferred\n"
+                "    triples alongside asserted ones\n"
             ),
         })
 
@@ -307,21 +414,11 @@ class SchemaVectorIndex:
             except Exception as e:
                 print(f"⚠️  Schema index: could not load taxonomy '{scheme_id}': {e}")
 
-        # Relationship types as a single fragment
+        # Relationship types \u2014 read live from the connected repo, never hardcoded.
         elements.append({
             "category": "relationships",
             "label": "edge relationship types",
-            "text": (
-                "RELATIONSHIP TYPES (edge predicates):\n"
-                "  rel:LEADS_TO — sequential dependency (transitive)\n"
-                "  rel:MAPS_TO_TECHNIQUE — module implements a MITRE technique\n"
-                "  rel:SUPPORTS_TECHNIQUE — range env supports a technique\n"
-                "  rel:REQUIRES_TECHNIQUE — scenario requires a technique\n"
-                "  rel:OWNED_BY — artifact is owned by a team (inverse: rel:OWNS)\n"
-                "  rel:OWNS — team owns an artifact\n"
-                "  rel:BELONGS_TO — person belongs to a team\n"
-                "  rel:RELATED_TO — general semantic relationship (symmetric)"
-            ),
+            "text": _format_relationship_block(),
         })
 
         return elements
@@ -611,91 +708,22 @@ _fewshot_library = FewShotLibrary()
 
 def _seed_fewshot_library():
     """
-    Bootstrap the few-shot library from the hardcoded pattern-match
-    queries so the very first real query already has examples available.
-    """
-    seeds = [
-        (
-            "What library modules do we have?",
-            """SELECT ?name ?tactic ?category ?riskLevel ?owner WHERE {
-    ?m a proto:LibraryModule ;
-       proto:name ?name .
-    OPTIONAL { ?m proto:tactic ?tactic }
-    OPTIONAL { ?m proto:category ?cat . ?cat skos:prefLabel ?category }
-    OPTIONAL { ?m proto:riskLevel ?rl . ?rl skos:prefLabel ?riskLevel }
-    OPTIONAL { ?m proto:owner ?ow . ?ow skos:prefLabel ?owner }
-} ORDER BY ?name""",
-        ),
-        (
-            "Show me credential access modules",
-            """SELECT ?name ?tactic WHERE {
-    ?m a proto:LibraryModule ;
-       proto:name ?name ;
-       proto:tactic ?t .
-    FILTER(CONTAINS(STR(?t), "TA0006"))
-} ORDER BY ?name LIMIT 25""",
-        ),
-        (
-            "Show me all TTPs in the graph",
-            """SELECT ?name ?mitreId ?description WHERE {
-    ?t a proto:TTP ;
-       proto:name ?name .
-    OPTIONAL { ?t proto:mitreId ?mitreId }
-    OPTIONAL { ?t proto:description ?description }
-} ORDER BY ?name""",
-        ),
-        (
-            "Which tactics have the fewest modules?",
-            """SELECT ?tacticLabel (COUNT(?m) AS ?moduleCount) WHERE {
-    ?tactic a skos:Concept ;
-            skos:inScheme ?scheme ;
-            skos:prefLabel ?tacticLabel .
-    FILTER(CONTAINS(STR(?scheme), "mitre-tactics"))
-    OPTIONAL {
-        ?m a proto:LibraryModule ;
-           proto:tactic ?tacticLabel .
-    }
-} GROUP BY ?tacticLabel ORDER BY ?moduleCount""",
-        ),
-        (
-            "What teams own the most modules?",
-            """SELECT ?teamName (COUNT(?m) AS ?moduleCount) WHERE {
-    ?team a proto:Team ;
-          proto:name ?teamName .
-    OPTIONAL {
-        ?m a proto:LibraryModule .
-        ?m proto:owner ?team .
-    }
-} GROUP BY ?teamName ORDER BY DESC(?moduleCount)""",
-        ),
-        (
-            "Show high risk modules",
-            """SELECT ?name ?tactic ?riskLevel WHERE {
-    ?m a proto:LibraryModule ;
-       proto:name ?name .
-    ?m proto:riskLevel ?rl .
-    ?rl skos:prefLabel ?riskLevel .
-    FILTER(?riskLevel = "High" || ?riskLevel = "Critical")
-    OPTIONAL { ?m proto:tactic ?tactic }
-} ORDER BY ?name""",
-        ),
-        (
-            "How many library modules are there?",
-            "SELECT (COUNT(?m) AS ?count) WHERE { ?m a proto:LibraryModule }",
-        ),
-        (
-            "Show attack chains — what leads to what?",
-            """SELECT ?fromName ?toName WHERE {
-    ?from rel:LEADS_TO ?to .
-    ?from proto:name ?fromName .
-    ?to proto:name ?toName .
-} ORDER BY ?fromName""",
-        ),
-    ]
+    Intentionally a no-op.
 
-    print(f"🌱 Seeding few-shot library with {len(seeds)} examples...")
-    for question, sparql in seeds:
-        _fewshot_library.add(question, sparql, source="seed")
+    This previously inserted eight examples over proto:LibraryModule, proto:TTP
+    and proto:Team. Those classes belong to the `atlas` schema and do not exist
+    in every repository \u2014 in `razor-code` they exist in none. Because retrieved
+    few-shot examples are the strongest signal the SPARQL generator gets, seeding
+    them with a foreign schema made the model reproduce that schema no matter
+    what the live ontology said.
+
+    The library now fills from successful queries against whatever repo is
+    actually connected. If you want starter examples, add them by hand with
+    source="confirmed" so they outrank auto-saved entries \u2014 but write them
+    against the connected repo's real classes.
+    """
+    print("\U0001f331 Few-shot library starts empty; it fills from successful queries.")
+    return
 
 
 # ============================================================
@@ -915,10 +943,7 @@ def _build_full_schema_context() -> str:
         except Exception as e:
             print(f"⚠️  Schema dump: could not load taxonomy '{scheme_id}': {e}")
     lines.append("")
-    lines.append("RELATIONSHIP TYPES (edge predicates):")
-    lines.append("  rel:LEADS_TO  rel:MAPS_TO_TECHNIQUE  rel:SUPPORTS_TECHNIQUE")
-    lines.append("  rel:REQUIRES_TECHNIQUE  rel:OWNED_BY  rel:OWNS")
-    lines.append("  rel:BELONGS_TO  rel:RELATED_TO")
+    lines.append(_format_relationship_block())
     return "\n".join(lines)
 
 
@@ -1192,141 +1217,21 @@ async def natural_language_query(request: NaturalQueryRequest):
 
 def _pattern_match_sparql(question: str) -> Optional[str]:
     """
-    Hardcoded NL → SPARQL fallback for when LLM is unavailable.
-    These patterns also seed the few-shot library on first boot.
+    Legacy offline fallback, now disabled.
+
+    Every branch of the original implementation queried proto:LibraryModule,
+    proto:TTP or proto:Team \u2014 `atlas` classes that do not exist in every
+    repository. Against `razor-code` it could only ever return syntactically
+    valid SPARQL over classes with zero instances, i.e. a confident empty
+    answer that looks like a real finding.
+
+    Returning None makes the caller surface an honest "LLM unavailable" error
+    instead. That is strictly better than a plausible wrong answer.
+
+    If you want an offline fallback again, build it from the live ontology
+    (see _live_relationship_types and gdb.get_ontology_types) rather than from
+    a fixed class list.
     """
-    q = question.lower().strip().rstrip("?")
-
-    if any(kw in q for kw in ["library module", "modules", "what modules"]):
-        if any(kw in q for kw in ["credential", "cred"]):
-            return """SELECT ?name ?description ?tactic ?riskLevel WHERE {
-    ?m a proto:LibraryModule ;
-       proto:name ?name ;
-       proto:tactic "Credential Access" .
-    OPTIONAL { ?m proto:description ?description }
-    OPTIONAL { ?m proto:riskLevel ?rl . ?rl skos:prefLabel ?riskLevel }
-} ORDER BY ?name"""
-        if any(kw in q for kw in ["cobalt", "c2", "framework"]):
-            return """SELECT ?name ?description ?tactic WHERE {
-    ?m a proto:LibraryModule ;
-       proto:name ?name .
-    ?m proto:category ?cat .
-    ?cat skos:prefLabel ?framework .
-    FILTER(CONTAINS(LCASE(?framework), "cobalt"))
-    OPTIONAL { ?m proto:description ?description }
-    OPTIONAL { ?m proto:tactic ?tactic }
-} ORDER BY ?name"""
-        if any(kw in q for kw in ["high risk", "high-risk", "dangerous"]):
-            return """SELECT ?name ?tactic ?riskLevel WHERE {
-    ?m a proto:LibraryModule ;
-       proto:name ?name .
-    ?m proto:riskLevel ?rl .
-    ?rl skos:prefLabel ?riskLevel .
-    FILTER(?riskLevel = "High" || ?riskLevel = "Critical")
-    OPTIONAL { ?m proto:tactic ?tactic }
-} ORDER BY ?name"""
-        if "opfor" in q:
-            return """SELECT ?name ?tactic ?riskLevel WHERE {
-    ?m a proto:LibraryModule ;
-       proto:name ?name .
-    ?m proto:owner ?team .
-    ?team skos:prefLabel "OPFOR" .
-    OPTIONAL { ?m proto:tactic ?tactic }
-    OPTIONAL { ?m proto:riskLevel ?rl . ?rl skos:prefLabel ?riskLevel }
-} ORDER BY ?name"""
-        return """SELECT ?name ?tactic ?category ?riskLevel ?owner WHERE {
-    ?m a proto:LibraryModule ;
-       proto:name ?name .
-    OPTIONAL { ?m proto:tactic ?tactic }
-    OPTIONAL { ?m proto:category ?cat . ?cat skos:prefLabel ?category }
-    OPTIONAL { ?m proto:riskLevel ?rl . ?rl skos:prefLabel ?riskLevel }
-    OPTIONAL { ?m proto:owner ?ow . ?ow skos:prefLabel ?owner }
-} ORDER BY ?name"""
-
-    if any(kw in q for kw in ["ttp", "technique", "mitre", "att&ck", "attack"]):
-        return """SELECT ?name ?mitreId ?description WHERE {
-    ?t a proto:TTP ;
-       proto:name ?name .
-    OPTIONAL { ?t proto:mitreId ?mitreId }
-    OPTIONAL { ?t proto:description ?description }
-} ORDER BY ?name"""
-
-    if any(kw in q for kw in ["team", "teams", "who owns", "ownership"]):
-        return """SELECT ?teamName (COUNT(?m) AS ?moduleCount) WHERE {
-    ?team a proto:Team ;
-          proto:name ?teamName .
-    OPTIONAL {
-        ?m a proto:LibraryModule .
-        ?m proto:owner ?team .
-    }
-} GROUP BY ?teamName ORDER BY DESC(?moduleCount)"""
-
-    if any(kw in q for kw in ["related", "connected", "linked", "relationship"]):
-        if "kerberoast" in q:
-            return """SELECT ?fromName ?relType ?toName WHERE {
-    {
-        data:kerberoast ?rel ?to .
-        FILTER(STRSTARTS(STR(?rel), "https://proto.atlas/relationship/"))
-        data:kerberoast proto:name ?fromName .
-        ?to proto:name ?toName .
-        BIND(STRAFTER(STR(?rel), "https://proto.atlas/relationship/") AS ?relType)
-    } UNION {
-        ?from ?rel data:kerberoast .
-        FILTER(STRSTARTS(STR(?rel), "https://proto.atlas/relationship/"))
-        ?from proto:name ?fromName .
-        data:kerberoast proto:name ?toName .
-        BIND(STRAFTER(STR(?rel), "https://proto.atlas/relationship/") AS ?relType)
-    }
-}"""
-        return """SELECT ?fromName ?relType ?toName WHERE {
-    ?from ?rel ?to .
-    FILTER(STRSTARTS(STR(?rel), "https://proto.atlas/relationship/"))
-    FILTER(STRSTARTS(STR(?from), "https://proto.atlas/data/"))
-    FILTER(STRSTARTS(STR(?to), "https://proto.atlas/data/"))
-    ?from proto:name ?fromName .
-    ?to proto:name ?toName .
-    BIND(STRAFTER(STR(?rel), "https://proto.atlas/relationship/") AS ?relType)
-} LIMIT 25"""
-
-    if any(kw in q for kw in ["chain", "path", "leads to", "attack flow", "execution"]):
-        return """SELECT ?fromName ?toName WHERE {
-    ?from rel:LEADS_TO ?to .
-    ?from proto:name ?fromName .
-    ?to proto:name ?toName .
-} ORDER BY ?fromName"""
-
-    if any(kw in q for kw in ["coverage", "missing", "gap", "which tactic"]):
-        return """SELECT ?tacticLabel (COUNT(?m) AS ?moduleCount) WHERE {
-    ?tactic a skos:Concept ;
-            skos:inScheme ?scheme ;
-            skos:prefLabel ?tacticLabel .
-    FILTER(CONTAINS(STR(?scheme), "mitre-tactics"))
-    OPTIONAL {
-        ?m a proto:LibraryModule ;
-           proto:tactic ?tacticLabel .
-    }
-} GROUP BY ?tacticLabel ORDER BY ?moduleCount"""
-
-    if any(kw in q for kw in ["how many", "count", "total"]):
-        if "module" in q:
-            return "SELECT (COUNT(?m) AS ?count) WHERE { ?m a proto:LibraryModule }"
-        if "ttp" in q:
-            return "SELECT (COUNT(?t) AS ?count) WHERE { ?t a proto:TTP }"
-        if "team" in q:
-            return "SELECT (COUNT(?t) AS ?count) WHERE { ?t a proto:Team }"
-        return """SELECT ?type (COUNT(?x) AS ?count) WHERE {
-    ?x a ?type .
-    FILTER(STRSTARTS(STR(?x), "https://proto.atlas/data/"))
-    FILTER(STRSTARTS(STR(?type), "https://proto.atlas/ontology/"))
-} GROUP BY ?type ORDER BY DESC(?count)"""
-
-    if any(kw in q for kw in ["everything", "all", "summary", "overview", "graph"]):
-        return """SELECT ?type (COUNT(?x) AS ?count) WHERE {
-    ?x a ?type .
-    FILTER(STRSTARTS(STR(?x), "https://proto.atlas/data/"))
-    FILTER(STRSTARTS(STR(?type), "https://proto.atlas/ontology/"))
-} GROUP BY ?type ORDER BY DESC(?count)"""
-
     return None
 
 
