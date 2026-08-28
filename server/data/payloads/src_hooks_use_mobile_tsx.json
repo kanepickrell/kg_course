@@ -1,0 +1,11 @@
+{
+  "_payload_version": "2.0",
+  "_saved_at": "2026-08-28T18:16:58.944694+00:00",
+  "_artifact_key": "src_hooks_use_mobile_tsx",
+  "_artifact_type": "SourceFile",
+  "name": "use-mobile.tsx",
+  "path": "src/hooks/use-mobile.tsx",
+  "language": "typescript",
+  "partOf": "Codebase/pb-kane",
+  "analysis": "{\"content\":\"import * as React from \\\"react\\\";\\n\\nconst MOBILE_BREAKPOINT = 768;\\n\\nexport function useIsMobile() {\\n  const [isMobile, setIsMobile] = React.useState<boolean | undefined>(undefined);\\n\\n  React.useEffect(() => {\\n    const mql = window.matchMedia(`(max-width: ${MOBILE_BREAKPOINT - 1}px)`);\\n    const onChange = () => {\\n      setIsMobile(window.innerWidth < MOBILE_BREAKPOINT);\\n    };\\n    mql.addEventListener(\\\"change\\\", onChange);\\n    setIsMobile(window.innerWidth < MOBILE_BREAKPOINT);\\n    return () => mql.removeEventListener(\\\"change\\\", onChange);\\n  }, []);\\n\\n  return !!isMobile;\\n}\\n\",\"signals\":{\"functions\":[\"useIsMobile\",\"onChange\"],\"imports\":[\"react\"],\"references\":[]},\"size\":576,\"line_count\":20}"
+}

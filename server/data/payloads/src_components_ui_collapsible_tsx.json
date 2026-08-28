@@ -1,0 +1,11 @@
+{
+  "_payload_version": "2.0",
+  "_saved_at": "2026-08-28T18:16:53.977831+00:00",
+  "_artifact_key": "src_components_ui_collapsible_tsx",
+  "_artifact_type": "SourceFile",
+  "name": "collapsible.tsx",
+  "path": "src/components/ui/collapsible.tsx",
+  "language": "typescript",
+  "partOf": "Codebase/pb-kane",
+  "analysis": "{\"content\":\"\\\"use client\\\";\\n\\nimport * as CollapsiblePrimitive from \\\"@radix-ui/react-collapsible\\\";\\n\\nconst Collapsible = CollapsiblePrimitive.Root;\\n\\nconst CollapsibleTrigger = CollapsiblePrimitive.CollapsibleTrigger;\\n\\nconst CollapsibleContent = CollapsiblePrimitive.CollapsibleContent;\\n\\nexport { Collapsible, CollapsibleTrigger, CollapsibleContent };\\n\",\"signals\":{\"functions\":[],\"imports\":[\"@radix-ui/react-collapsible\"],\"references\":[]},\"size\":335,\"line_count\":12}"
+}

@@ -1,0 +1,11 @@
+{
+  "_payload_version": "2.0",
+  "_saved_at": "2026-08-28T18:16:50.888541+00:00",
+  "_artifact_key": "eslint_config_js",
+  "_artifact_type": "SourceFile",
+  "name": "eslint.config.js",
+  "path": "eslint.config.js",
+  "language": "javascript",
+  "partOf": "Codebase/pb-kane",
+  "analysis": "{\"content\":\"import js from \\\"@eslint/js\\\";\\nimport eslintPluginPrettier from \\\"eslint-plugin-prettier/recommended\\\";\\nimport globals from \\\"globals\\\";\\nimport reactHooks from \\\"eslint-plugin-react-hooks\\\";\\nimport reactRefresh from \\\"eslint-plugin-react-refresh\\\";\\nimport tseslint from \\\"typescript-eslint\\\";\\n\\nexport default tseslint.config(\\n  { ignores: [\\\"dist\\\", \\\".output\\\", \\\".vinxi\\\"] },\\n  {\\n    extends: [js.configs.recommended, ...tseslint.configs.recommended],\\n    files: [\\\"**/*.{ts,tsx}\\\"],\\n    languageOptions: {\\n      ecmaVersion: 2020,\\n      globals: globals.browser,\\n    },\\n    plugins: {\\n      \\\"react-hooks\\\": reactHooks,\\n      \\\"react-refresh\\\": reactRefresh,\\n    },\\n    rules: {\\n      ...reactHooks.configs.recommended.rules,\\n      \\\"no-restricted-imports\\\": [\\n        \\\"error\\\",\\n        {\\n          paths: [\\n            {\\n              name: \\\"server-only\\\",\\n              message:\\n                \\\"TanStack Start does not use the Next.js `server-only` package. Rename the module to `*.server.ts` or mark it with `@tanstack/react-start/server-only`.\\\",\\n            },\\n          ],\\n        },\\n      ],\\n      \\\"react-refresh/only-export-components\\\": [\\\"warn\\\", { allowConstantExport: true }],\\n      \\\"@typescript-eslint/no-unused-vars\\\": \\\"off\\\",\\n    },\\n  },\\n  eslintPluginPrettier,\\n);\\n\",\"signals\":{\"functions\":[],\"imports\":[\"@eslint/js\",\"eslint-plugin-prettier/recommended\",\"globals\",\"eslint-plugin-react-hooks\",\"eslint-plugin-react-refresh\",\"typescript-eslint\"],\"references\":[]},\"size\":1250,\"line_count\":41}"
+}

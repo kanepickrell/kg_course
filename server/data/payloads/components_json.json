@@ -1,0 +1,11 @@
+{
+  "_payload_version": "2.0",
+  "_saved_at": "2026-08-28T18:16:50.776524+00:00",
+  "_artifact_key": "components_json",
+  "_artifact_type": "SourceFile",
+  "name": "components.json",
+  "path": "components.json",
+  "language": "json",
+  "partOf": "Codebase/pb-kane",
+  "analysis": "{\"content\":\"{\\n  \\\"$schema\\\": \\\"https://ui.shadcn.com/schema.json\\\",\\n  \\\"style\\\": \\\"new-york\\\",\\n  \\\"rsc\\\": false,\\n  \\\"tsx\\\": true,\\n  \\\"tailwind\\\": {\\n    \\\"css\\\": \\\"src/styles.css\\\",\\n    \\\"baseColor\\\": \\\"slate\\\",\\n    \\\"cssVariables\\\": true,\\n    \\\"prefix\\\": \\\"\\\"\\n  },\\n  \\\"iconLibrary\\\": \\\"lucide\\\",\\n  \\\"rtl\\\": false,\\n  \\\"aliases\\\": {\\n    \\\"components\\\": \\\"@/components\\\",\\n    \\\"utils\\\": \\\"@/lib/utils\\\",\\n    \\\"ui\\\": \\\"@/components/ui\\\",\\n    \\\"lib\\\": \\\"@/lib\\\",\\n    \\\"hooks\\\": \\\"@/hooks\\\"\\n  },\\n  \\\"registries\\\": {}\\n}\\n\",\"signals\":{\"functions\":[],\"imports\":[],\"references\":[]},\"size\":443,\"line_count\":23}"
+}

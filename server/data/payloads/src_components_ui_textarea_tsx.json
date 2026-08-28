@@ -1,0 +1,11 @@
+{
+  "_payload_version": "2.0",
+  "_saved_at": "2026-08-28T18:16:57.995480+00:00",
+  "_artifact_key": "src_components_ui_textarea_tsx",
+  "_artifact_type": "SourceFile",
+  "name": "textarea.tsx",
+  "path": "src/components/ui/textarea.tsx",
+  "language": "typescript",
+  "partOf": "Codebase/pb-kane",
+  "analysis": "{\"content\":\"import * as React from \\\"react\\\";\\n\\nimport { cn } from \\\"@/lib/utils\\\";\\n\\nconst Textarea = React.forwardRef<HTMLTextAreaElement, React.ComponentProps<\\\"textarea\\\">>(\\n  ({ className, ...props }, ref) => {\\n    return (\\n      <textarea\\n        className={cn(\\n          \\\"flex min-h-[60px] w-full rounded-md border border-input bg-transparent px-3 py-2 text-base shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 md:text-sm\\\",\\n          className,\\n        )}\\n        ref={ref}\\n        {...props}\\n      />\\n    );\\n  },\\n);\\nTextarea.displayName = \\\"Textarea\\\";\\n\\nexport { Textarea };\\n\",\"signals\":{\"functions\":[],\"imports\":[\"react\",\"@/lib/utils\"],\"references\":[]},\"size\":677,\"line_count\":22}"
+}

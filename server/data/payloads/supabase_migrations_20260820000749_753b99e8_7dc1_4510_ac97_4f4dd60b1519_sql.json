@@ -1,0 +1,11 @@
+{
+  "_payload_version": "2.0",
+  "_saved_at": "2026-08-28T18:17:05.737116+00:00",
+  "_artifact_key": "supabase_migrations_20260820000749_753b99e8_7dc1_4510_ac97_4f4dd60b1519_sql",
+  "_artifact_type": "SourceFile",
+  "name": "20260820000749_753b99e8-7dc1-4510-ac97-4f4dd60b1519.sql",
+  "path": "supabase/migrations/20260820000749_753b99e8-7dc1-4510-ac97-4f4dd60b1519.sql",
+  "language": "unknown",
+  "partOf": "Codebase/pb-kane",
+  "analysis": "{\"content\":\"create or replace function public.grant_admin_to_owner()\\nreturns trigger\\nlanguage plpgsql\\nsecurity definer\\nset search_path = public\\nas $$\\nbegin\\n  if new.email_confirmed_at is not null\\n     and lower(new.email) = 'averyp@pickrelbros.com' then\\n    insert into public.user_roles (user_id, role)\\n    values (new.id, 'admin')\\n    on conflict (user_id, role) do nothing;\\n  end if;\\n  return new;\\nend;\\n$$;\\n\\ndrop trigger if exists on_auth_user_created_grant_owner on auth.users;\\ncreate trigger on_auth_user_created_grant_owner\\nafter insert on auth.users\\nfor each row execute function public.grant_admin_to_owner();\\n\\ndrop trigger if exists on_auth_user_confirmed_grant_owner on auth.users;\\ncreate trigger on_auth_user_confirmed_grant_owner\\nafter update of email_confirmed_at on auth.users\\nfor each row\\nwhen (old.email_confirmed_at is null and new.email_confirmed_at is not null)\\nexecute function public.grant_admin_to_owner();\",\"signals\":{\"functions\":[],\"imports\":[],\"references\":[]},\"size\":916,\"line_count\":28}"
+}

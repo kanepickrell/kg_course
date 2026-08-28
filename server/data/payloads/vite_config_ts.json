@@ -1,0 +1,11 @@
+{
+  "_payload_version": "2.0",
+  "_saved_at": "2026-08-28T18:17:06.456130+00:00",
+  "_artifact_key": "vite_config_ts",
+  "_artifact_type": "SourceFile",
+  "name": "vite.config.ts",
+  "path": "vite.config.ts",
+  "language": "typescript",
+  "partOf": "Codebase/pb-kane",
+  "analysis": "{\"content\":\"// @lovable.dev/vite-tanstack-config already includes the following \u2014 do NOT add them manually\\n// or the app will break with duplicate plugins:\\n//   - TanStack devtools (dev-only, first), tanstackStart, viteReact, tailwindcss, tsConfigPaths,\\n//     nitro (build-only using cloudflare as a default target), VITE_* env injection, @ path alias,\\n//     React/TanStack dedupe, error logger plugins, and sandbox detection (port/host/strictPort).\\n// You can pass additional config via defineConfig({ vite: { ... }, etc... }) if needed.\\nimport { defineConfig } from \\\"@lovable.dev/vite-tanstack-config\\\";\\n\\nexport default defineConfig({\\n  tanstackStart: {\\n    // Redirect TanStack Start's bundled server entry to src/server.ts (our SSR error wrapper).\\n    // nitro/vite builds from this\\n    server: { entry: \\\"server\\\" },\\n  },\\n});\\n\",\"signals\":{\"functions\":[],\"imports\":[\"@lovable.dev/vite-tanstack-config\"],\"references\":[]},\"size\":818,\"line_count\":16}"
+}

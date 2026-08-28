@@ -1,0 +1,11 @@
+{
+  "_payload_version": "2.0",
+  "_saved_at": "2026-08-28T18:16:52.642769+00:00",
+  "_artifact_key": "src_components_ui_aspect_ratio_tsx",
+  "_artifact_type": "SourceFile",
+  "name": "aspect-ratio.tsx",
+  "path": "src/components/ui/aspect-ratio.tsx",
+  "language": "typescript",
+  "partOf": "Codebase/pb-kane",
+  "analysis": "{\"content\":\"import * as AspectRatioPrimitive from \\\"@radix-ui/react-aspect-ratio\\\";\\n\\nconst AspectRatio = AspectRatioPrimitive.Root;\\n\\nexport { AspectRatio };\\n\",\"signals\":{\"functions\":[],\"imports\":[\"@radix-ui/react-aspect-ratio\"],\"references\":[]},\"size\":143,\"line_count\":6}"
+}

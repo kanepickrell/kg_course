@@ -1,0 +1,11 @@
+{
+  "_payload_version": "2.0",
+  "_saved_at": "2026-08-28T18:17:06.170245+00:00",
+  "_artifact_key": "supabase_migrations_20260821133800_a093af0e_81b9_4acd_be0d_de533b1b9fc3_sql",
+  "_artifact_type": "SourceFile",
+  "name": "20260821133800_a093af0e-81b9-4acd-be0d-de533b1b9fc3.sql",
+  "path": "supabase/migrations/20260821133800_a093af0e-81b9-4acd-be0d-de533b1b9fc3.sql",
+  "language": "unknown",
+  "partOf": "Codebase/pb-kane",
+  "analysis": "{\"content\":\"REVOKE ALL ON FUNCTION public.grant_admin_to_owner() FROM public, anon, authenticated;\\nREVOKE ALL ON FUNCTION public.log_pricing_change() FROM public, anon, authenticated;\",\"signals\":{\"functions\":[],\"imports\":[],\"references\":[]},\"size\":171,\"line_count\":2}"
+}

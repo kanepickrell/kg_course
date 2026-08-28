@@ -1,0 +1,11 @@
+{
+  "_payload_version": "2.0",
+  "_saved_at": "2026-08-28T18:17:01.193218+00:00",
+  "_artifact_key": "src_lib_utils_ts",
+  "_artifact_type": "SourceFile",
+  "name": "utils.ts",
+  "path": "src/lib/utils.ts",
+  "language": "typescript",
+  "partOf": "Codebase/pb-kane",
+  "analysis": "{\"content\":\"import { clsx, type ClassValue } from \\\"clsx\\\";\\nimport { twMerge } from \\\"tailwind-merge\\\";\\n\\nexport function cn(...inputs: ClassValue[]) {\\n  return twMerge(clsx(inputs));\\n}\\n\",\"signals\":{\"functions\":[\"cn\"],\"imports\":[\"clsx\",\"tailwind-merge\"],\"references\":[]},\"size\":169,\"line_count\":7}"
+}

@@ -1,0 +1,11 @@
+{
+  "_payload_version": "2.0",
+  "_saved_at": "2026-08-28T18:17:03.864807+00:00",
+  "_artifact_key": "src_routes_readme_md",
+  "_artifact_type": "SourceFile",
+  "name": "README.md",
+  "path": "src/routes/README.md",
+  "language": "markdown",
+  "partOf": "Codebase/pb-kane",
+  "analysis": "{\"content\":\"# Routes\\n\\nTanStack Start uses **file-based routing**. Every `.tsx` file in this directory\\ndefines a route. Do **not** create `src/pages/`, `src/routes/_app/index.tsx`, or\\n`app/layout.tsx` \u2014 those are Next.js / Remix conventions. The only root layout\\nis `src/routes/__root.tsx`.\\n\\n## Conventions\\n\\n| File | URL |\\n| --- | --- |\\n| `index.tsx` | `/` |\\n| `about.tsx` | `/about` |\\n| `users/index.tsx` | `/users` |\\n| `users/$id.tsx` | `/users/:id` (dynamic \u2014 bare `$`, no curly braces) |\\n| `posts/{-$category}.tsx` | `/posts/:category?` (optional segment) |\\n| `files/$.tsx` | `/files/*` (splat \u2014 read via `_splat` param, never `*`) |\\n| `_layout.tsx` | layout route (renders children via `<Outlet />`) |\\n| `__root.tsx` | app shell \u2014 wraps every page; preserve `<Outlet />` |\\n\\n`routeTree.gen.ts` is auto-generated. Don't edit it by hand.\\n\",\"signals\":{\"functions\":[],\"imports\":[],\"references\":[]},\"size\":827,\"line_count\":22}"
+}

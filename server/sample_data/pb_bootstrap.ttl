@@ -1,0 +1,119 @@
+#
+# Bootstrap ontology for the pb-kane repository.
+#
+# Hierarchy is deliberately flat: Thing <- Artifact <- {Codebase, SourceFile}.
+# The pi extension lists only classes that HAVE a parent and ARE NOT a parent,
+# so anything subclassing Codebase or SourceFile would hide them from
+# describe_ontology while ingest still targets them. Keep concrete classes leaf.
+#
+# Labels match URI local names exactly. Ingest matches classes on rdfs:label,
+# /prospector/node matches on the URI local name; a label like "Source File"
+# satisfies one and breaks the other.
+#
+# Property attachment uses proto:definedOn (what _get_class_properties reads),
+# not rdfs:domain.
+#
+
+@prefix rdfs:  <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix owl:   <http://www.w3.org/2002/07/owl#> .
+@prefix xsd:   <http://www.w3.org/2001/XMLSchema#> .
+@prefix proto: <https://proto.atlas/ontology/> .
+@prefix rel:   <https://proto.atlas/relationship/> .
+
+#
+# Scaffold. Neither of these appears in the extension's class list: Thing has no
+# parent, Artifact is a parent. That is intended — they exist so the concrete
+# classes below have somewhere to hang.
+#
+
+proto:Thing a owl:Class ;
+    rdfs:label "Thing" ;
+    rdfs:comment "Root of the ontology." .
+
+proto:Artifact a owl:Class ;
+    rdfs:label "Artifact" ;
+    rdfs:comment "Anything the graph tracks as a first-class record." ;
+    rdfs:subClassOf proto:Thing .
+
+#
+# Concrete classes. Names are exact: resolveIngestClasses in protograph.ts looks
+# for "SourceFile" and "Codebase" by name, and falls back to guessing if neither
+# is found.
+#
+
+proto:Codebase a owl:Class ;
+    rdfs:label "Codebase" ;
+    rdfs:comment "A source repository. One per ingested project." ;
+    rdfs:subClassOf proto:Artifact .
+
+proto:SourceFile a owl:Class ;
+    rdfs:label "SourceFile" ;
+    rdfs:comment "One source file within a codebase." ;
+    rdfs:subClassOf proto:Artifact .
+
+#
+# Properties.
+#
+# Undeclared fields still get written at ingest as proto:<field>, but the NL
+# query engine only indexes declared ones — so anything you want query_graph to
+# reason over has to be here. These five are exactly what /api/ingest/commit
+# sends for a SourceFile.
+#
+# Nothing is marked required. Ingest omits fields it could not extract, and a
+# required field it omits 400s the commit for every file in the repo.
+#
+
+proto:name a owl:DatatypeProperty ;
+    rdfs:label "name" ;
+    rdfs:comment "Display name. For a SourceFile, the file name with extension." ;
+    rdfs:range xsd:string ;
+    proto:definedOn proto:Artifact .
+
+proto:description a owl:DatatypeProperty ;
+    rdfs:label "description" ;
+    rdfs:comment "Free-text description." ;
+    rdfs:range xsd:string ;
+    proto:definedOn proto:Artifact .
+
+proto:path a owl:DatatypeProperty ;
+    rdfs:label "path" ;
+    rdfs:comment "Path relative to the codebase root, forward slashes." ;
+    rdfs:range xsd:string ;
+    proto:definedOn proto:SourceFile .
+
+proto:language a owl:DatatypeProperty ;
+    rdfs:label "language" ;
+    rdfs:comment "Source language inferred from file extension at ingest." ;
+    rdfs:range xsd:string ;
+    proto:definedOn proto:SourceFile .
+
+proto:partOf a owl:DatatypeProperty ;
+    rdfs:label "partOf" ;
+    rdfs:comment "Owning codebase as a raw 'Codebase/<key>' string, not an edge. Traversal from a Codebase node will look empty; count its files with query_graph instead." ;
+    rdfs:range xsd:string ;
+    proto:definedOn proto:SourceFile .
+
+proto:analysis a owl:DatatypeProperty ;
+    rdfs:label "analysis" ;
+    rdfs:comment "Ingest-time extraction: file content plus captured import and symbol signals." ;
+    rdfs:range xsd:string ;
+    proto:definedOn proto:SourceFile .
+
+#
+# Relationships.
+#
+# One only, on purpose: propose_dependencies infers the relationship type when
+# exactly one is declared. Declaring a second means every call has to pass
+# relationship_type explicitly.
+#
+# proto:rangeClass is what the extension reads to check an edge is legal before
+# writing it; rdfs:range is there for the reasoner.
+#
+
+rel:DEPENDS_ON a owl:ObjectProperty ;
+    rdfs:label "DEPENDS_ON" ;
+    rdfs:comment "Source file imports or requires another source file in the same codebase." ;
+    rdfs:domain proto:SourceFile ;
+    rdfs:range proto:SourceFile ;
+    proto:definedOn proto:SourceFile ;
+    proto:rangeClass proto:SourceFile .

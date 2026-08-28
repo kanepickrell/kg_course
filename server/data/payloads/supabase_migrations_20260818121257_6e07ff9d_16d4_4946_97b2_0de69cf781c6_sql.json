@@ -1,0 +1,11 @@
+{
+  "_payload_version": "2.0",
+  "_saved_at": "2026-08-28T18:17:05.601227+00:00",
+  "_artifact_key": "supabase_migrations_20260818121257_6e07ff9d_16d4_4946_97b2_0de69cf781c6_sql",
+  "_artifact_type": "SourceFile",
+  "name": "20260818121257_6e07ff9d-16d4-4946-97b2-0de69cf781c6.sql",
+  "path": "supabase/migrations/20260818121257_6e07ff9d-16d4-4946-97b2-0de69cf781c6.sql",
+  "language": "unknown",
+  "partOf": "Codebase/pb-kane",
+  "analysis": "{\"content\":\"REVOKE ALL ON FUNCTION public.calc_selling_price(UUID, UUID) FROM PUBLIC, anon, authenticated;\\nREVOKE ALL ON FUNCTION public.price_list(UUID) FROM PUBLIC, anon, authenticated;\\nREVOKE ALL ON FUNCTION public.log_pricing_change() FROM PUBLIC, anon, authenticated;\\nREVOKE ALL ON FUNCTION public.handle_new_user() FROM PUBLIC, anon, authenticated;\\nREVOKE ALL ON FUNCTION public.update_updated_at_column() FROM PUBLIC, anon, authenticated;\\nREVOKE ALL ON FUNCTION public.has_role(UUID, public.app_role) FROM PUBLIC, anon;\\nREVOKE ALL ON FUNCTION public.is_staff(UUID) FROM PUBLIC, anon;\\nGRANT EXECUTE ON FUNCTION public.has_role(UUID, public.app_role) TO authenticated, service_role;\\nGRANT EXECUTE ON FUNCTION public.is_staff(UUID) TO authenticated, service_role;\\nGRANT EXECUTE ON FUNCTION public.calc_selling_price(UUID, UUID) TO service_role;\\nGRANT EXECUTE ON FUNCTION public.price_list(UUID) TO service_role;\",\"signals\":{\"functions\":[],\"imports\":[],\"references\":[]},\"size\":903,\"line_count\":11}"
+}

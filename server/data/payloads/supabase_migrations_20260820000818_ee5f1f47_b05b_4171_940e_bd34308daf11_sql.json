@@ -1,0 +1,11 @@
+{
+  "_payload_version": "2.0",
+  "_saved_at": "2026-08-28T18:17:05.917117+00:00",
+  "_artifact_key": "supabase_migrations_20260820000818_ee5f1f47_b05b_4171_940e_bd34308daf11_sql",
+  "_artifact_type": "SourceFile",
+  "name": "20260820000818_ee5f1f47-b05b-4171-940e-bd34308daf11.sql",
+  "path": "supabase/migrations/20260820000818_ee5f1f47-b05b-4171-940e-bd34308daf11.sql",
+  "language": "unknown",
+  "partOf": "Codebase/pb-kane",
+  "analysis": "{\"content\":\"revoke all on function public.grant_admin_to_owner() from public, anon, authenticated;\",\"signals\":{\"functions\":[],\"imports\":[],\"references\":[]},\"size\":86,\"line_count\":1}"
+}

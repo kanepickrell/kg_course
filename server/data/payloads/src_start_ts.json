@@ -1,0 +1,11 @@
+{
+  "_payload_version": "2.0",
+  "_saved_at": "2026-08-28T18:17:04.982377+00:00",
+  "_artifact_key": "src_start_ts",
+  "_artifact_type": "SourceFile",
+  "name": "start.ts",
+  "path": "src/start.ts",
+  "language": "typescript",
+  "partOf": "Codebase/pb-kane",
+  "analysis": "{\"content\":\"import { createStart, createCsrfMiddleware, createMiddleware } from \\\"@tanstack/react-start\\\";\\n\\nimport { renderErrorPage } from \\\"./lib/error-page\\\";\\nimport { attachSupabaseAuth } from \\\"@/integrations/supabase/auth-attacher\\\";\\n\\nconst errorMiddleware = createMiddleware().server(async ({ next }) => {\\n  try {\\n    return await next();\\n  } catch (error) {\\n    if (error != null && typeof error === \\\"object\\\" && \\\"statusCode\\\" in error) {\\n      throw error;\\n    }\\n    console.error(error);\\n    return new Response(renderErrorPage(), {\\n      status: 500,\\n      headers: { \\\"content-type\\\": \\\"text/html; charset=utf-8\\\" },\\n    });\\n  }\\n});\\n\\n// Start installs this automatically when src/start.ts is absent; defining the\\n// file opts out, so re-add it explicitly to keep server functions protected\\n// from cross-site requests.\\nconst csrfMiddleware = createCsrfMiddleware({\\n  filter: (ctx) => ctx.handlerType === \\\"serverFn\\\",\\n});\\n\\nexport const startInstance = createStart(() => ({\\n  functionMiddleware: [attachSupabaseAuth],\\n  requestMiddleware: [errorMiddleware, csrfMiddleware],\\n}));\\n\",\"signals\":{\"functions\":[],\"imports\":[\"@tanstack/react-start\",\"./lib/error-page\",\"@/integrations/supabase/auth-attacher\"],\"references\":[]},\"size\":1064,\"line_count\":32}"
+}

@@ -1,0 +1,11 @@
+{
+  "_payload_version": "2.0",
+  "_saved_at": "2026-08-28T18:16:50.537524+00:00",
+  "_artifact_key": "agents_md",
+  "_artifact_type": "SourceFile",
+  "name": "AGENTS.md",
+  "path": "AGENTS.md",
+  "language": "markdown",
+  "partOf": "Codebase/pb-kane",
+  "analysis": "{\"content\":\"<!-- LOVABLE:BEGIN -->\\n> [!IMPORTANT]\\n> This project is connected to [Lovable](https://lovable.dev). Avoid rewriting\\n> published git history \u2014 force pushing, or rebasing/amending/squashing commits\\n> that are already pushed \u2014 as it rewrites history on Lovable's side and the\\n> user will likely lose their project history.\\n>\\n> Commits you push to the connected branch sync back to Lovable and show up in\\n> the editor, so keep the branch in a working state.\\n<!-- LOVABLE:END -->\\n\",\"signals\":{\"functions\":[],\"imports\":[],\"references\":[]},\"size\":476,\"line_count\":11}"
+}

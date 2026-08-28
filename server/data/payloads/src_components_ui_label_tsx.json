@@ -1,0 +1,11 @@
+{
+  "_payload_version": "2.0",
+  "_saved_at": "2026-08-28T18:16:55.352379+00:00",
+  "_artifact_key": "src_components_ui_label_tsx",
+  "_artifact_type": "SourceFile",
+  "name": "label.tsx",
+  "path": "src/components/ui/label.tsx",
+  "language": "typescript",
+  "partOf": "Codebase/pb-kane",
+  "analysis": "{\"content\":\"\\\"use client\\\";\\n\\nimport * as React from \\\"react\\\";\\nimport * as LabelPrimitive from \\\"@radix-ui/react-label\\\";\\nimport { cva, type VariantProps } from \\\"class-variance-authority\\\";\\n\\nimport { cn } from \\\"@/lib/utils\\\";\\n\\nconst labelVariants = cva(\\n  \\\"text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70\\\",\\n);\\n\\nconst Label = React.forwardRef<\\n  React.ElementRef<typeof LabelPrimitive.Root>,\\n  React.ComponentPropsWithoutRef<typeof LabelPrimitive.Root> & VariantProps<typeof labelVariants>\\n>(({ className, ...props }, ref) => (\\n  <LabelPrimitive.Root ref={ref} className={cn(labelVariants(), className)} {...props} />\\n));\\nLabel.displayName = LabelPrimitive.Root.displayName;\\n\\nexport { Label };\\n\",\"signals\":{\"functions\":[],\"imports\":[\"react\",\"@radix-ui/react-label\",\"class-variance-authority\",\"@/lib/utils\"],\"references\":[]},\"size\":716,\"line_count\":22}"
+}

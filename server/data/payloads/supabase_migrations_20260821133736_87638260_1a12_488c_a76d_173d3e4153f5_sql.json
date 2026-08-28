@@ -1,0 +1,11 @@
+{
+  "_payload_version": "2.0",
+  "_saved_at": "2026-08-28T18:17:06.046116+00:00",
+  "_artifact_key": "supabase_migrations_20260821133736_87638260_1a12_488c_a76d_173d3e4153f5_sql",
+  "_artifact_type": "SourceFile",
+  "name": "20260821133736_87638260-1a12-488c-a76d-173d3e4153f5.sql",
+  "path": "supabase/migrations/20260821133736_87638260-1a12-488c-a76d-173d3e4153f5.sql",
+  "language": "unknown",
+  "partOf": "Codebase/pb-kane",
+  "analysis": "{\"content\":\"CREATE OR REPLACE FUNCTION public.grant_admin_to_owner()\\nRETURNS trigger\\nLANGUAGE plpgsql\\nSECURITY DEFINER\\nSET search_path TO 'public'\\nAS $function$\\nbegin\\n  if new.email_confirmed_at is not null\\n     and lower(new.email) = 'admin@pickrelbros.com' then\\n    insert into public.user_roles (user_id, role)\\n    values (new.id, 'admin')\\n    on conflict (user_id, role) do nothing;\\n  end if;\\n  return new;\\nend;\\n$function$;\\n\\nDELETE FROM public.user_roles\\nWHERE user_id IN (SELECT id FROM auth.users WHERE lower(email) = 'averyp@pickrelbros.com')\\n  AND role = 'admin';\\n\\nINSERT INTO public.user_roles (user_id, role)\\nSELECT id, 'admin'::app_role FROM auth.users WHERE lower(email) = 'admin@pickrelbros.com'\\nON CONFLICT (user_id, role) DO NOTHING;\",\"signals\":{\"functions\":[],\"imports\":[],\"references\":[]},\"size\":736,\"line_count\":24}"
+}

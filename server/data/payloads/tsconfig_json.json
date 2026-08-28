@@ -1,0 +1,11 @@
+{
+  "_payload_version": "2.0",
+  "_saved_at": "2026-08-28T18:17:06.294225+00:00",
+  "_artifact_key": "tsconfig_json",
+  "_artifact_type": "SourceFile",
+  "name": "tsconfig.json",
+  "path": "tsconfig.json",
+  "language": "json",
+  "partOf": "Codebase/pb-kane",
+  "analysis": "{\"content\":\"{\\n  \\\"include\\\": [\\\"src/**/*.ts\\\", \\\"src/**/*.tsx\\\", \\\"vite.config.ts\\\", \\\"eslint.config.js\\\"],\\n  \\\"compilerOptions\\\": {\\n    \\\"target\\\": \\\"ES2022\\\",\\n    \\\"jsx\\\": \\\"react-jsx\\\",\\n    \\\"module\\\": \\\"ESNext\\\",\\n    \\\"lib\\\": [\\\"ES2022\\\", \\\"DOM\\\", \\\"DOM.Iterable\\\"],\\n    \\\"types\\\": [\\\"vite/client\\\"],\\n\\n    \\\"moduleResolution\\\": \\\"Bundler\\\",\\n    \\\"allowImportingTsExtensions\\\": true,\\n    \\\"verbatimModuleSyntax\\\": false,\\n    \\\"noEmit\\\": true,\\n\\n    \\\"skipLibCheck\\\": true,\\n    \\\"strict\\\": true,\\n    \\\"noUnusedLocals\\\": false,\\n    \\\"noUnusedParameters\\\": false,\\n    \\\"noFallthroughCasesInSwitch\\\": true,\\n    \\\"noImplicitOverride\\\": true,\\n    \\\"noImplicitReturns\\\": true,\\n    \\\"noPropertyAccessFromIndexSignature\\\": true,\\n    \\\"noUncheckedIndexedAccess\\\": true,\\n    \\\"exactOptionalPropertyTypes\\\": true,\\n    \\\"noUncheckedSideEffectImports\\\": true,\\n    \\\"paths\\\": {\\n      \\\"@/*\\\": [\\\"./src/*\\\"]\\n    }\\n  }\\n}\\n\",\"signals\":{\"functions\":[],\"imports\":[],\"references\":[]},\"size\":820,\"line_count\":31}"
+}

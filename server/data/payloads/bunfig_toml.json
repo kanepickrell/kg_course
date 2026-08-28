@@ -1,0 +1,11 @@
+{
+  "_payload_version": "2.0",
+  "_saved_at": "2026-08-28T18:16:50.657524+00:00",
+  "_artifact_key": "bunfig_toml",
+  "_artifact_type": "SourceFile",
+  "name": "bunfig.toml",
+  "path": "bunfig.toml",
+  "language": "unknown",
+  "partOf": "Codebase/pb-kane",
+  "analysis": "{\"content\":\"[install]\\nsaveTextLockfile = true\\n# 24h supply-chain guard: skip package versions published less than a day ago.\\nminimumReleaseAge = 86400\\n# Each entry bypasses the 24h guard for one package \u2014 confirm with the user\\n# before adding any.\\nminimumReleaseAgeExcludes = [\\\"@lovable.dev/vite-tanstack-config\\\", \\\"@lovable.dev/mcp-js\\\", \\\"@lovable.dev/email-js\\\", \\\"@lovable.dev/webhooks-js\\\"]\\n\",\"signals\":{\"functions\":[],\"imports\":[],\"references\":[]},\"size\":378,\"line_count\":8}"
+}

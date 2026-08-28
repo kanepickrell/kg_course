@@ -1,0 +1,11 @@
+{
+  "_payload_version": "2.0",
+  "_saved_at": "2026-08-28T18:16:51.640770+00:00",
+  "_artifact_key": "src_components_site_logo_tsx",
+  "_artifact_type": "SourceFile",
+  "name": "Logo.tsx",
+  "path": "src/components/site/Logo.tsx",
+  "language": "typescript",
+  "partOf": "Codebase/pb-kane",
+  "analysis": "{\"content\":\"import { Link } from \\\"@tanstack/react-router\\\";\\n\\nexport function Logo({ variant = \\\"light\\\" }: { variant?: \\\"light\\\" | \\\"dark\\\" }) {\\n  const primary = variant === \\\"light\\\" ? \\\"text-navy\\\" : \\\"text-navy-foreground\\\";\\n  const sub = variant === \\\"light\\\" ? \\\"text-muted-foreground\\\" : \\\"text-sky-soft\\\";\\n  return (\\n    <Link to=\\\"/\\\" className=\\\"flex items-center gap-3\\\" aria-label=\\\"Pickrel Brothers Inc. home\\\">\\n      <span\\n        aria-hidden\\n        className=\\\"flex h-11 w-11 shrink-0 items-center justify-center rounded-sm bg-navy font-display text-xl font-bold tracking-tight text-navy-foreground ring-2 ring-sky\\\"\\n      >\\n        PB\\n      </span>\\n      <span className=\\\"leading-none\\\">\\n        <span className={`block font-display text-xl font-bold uppercase tracking-wide ${primary}`}>\\n          Pickrel Brothers <span className=\\\"text-sky\\\">Inc.</span>\\n        </span>\\n        <span className={`mt-1 block text-[0.65rem] font-semibold uppercase tracking-[0.16em] ${sub}`}>\\n          Wholesale Distributor\\n        </span>\\n      </span>\\n    </Link>\\n  );\\n}\\n\",\"signals\":{\"functions\":[\"Logo\"],\"imports\":[\"@tanstack/react-router\"],\"references\":[]},\"size\":1033,\"line_count\":25}"
+}

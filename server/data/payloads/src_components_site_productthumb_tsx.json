@@ -1,0 +1,11 @@
+{
+  "_payload_version": "2.0",
+  "_saved_at": "2026-08-28T18:16:51.946747+00:00",
+  "_artifact_key": "src_components_site_productthumb_tsx",
+  "_artifact_type": "SourceFile",
+  "name": "ProductThumb.tsx",
+  "path": "src/components/site/ProductThumb.tsx",
+  "language": "typescript",
+  "partOf": "Codebase/pb-kane",
+  "analysis": "{\"content\":\"import type { Product } from \\\"@/data/catalog\\\";\\n\\n/**\\n * Lightweight generated product visual.\\n * Real product photography from the ERP/PIM feed replaces this component's\\n * inner markup later; keeping it isolated avoids heavy placeholder images.\\n */\\nexport function ProductThumb({ product, className = \\\"\\\" }: { product: Product; className?: string }) {\\n  const initials = product.manufacturer\\n    .replace(/[^A-Za-z& ]/g, \\\"\\\")\\n    .split(\\\" \\\")\\n    .slice(0, 2)\\n    .map((w) => w[0])\\n    .join(\\\"\\\");\\n\\n  return (\\n    <div\\n      className={`flex flex-col items-center justify-center rounded-sm bg-sky-soft text-navy ${className}`}\\n      role=\\\"img\\\"\\n      aria-label={`${product.manufacturer} ${product.name}`}\\n    >\\n      <span className=\\\"font-display text-2xl font-bold tracking-wide\\\">{initials}</span>\\n      <span className=\\\"mt-1 px-2 text-center font-mono text-[0.65rem] uppercase text-navy-muted\\\">\\n        {product.mfrPartNumber}\\n      </span>\\n    </div>\\n  );\\n}\\n\",\"signals\":{\"functions\":[\"ProductThumb\"],\"imports\":[\"@/data/catalog\"],\"references\":[]},\"size\":957,\"line_count\":29}"
+}

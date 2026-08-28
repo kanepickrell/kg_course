@@ -1,0 +1,11 @@
+{
+  "_payload_version": "2.0",
+  "_saved_at": "2026-08-28T18:16:55.885049+00:00",
+  "_artifact_key": "src_components_ui_popover_tsx",
+  "_artifact_type": "SourceFile",
+  "name": "popover.tsx",
+  "path": "src/components/ui/popover.tsx",
+  "language": "typescript",
+  "partOf": "Codebase/pb-kane",
+  "analysis": "{\"content\":\"import * as React from \\\"react\\\";\\nimport * as PopoverPrimitive from \\\"@radix-ui/react-popover\\\";\\n\\nimport { cn } from \\\"@/lib/utils\\\";\\n\\nconst Popover = PopoverPrimitive.Root;\\n\\nconst PopoverTrigger = PopoverPrimitive.Trigger;\\n\\nconst PopoverAnchor = PopoverPrimitive.Anchor;\\n\\nconst PopoverContent = React.forwardRef<\\n  React.ElementRef<typeof PopoverPrimitive.Content>,\\n  React.ComponentPropsWithoutRef<typeof PopoverPrimitive.Content>\\n>(({ className, align = \\\"center\\\", sideOffset = 4, ...props }, ref) => (\\n  <PopoverPrimitive.Portal>\\n    <PopoverPrimitive.Content\\n      ref={ref}\\n      align={align}\\n      sideOffset={sideOffset}\\n      className={cn(\\n        \\\"z-50 w-72 rounded-md border bg-popover p-4 text-popover-foreground shadow-md outline-none data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 origin-(--radix-popover-content-transform-origin)\\\",\\n        className,\\n      )}\\n      {...props}\\n    />\\n  </PopoverPrimitive.Portal>\\n));\\nPopoverContent.displayName = PopoverPrimitive.Content.displayName;\\n\\nexport { Popover, PopoverTrigger, PopoverContent, PopoverAnchor };\\n\",\"signals\":{\"functions\":[],\"imports\":[\"react\",\"@radix-ui/react-popover\",\"@/lib/utils\"],\"references\":[]},\"size\":1352,\"line_count\":32}"
+}
