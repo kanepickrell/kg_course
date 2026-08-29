@@ -1,11 +1,11 @@
 {
   "_payload_version": "2.0",
-  "_saved_at": "2026-08-28T18:16:51.265099+00:00",
+  "_saved_at": "2026-08-28T23:54:41.962384+00:00",
   "_artifact_key": "readme_md",
   "_artifact_type": "SourceFile",
   "name": "README.md",
   "path": "README.md",
   "language": "markdown",
-  "partOf": "Codebase/pb-kane",
-  "analysis": "{\"content\":\"# Welcome to your Lovable project\\n\\nThis project was built with [Lovable](https://lovable.dev).\\n\\n## Build with Lovable\\n\\nOpen your project in the [Lovable editor](https://lovable.dev) and keep building.\\n\\n- **Ship faster**: describe what you want to build and Lovable handles the code.\\n- **Stay in sync**: connect the project to GitHub and every change made in Lovable is committed straight to your repository.\\n- **Full ownership**: this code is yours. Push to your repository and your changes sync back into Lovable, ready for your next prompt.\\n\\n## Development\\n\\nPrefer working locally? You need Node.js and npm \u2014 [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating).\\n\\n```sh\\ngit clone <this-repository-url>\\ncd <repository-name>\\nnpm i\\nnpm run dev\\n```\\n\\n## Built with\\n\\n- TanStack Start\\n- TypeScript\\n- React\\n- Tailwind CSS\\n\",\"signals\":{\"functions\":[],\"imports\":[],\"references\":[]},\"size\":837,\"line_count\":30}"
+  "partOf": "Codebase/razor-svcmgr",
+  "analysis": "{\"content\":\"# RAZOR Service Manager\\n\\nA small PowerShell service-manager with a web UI. Lists Windows services from an\\nallow-list, shows status, and exposes start/stop/restart over a local REST API.\\n\\n## Run\\n```powershell\\n./Start-SvcMgr.ps1 -Port 8080\\n```\\nThen open http://localhost:8080.\\n\\n## Layout\\n- `src/ServiceManager.ps1` \u2014 core service control + allow-list\\n- `src/ApiServer.ps1` \u2014 HttpListener REST API + static file serving\\n- `src/Logger.ps1` \u2014 shared structured logging\\n- `web/` \u2014 frontend (index.html, app.js, app.css)\\n- `config/allowed-services.json` \u2014 which services the UI may touch\\n- `Start-SvcMgr.ps1` \u2014 entry point\\n\",\"signals\":{\"functions\":[],\"imports\":[],\"references\":[]},\"size\":616,\"line_count\":19}"
 }

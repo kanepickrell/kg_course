@@ -657,7 +657,7 @@ class GraphDBAdapter:
         properties: Dict[str, Any],
     ) -> Dict[str, Any]:
         """
-        Insert a new artifact. Returns ArangoDB-style response.
+        Insert a new artifact. 
         
         artifact_type: a class name the ontology declares, e.g. "SourceFile".
         """
@@ -829,7 +829,7 @@ class GraphDBAdapter:
     # ============================================================
 
     def get_collections(self) -> List[str]:
-        """Return list of artifact type names that have instances (like ArangoDB collection list)."""
+        """Return list of artifact type names that have instances (like collection list)."""
         rows = self.sparql_query(f"""
             SELECT DISTINCT ?type WHERE {{
                 ?entity a ?type .
@@ -1340,7 +1340,7 @@ class GraphDBAdapter:
 
     def _field_to_pred_uri(self, field: str) -> Optional[str]:
         """Convert a field name to a predicate URI."""
-        # Skip internal ArangoDB-style fields
+        # Skip internal fields
         if field.startswith("_"):
             return None
         return f"{ONTOLOGY_NS}{field}"
@@ -1421,7 +1421,7 @@ class GraphDBAdapter:
     # If clustering is wanted, derive it from a property the ontology declares.
 
     def _find_node_id(self, key: str, node_ids: set) -> Optional[str]:
-        """Find the full ArangoDB-style ID for a key from the node set."""
+        """Find the full ID for a key from the node set."""
         for nid in node_ids:
             if nid.endswith(f"/{key}"):
                 return nid
